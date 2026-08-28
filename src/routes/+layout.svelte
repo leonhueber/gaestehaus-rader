@@ -17,6 +17,9 @@
 
 	let { children, data } = $props();
 	const currentLocale = $derived(data.locale);
+	type WebMcpDocument = Document & {
+		modelContext?: { registerTool?: unknown };
+	};
 
 	// svelte-ignore state_referenced_locally
 	setLang(currentLocale);
@@ -57,6 +60,15 @@
 	};
 
 	let headerHidden = $state(false);
+
+	onMount(() => {
+		const modelContext = (document as WebMcpDocument).modelContext;
+		if (typeof modelContext?.registerTool !== 'function') return;
+
+		void import('$lib/webmcp')
+			.then(({ registerSiteTools }) => registerSiteTools())
+			.catch(() => false);
+	});
 
 	onMount(() => {
 		let lenis: Lenis | null = null;

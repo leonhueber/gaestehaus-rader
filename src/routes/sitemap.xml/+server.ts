@@ -24,10 +24,9 @@ const staticGermanPaths = [
 	'/bildnachweise',
 ] as const;
 
-const dynamicGermanPaths = accommodations.flatMap((accommodation) => [
-	`/unterkuenfte-preise/${accommodation.slug}`,
-	`/buchen/${accommodation.slug}`,
-]);
+const dynamicGermanPaths = accommodations.map(
+	(accommodation) => `/unterkuenfte-preise/${accommodation.slug}`
+);
 
 const allGermanPaths = [...staticGermanPaths, ...dynamicGermanPaths];
 const freshnessEntries = getSitemapFreshnessEntries(accommodations);

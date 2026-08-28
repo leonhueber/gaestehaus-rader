@@ -1,7 +1,5 @@
 <script lang="ts">
-	import Page from '../../../buchen/[slug]/+page.svelte';
-
-	let { data } = $props();
+	import Page from '../+page.svelte';
 </script>
 
-<Page data={data as any} />
+<Page />

@@ -102,10 +102,7 @@ const buildAccommodationEntries = (
 	entry: ContentFreshnessEntry
 ): Record<string, ContentFreshnessEntry> =>
 	Object.fromEntries(
-		rooms.flatMap((room) => [
-			[`/unterkuenfte-preise/${room.slug}`, entry],
-			[`/buchen/${room.slug}`, entry],
-		])
+		rooms.map((room) => [`/unterkuenfte-preise/${room.slug}`, entry])
 	);
 
 export const getSitemapFreshnessEntries = (rooms: Accommodation[]): Record<string, ContentFreshnessEntry> => ({
