@@ -90,7 +90,7 @@ export const accommodations: Accommodation[] = [
 	{
 		key: 3,
 		slug: 'nr-1',
-		title: 'Nº 1',
+		title: 'Nr. 1',
 		subtitle: {
 			de: 'Helle Ferienwohnung mit Balkon und Morgensonne',
 			en: 'Bright apartment with balcony and morning sun',
@@ -108,7 +108,7 @@ export const accommodations: Accommodation[] = [
 			en: 'Apartment in Weissbriach for 1–3 guests with balcony',
 		},
 		detailIntro: {
-			de: 'Appartement Nº 1 ist eine ruhige Ferienwohnung im Gästehaus Rader in Weißbriach im Gitschtal – ideal für Paare oder kleine Familien, die nahe Weissensee und Nassfeld wohnen und direkt buchen möchten.',
+			de: 'Appartement Nr. 1 ist eine ruhige Ferienwohnung im Gästehaus Rader in Weißbriach im Gitschtal – ideal für Paare oder kleine Familien, die nahe Weissensee und Nassfeld wohnen und direkt buchen möchten.',
 			en: 'Apartment No. 1 is a quiet holiday apartment at Guesthouse Rader in Weissbriach in the Gitschtal – ideal for couples or small families who want to stay near Lake Weissensee and Nassfeld and book directly.',
 		},
 		description: {
@@ -130,40 +130,40 @@ export const accommodations: Accommodation[] = [
 					src: '/images/Nr1/living-room.jpg',
 					category: 'living',
 					alt: {
-						de: 'Wohnbereich im Appartement Nº 1',
-						en: 'Living area in Apartment Nº 1',
+						de: 'Wohnbereich im Appartement Nr. 1',
+						en: 'Living area in Apartment Nr. 1',
 					},
 				},
 				{
 					src: '/images/Nr1/dining-room.jpg',
 					category: 'dining',
 					alt: {
-						de: 'Essbereich im Appartement Nº 1',
-						en: 'Dining area in Apartment Nº 1',
+						de: 'Essbereich im Appartement Nr. 1',
+						en: 'Dining area in Apartment Nr. 1',
 					},
 				},
 				{
 					src: '/images/Nr1/balcony.jpg',
 					category: 'balcony',
 					alt: {
-						de: 'Balkon im Appartement Nº 1',
-						en: 'Balcony in Apartment Nº 1',
+						de: 'Balkon im Appartement Nr. 1',
+						en: 'Balcony in Apartment Nr. 1',
 					},
 				},
 				{
 					src: '/images/Nr1/balcony-seating.jpg',
 					category: 'balcony',
 					alt: {
-						de: 'Sitzplatz am Balkon im Appartement Nº 1',
-						en: 'Balcony seating in Apartment Nº 1',
+						de: 'Sitzplatz am Balkon im Appartement Nr. 1',
+						en: 'Balcony seating in Apartment Nr. 1',
 					},
 				},
 				{
 					src: '/images/Nr1/nr1-wc.png',
 					category: 'wc',
 					alt: {
-						de: 'WC im Appartement Nº 1',
-						en: 'Toilet in Apartment Nº 1',
+						de: 'WC im Appartement Nr. 1',
+						en: 'Toilet in Apartment Nr. 1',
 					},
 				},
 			],
@@ -253,7 +253,7 @@ export const accommodations: Accommodation[] = [
 	{
 		key: 2,
 		slug: 'nr-2',
-		title: 'Nº 2',
+		title: 'Nr. 2',
 		subtitle: {
 			de: 'Charmante Dachgeschosswohnung mit Balkon',
 			en: 'Charming top-floor apartment with balcony',
@@ -271,7 +271,7 @@ export const accommodations: Accommodation[] = [
 			en: 'Top-floor apartment in Weissbriach with balcony for 1–3 guests',
 		},
 		detailIntro: {
-			de: 'Appartement Nº 2 ist ein ruhiges Dachgeschoss-Appartement im Gästehaus Rader in Weißbriach – ideal für Gäste, die zwischen Gitschtal, Weissensee und Nassfeld komfortabel wohnen und direkt anfragen möchten.',
+			de: 'Appartement Nr. 2 ist ein ruhiges Dachgeschoss-Appartement im Gästehaus Rader in Weißbriach – ideal für Gäste, die zwischen Gitschtal, Weissensee und Nassfeld komfortabel wohnen und direkt anfragen möchten.',
 			en: 'Apartment No. 2 is a quiet top-floor apartment at Guesthouse Rader in Weissbriach – ideal for guests who want a comfortable base between the Gitschtal, Lake Weissensee and Nassfeld and prefer to book direct.',
 		},
 		description: {
@@ -293,56 +293,56 @@ export const accommodations: Accommodation[] = [
 					src: '/images/Nr2/nr2-living-room.jpg',
 					category: 'living',
 					alt: {
-						de: 'Wohnbereich im Appartement Nº 2',
-						en: 'Living area in Apartment Nº 2',
+						de: 'Wohnbereich im Appartement Nr. 2',
+						en: 'Living area in Apartment Nr. 2',
 					},
 				},
 				{
 					src: '/images/Nr2/nr2-bedroom-overview-bright.jpg',
 					category: 'sleeping',
 					alt: {
-						de: 'Schlafbereich im Appartement Nº 2',
-						en: 'Sleeping area in Apartment Nº 2',
+						de: 'Schlafbereich im Appartement Nr. 2',
+						en: 'Sleeping area in Apartment Nr. 2',
 					},
 				},
 				{
 					src: '/images/Nr2/nr2-kitchen-living.jpg',
 					category: 'kitchen',
 					alt: {
-						de: 'Küchenbereich im Appartement Nº 2',
-						en: 'Kitchen area in Apartment Nº 2',
+						de: 'Küchenbereich im Appartement Nr. 2',
+						en: 'Kitchen area in Apartment Nr. 2',
 					},
 				},
 				{
 					src: '/images/Nr2/nr2-living-dining-bright.jpg',
 					category: 'dining',
 					alt: {
-						de: 'Wohn- und Essbereich im Appartement Nº 2',
-						en: 'Living and dining area in Apartment Nº 2',
+						de: 'Wohn- und Essbereich im Appartement Nr. 2',
+						en: 'Living and dining area in Apartment Nr. 2',
 					},
 				},
 				{
 					src: '/images/Nr2/nr2-balcony-seating.jpg',
 					category: 'balcony',
 					alt: {
-						de: 'Balkon mit Sitzplatz im Appartement Nº 2',
-						en: 'Balcony seating in Apartment Nº 2',
+						de: 'Balkon mit Sitzplatz im Appartement Nr. 2',
+						en: 'Balcony seating in Apartment Nr. 2',
 					},
 				},
 				{
 					src: '/images/Haus/weissbriach-dorfblick-winter.jpg',
 					category: 'view',
 					alt: {
-						de: 'Winterlicher Ausblick bei Appartement Nº 2',
-						en: 'Winter view near Apartment Nº 2',
+						de: 'Winterlicher Ausblick bei Appartement Nr. 2',
+						en: 'Winter view near Apartment Nr. 2',
 					},
 				},
 				{
 					src: '/images/Nr2/nr2-bathroom.jpg',
 					category: 'bathroom',
 					alt: {
-						de: 'Badezimmer im Appartement Nº 2',
-						en: 'Bathroom in Apartment Nº 2',
+						de: 'Badezimmer im Appartement Nr. 2',
+						en: 'Bathroom in Apartment Nr. 2',
 					},
 				},
 			],
@@ -432,7 +432,7 @@ export const accommodations: Accommodation[] = [
 	{
 		key: 1,
 		slug: 'nr-3',
-		title: 'Nº 3',
+		title: 'Nr. 3',
 		subtitle: {
 			de: 'Sonnige Ferienwohnung mit Südbalkon und Gartenblick',
 			en: 'Sunny apartment with south-facing balcony and garden view',
@@ -450,7 +450,7 @@ export const accommodations: Accommodation[] = [
 			en: 'Apartment in Weissbriach for 1–2 guests with south-facing balcony',
 		},
 		detailIntro: {
-			de: 'Appartement Nº 3 ist eine sonnige Ferienwohnung im Gästehaus Rader in Weißbriach – perfekt für Paare oder zwei Gäste, die ruhig wohnen und Ausflüge zum Weissensee oder nach Nassfeld flexibel planen möchten.',
+			de: 'Appartement Nr. 3 ist eine sonnige Ferienwohnung im Gästehaus Rader in Weißbriach – perfekt für Paare oder zwei Gäste, die ruhig wohnen und Ausflüge zum Weissensee oder nach Nassfeld flexibel planen möchten.',
 			en: 'Apartment No. 3 is a sunny holiday apartment at Guesthouse Rader in Weissbriach – perfect for couples or two guests who want a quiet stay with easy trips to Lake Weissensee or Nassfeld.',
 		},
 		description: {
@@ -472,48 +472,48 @@ export const accommodations: Accommodation[] = [
 					src: '/images/Nr3/sofa.jpeg',
 					category: 'living',
 					alt: {
-						de: 'Wohnbereich im Appartement Nº 3',
-						en: 'Living area in Apartment Nº 3',
+						de: 'Wohnbereich im Appartement Nr. 3',
+						en: 'Living area in Apartment Nr. 3',
 					},
 				},
 				{
 					src: '/images/Nr3/bed.jpeg',
 					category: 'sleeping',
 					alt: {
-						de: 'Schlafbereich im Appartement Nº 3',
-						en: 'Sleeping area in Apartment Nº 3',
+						de: 'Schlafbereich im Appartement Nr. 3',
+						en: 'Sleeping area in Apartment Nr. 3',
 					},
 				},
 				{
 					src: '/images/Nr3/kitchen-tools.jpeg',
 					category: 'kitchen',
 					alt: {
-						de: 'Küchenbereich im Appartement Nº 3',
-						en: 'Kitchen area in Apartment Nº 3',
+						de: 'Küchenbereich im Appartement Nr. 3',
+						en: 'Kitchen area in Apartment Nr. 3',
 					},
 				},
 				{
 					src: '/images/Nr3/view.jpeg',
 					category: 'view',
 					alt: {
-						de: 'Ausblick vom Appartement Nº 3',
-						en: 'View from Apartment Nº 3',
+						de: 'Ausblick vom Appartement Nr. 3',
+						en: 'View from Apartment Nr. 3',
 					},
 				},
 				{
 					src: '/images/Nr3/shoe-rack.jpeg',
 					category: 'other',
 					alt: {
-						de: 'Eingangsbereich im Appartement Nº 3',
-						en: 'Entry area in Apartment Nº 3',
+						de: 'Eingangsbereich im Appartement Nr. 3',
+						en: 'Entry area in Apartment Nr. 3',
 					},
 				},
 				{
 					src: '/images/Nr3/bathroom.jpeg',
 					category: 'bathroom',
 					alt: {
-						de: 'Badezimmer im Appartement Nº 3',
-						en: 'Bathroom in Apartment Nº 3',
+						de: 'Badezimmer im Appartement Nr. 3',
+						en: 'Bathroom in Apartment Nr. 3',
 					},
 				},
 			],
