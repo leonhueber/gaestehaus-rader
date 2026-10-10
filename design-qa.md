@@ -4,6 +4,7 @@ Current status: implementation in progress; final visual review deferred at the 
 
 ## Carousel expansion — 2026-10-10
 
+- Apartment kicker restored at the user's request: “Ein Blick in unsere Appartements” and its existing English translation appear above apartment titles again, with the original title spacing. This supersedes the removal note below.
 - Hero loading copy: removed the visible “Bild wird geladen …” / “Loading image …” message. Image loading and actual failure feedback are unchanged; no placeholder text appears while a photo loads.
 - Resume tooltip: the paused active dot now shows only “Karussell fortsetzen” / “Resume slideshow”, also used as its accessible name. Other dots retain their image titles. This supersedes earlier resume labels containing the current image title.
 - Nr. 3 imagery: replaced the 1024 × 576 main image with responsive derivatives of the matching 4032 × 2268 `Schlafzimmer.jpeg` original from `Bilder/Nr3/Neue Bilder`. Shared accommodation data updates the hero, overview and detail page. Gallery now shows `Kochnische.jpeg` and `Balkon.jpeg` instead of the equipment/shelf close-ups, with matching DE/EN alternative text and categories. Original files remain unchanged. WebP quality 82 / effort 6, metadata stripped, no enlargement: main image 480–3840px (2560px: 178 KiB; 3840px: 301 KiB), gallery additions 480–2560px. Apartment hero `sizes` accounts for both 4:3 and 16:9 source ratios when using cover.

@@ -702,12 +702,10 @@ import { localizePath } from '$lib/routing';
 		>
 			{#each [isLeftAlignedHero] as leftAligned ('hero-copy')}
 				<div animate:flip={{ duration: prefersReducedMotion() ? 0 : 650 }} class={`flex w-full max-w-3xl flex-col ${leftAligned ? 'items-start text-left' : 'items-center text-center'}`}>
-					{#if !heroSlide.apartment}
-						<p class="text-sm font-medium leading-relaxed text-white">
-							{isInfoHero ? heroInfo.kicker : $t('hero.kicker')}
-						</p>
-					{/if}
-					<h1 id="home-hero-title" class:mt-5={!heroSlide.apartment} class="max-w-4xl whitespace-pre-line text-balance font-serif text-4xl font-medium leading-[1.1] tracking-normal sm:text-6xl sm:leading-[1.1]">
+					<p class="text-sm font-medium leading-relaxed text-white">
+						{isInfoHero ? heroInfo.kicker : $t('hero.kicker')}
+					</p>
+					<h1 id="home-hero-title" class="mt-5 max-w-4xl whitespace-pre-line text-balance font-serif text-4xl font-medium leading-[1.1] tracking-normal sm:text-6xl sm:leading-[1.1]">
 						{isInfoHero ? heroInfo.title : $t('hero.title')}
 					</h1>
 					{#if isInfoHero && heroInfo.meta}
