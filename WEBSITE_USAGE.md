@@ -1,78 +1,26 @@
-# Website Usage and Legal Checklist (Draft)
+# Website scope and operations
 
-This site belongs to a hotel that lets guests book apartments through an external booking system embedded via an iframe.
-This document explains the intended site usage and outlines legal items to implement later (EU/AT focus).
+## Current scope
 
-## Usage Overview
+- Present Gästehaus Rader, its apartments, indicative prices and local experiences in German and English.
+- Hand live availability and booking to Deskline. The site loads the provider's script/widget through `src/lib/deskline.ts`; it is not maintained as a simple iframe integration. The provider controls the booking interface and subsequent reservation flow.
+- WebMCP exposes site facts, apartment recommendations, experience filtering, prepared inquiry links and navigation to booking. It does not itself send inquiries or complete reservations.
+- Plausible tracking is integrated in `src/lib/analytics/plausible.ts`. Actual behavior depends on runtime configuration; inspect it when reviewing data processing.
 
-- Purpose: Present the hotel, rooms/apartments, prices, and local experiences, then hand off booking to the embedded provider.
-- Booking flow: Users interact with an external booking system inside an iframe; the actual reservation and payment happen outside our infrastructure.
-- Content sources: Images are AI-generated or taken by our staff. We ensure we have the rights to use them on the site.
+## Content and booking expectations
 
-## Booking System (Iframe) Notes
+- Keep prices, capacity, amenities and policies consistent with confirmed guesthouse information. Label indicative prices clearly; do not imply live availability from static data.
+- Make the external booking handoff understandable and provide a contact option if loading fails. Do not treat a successfully loaded script as proof that the booking form works.
+- Maintain the existing legal notice, privacy, terms, accessibility and image-credit pages in both languages, with footer links. Their presence alone does not establish completeness or legal compliance.
+- Use images only with documented provenance and usage rights; identify generated imagery accurately where relevant.
 
-- The booking provider controls the booking form, checkout, and payment.
-- The iframe may set cookies or process personal data. This must be disclosed.
-- If the provider is a separate data controller, this must be stated in the privacy policy.
-- If the provider acts as a processor, a Data Processing Agreement (DPA) is required.
+## Items requiring confirmation
 
-## Legal Pages to Implement (EU/AT)
+Keep these open until supported by provider documentation or an owner decision:
 
-- Impressum (legal notice) per Austrian law (ECG/UGB):
-  - Business name, legal form, address
-  - Contact details (email, phone)
-  - Responsible person for content
-  - Company register details (if applicable)
-  - VAT ID (if applicable)
-- Privacy policy (GDPR):
-  - Data controller identity and contact
-  - Purposes and legal bases for processing
-  - Categories of personal data collected
-  - Recipients of data, including the booking provider
-  - International transfers (if any), safeguards
-  - Retention periods
-  - Data subject rights and how to exercise them
-  - Right to lodge a complaint with the Austrian DPA
-- Cookie and tracking disclosure:
-  - List all cookies from our site and the iframe provider
-  - Consent banner for non-essential cookies (ePrivacy)
-  - Explain how to withdraw consent
-- Terms and conditions / booking terms:
-  - Reservation rules, payment terms, cancellation policy
-  - House rules, check-in/check-out times
-  - Tourist tax, fees, and pricing notes
-- Accessibility statement:
-  - Describe current accessibility status and contact for issues
-- Image rights note:
-  - Disclose that images are AI-generated or staff-made, and confirm usage rights
+- Deskline's contractual role, data recipients, retention and any international transfers.
+- Actual cookies, storage and network requests from the site and provider, and the resulting consent/disclosure requirements.
+- Hosting and analytics configuration, corresponding privacy information and image-license records.
+- Accuracy of business details, booking terms and the stated accessibility status.
 
-## Additional Compliance Items to Consider
-
-- Hosting and logs:
-  - Identify hosting provider and log data usage in the privacy policy
-- Analytics:
-  - If used, add consent and disclose data processing details
-- Marketing contacts:
-  - If a newsletter or contact form exists, add double opt-in and consent records
-- Children:
-  - If marketing to minors is possible, add age-related notices
-- Security:
-  - TLS/HTTPS, backups, and access controls for any data we handle
-
-## Content and UX Notes
-
-- Clearly label the booking iframe as an external system.
-- Provide fallback contact info in case the booking system is unavailable.
-- Link to legal pages in the footer on every page.
-
-## Redirects
-
-- Retired URLs are preserved via 308 redirects so old links and search results keep working.
-- Add new redirects by creating a `+page.ts` in `src/routes/<old-path>/` that throws `redirect(308, resolve('<new-path>'))` and set `export const prerender = true`.
-
-## Open Questions (to finalize later)
-
-- Who is the booking provider and are they a controller or processor?
-- Do they transfer data outside the EU/EEA?
-- Which cookies are set by the iframe and by our site?
-- Do we use analytics, maps, or external fonts that require consent?
+This is an operational review list, not a completed legal assessment. Record confirmed answers here or in the relevant policy source rather than retaining outdated questions.

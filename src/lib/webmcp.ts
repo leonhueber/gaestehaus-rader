@@ -77,6 +77,7 @@ const experiencePaths: Record<SeasonKey, string> = {
 };
 
 let registrationPromise: Promise<boolean> | null = null;
+const registeredToolNames = new Set<string>();
 
 const currentLanguage = (): Lang => getLocaleFromPathname(window.location.pathname);
 
@@ -102,6 +103,17 @@ const isValidDate = (value: unknown): value is string => {
 	if (typeof value !== 'string' || !ISO_DATE_PATTERN.test(value)) return false;
 	const date = new Date(`${value}T00:00:00Z`);
 	return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+};
+
+const todayInAustria = () => {
+	const parts = new Intl.DateTimeFormat('en', {
+		timeZone: 'Europe/Vienna',
+		year: 'numeric',
+		month: '2-digit',
+		day: '2-digit',
+	}).formatToParts(new Date());
+	const part = (type: string) => parts.find((value) => value.type === type)!.value;
+	return `${part('year')}-${part('month')}-${part('day')}`;
 };
 
 const maximumGuests = (guestsLabel: string) => {
@@ -290,10 +302,15 @@ const findExperiences = (input?: unknown) => {
 			detailsPageUrl: localizedUrl(experiencePaths[experience.season]),
 		}));
 
-	const shouldIncludeFestivals =
+	// Festivals have no verified indoor, drive-time or difficulty metadata.
+	// Unknown values must not be treated as matches for an explicit filter.
+	const festivalsMissingFilterData =
+		indoor !== undefined || maxDriveMinutes !== undefined || difficulty !== undefined;
+	const festivalsRequested =
 		values.includeFestivals !== false &&
 		(!season || season === 'summer') &&
 		(!activity || activity === 'culture');
+	const shouldIncludeFestivals = festivalsRequested && !festivalsMissingFilterData;
 
 	const festivals = shouldIncludeFestivals
 		? [
@@ -337,10 +354,14 @@ const findExperiences = (input?: unknown) => {
 		},
 		matches,
 		festivals,
+		festivalsOmittedReason:
+			festivalsRequested && festivalsMissingFilterData
+				? 'missing_filter_metadata'
+				: null,
 		eventsNotice:
 			language === 'de'
-				? 'Festtermine und Programme können sich jährlich ändern. Bitte vor dem Besuch beim Veranstalter prüfen.'
-				: 'Festival dates and programmes can change each year. Check with the organiser before visiting.',
+				? 'Festtermine und Programme können sich jährlich ändern. Bitte vor dem Besuch beim Veranstalter prüfen. Bei Filtern zu Indoor, Fahrzeit oder Schwierigkeit werden Feste mangels verifizierter Angaben ausgelassen.'
+				: 'Festival dates and programmes can change each year. Check with the organiser before visiting. Festivals are omitted when filtering by indoor setting, drive time or difficulty because verified metadata is unavailable.',
 	};
 };
 
@@ -352,6 +373,10 @@ const prepareBookingInquiry = (input?: unknown) => {
 	}
 	if (values.checkOut <= values.checkIn) {
 		return invalidInput('checkOut must be after checkIn.');
+	}
+	const today = todayInAustria();
+	if (values.checkIn < today) {
+		return invalidInput(`checkIn must be on or after ${today} (Europe/Vienna).`);
 	}
 	if (!isIntegerInRange(values.adults, 1, 10)) {
 		return invalidInput('adults must be an integer between 1 and 10.');
@@ -373,6 +398,11 @@ const prepareBookingInquiry = (input?: unknown) => {
 	const children = (values.children as number | undefined) ?? 0;
 	const apartment =
 		typeof values.apartmentSlug === 'string' ? accommodationBySlug(values.apartmentSlug) : undefined;
+	if (apartment && values.adults + children > maximumGuests(apartment.attributes.guests.de)) {
+		return invalidInput(
+			`${apartment.slug} accommodates at most ${maximumGuests(apartment.attributes.guests.de)} guests, including children. Reduce the guest count or omit apartmentSlug to inquire about multiple apartments.`
+		);
+	}
 	const note = typeof values.note === 'string' ? values.note.trim() : '';
 	const subject =
 		language === 'de' ? 'Buchungsanfrage Gästehaus Rader' : 'Booking inquiry – Guesthouse Rader';
@@ -493,7 +523,7 @@ const siteTools: SiteTool[] = [
 				indoor: { type: 'boolean' },
 				includeFestivals: {
 					type: 'boolean',
-					description: 'Include seasonal local and regional festivals where relevant. Defaults to true.',
+					description: 'Include seasonal local and regional festivals where relevant. Defaults to true. Festivals are omitted when indoor, maxDriveMinutes or difficulty is specified because verified metadata is unavailable.',
 				},
 			},
 			additionalProperties: false,
@@ -508,11 +538,11 @@ const siteTools: SiteTool[] = [
 		inputSchema: {
 			type: 'object',
 			properties: {
-				checkIn: { type: 'string', format: 'date', description: 'Arrival date in YYYY-MM-DD format.' },
+				checkIn: { type: 'string', format: 'date', description: 'Arrival date in YYYY-MM-DD format, today or later in Europe/Vienna.' },
 				checkOut: { type: 'string', format: 'date', description: 'Departure date in YYYY-MM-DD format.' },
 				adults: { type: 'integer', minimum: 1, maximum: 10 },
 				children: { type: 'integer', minimum: 0, maximum: 10 },
-				apartmentSlug: { type: 'string', enum: VALID_APARTMENT_SLUGS },
+				apartmentSlug: { type: 'string', enum: VALID_APARTMENT_SLUGS, description: 'Optional apartment. Adults and children combined must fit its capacity. Omit for an inquiry about multiple apartments.' },
 				note: { type: 'string', maxLength: 500 },
 			},
 			required: ['checkIn', 'checkOut', 'adults'],
@@ -541,17 +571,23 @@ const registerTools = async () => {
 	const modelContext = (document as WebMcpDocument).modelContext;
 	if (typeof modelContext?.registerTool !== 'function') return false;
 
-	try {
-		for (const tool of siteTools) {
+	for (const tool of siteTools) {
+		if (registeredToolNames.has(tool.name)) continue;
+		try {
 			await modelContext.registerTool(tool);
+			registeredToolNames.add(tool.name);
+		} catch (error) {
+			console.warn(`[WebMCP] Failed to register ${tool.name}; registration can be retried.`, error);
+			return false;
 		}
-		return true;
-	} catch {
-		return false;
 	}
+	return true;
 };
 
 export const registerSiteTools = () => {
-	registrationPromise ??= registerTools();
+	registrationPromise ??= registerTools().then((registered) => {
+		if (!registered) registrationPromise = null;
+		return registered;
+	});
 	return registrationPromise;
 };

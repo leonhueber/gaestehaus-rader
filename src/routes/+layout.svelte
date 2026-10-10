@@ -65,9 +65,23 @@
 		const modelContext = (document as WebMcpDocument).modelContext;
 		if (typeof modelContext?.registerTool !== 'function') return;
 
-		void import('$lib/webmcp')
-			.then(({ registerSiteTools }) => registerSiteTools())
-			.catch(() => false);
+		let disposed = false;
+		let retryTimer: ReturnType<typeof setTimeout> | undefined;
+		const register = async (retry: boolean) => {
+			try {
+				const { registerSiteTools } = await import('$lib/webmcp');
+				if (disposed) return;
+				if (await registerSiteTools()) return;
+			} catch (error) {
+				console.warn('[WebMCP] Could not load site tools.', error);
+			}
+			if (retry && !disposed) retryTimer = setTimeout(() => void register(false), 1000);
+		};
+		void register(true);
+		return () => {
+			disposed = true;
+			clearTimeout(retryTimer);
+		};
 	});
 
 	onMount(() => {
@@ -260,6 +274,7 @@
 				>
 					<a
 						href={localeSwitchHref('de')}
+						data-sveltekit-reload={isFullWidth}
 						class={`rounded-full px-2 py-1 transition sm:px-2.5 ${
 							$lang === 'de'
 								? 'bg-white text-slate-700 ring-1 ring-slate-200'
@@ -273,6 +288,7 @@
 					</a>
 					<a
 						href={localeSwitchHref('en')}
+						data-sveltekit-reload={isFullWidth}
 						class={`rounded-full px-2 py-1 transition sm:px-2.5 ${
 							$lang === 'en'
 								? 'bg-white text-slate-700 ring-1 ring-slate-200'

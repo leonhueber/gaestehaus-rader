@@ -16,6 +16,8 @@ type DesklineWindow = Window & {
 	dw?: DwFn;
 };
 
+export type DesklineStatus = 'loading' | 'ready' | 'error';
+
 const createQueue = () => {
 	const dwFn: DwFn = function (...args: unknown[]) {
 		dwFn.q = dwFn.q || [];
@@ -49,9 +51,10 @@ export function cleanupDeskline(container?: HTMLElement | null) {
 export function mountDeskline(
 	container: HTMLElement,
 	lang: string,
-	context?: {
+	options?: {
 		serviceIds?: string[];
 		productIds?: string[];
+		onStatusChange?: (status: DesklineStatus) => void;
 	}
 ) {
 	if (!browser) return () => {};
@@ -65,6 +68,17 @@ export function mountDeskline(
 
 	cleanupDeskline(container);
 	const mountId = ++activeMountId;
+	options?.onStatusChange?.('loading');
+	let readinessTimer: ReturnType<typeof setInterval> | undefined;
+	let timeout: ReturnType<typeof setTimeout> | undefined;
+	const stopWaiting = () => {
+		clearInterval(readinessTimer);
+		clearTimeout(timeout);
+	};
+	const setStatus = (status: DesklineStatus) => {
+		stopWaiting();
+		if (mountId === activeMountId && container.isConnected) options?.onStatusChange?.(status);
+	};
 
 	// Give scripts from the previous route one frame to finish before starting a fresh widget.
 	const frameId = window.requestAnimationFrame(() => {
@@ -75,22 +89,34 @@ export function mountDeskline(
 		win.dw = createQueue();
 		win.dw('settings', ACCOUNT_ID, {
 			context: {
-				serviceIds: context?.serviceIds ?? [],
-				productIds: context?.productIds ?? [],
+				serviceIds: options?.serviceIds ?? [],
+				productIds: options?.productIds ?? [],
 			},
 			lang,
+			// The site's language must take precedence over Deskline's saved selection.
+			doNotUseSelectedLang: true,
 		});
 
 		const script = document.createElement('script');
 		script.id = SCRIPT_ID;
 		script.async = true;
 		script.src = SCRIPT_SRC;
+		script.onerror = () => setStatus('error');
 		providerLoadedInDocument = true;
 		container.appendChild(script);
+
+		// The loader's load event only confirms its script, not a usable booking form.
+		readinessTimer = setInterval(() => {
+			const app = container.querySelector(APP_ELEMENT);
+			const root = app?.shadowRoot ?? app;
+			if (root?.querySelector('input, button')) setStatus('ready');
+		}, 250);
+		timeout = setTimeout(() => setStatus('error'), 30000);
 	});
 
 	return () => {
 		window.cancelAnimationFrame(frameId);
+		stopWaiting();
 		if (mountId === activeMountId) cleanupDeskline(container);
 	};
 }
