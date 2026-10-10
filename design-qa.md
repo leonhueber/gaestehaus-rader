@@ -2,8 +2,16 @@
 
 Current status: implementation in progress; final visual review deferred at the user's request.
 
+## Supporting benefit cards — 2026-10-10
+
+- Rebuilt the four cards using shared `Card` with a `quiet` tone (white, subtle border, 12px corners) and `compact` padding (24px). Removed icon circles, decorative dividers, shadows, hover movement and reveal animation. Shortened DE/EN titles and body copy; supporting text stays at 16px.
+- The content row is capped at 1152px excluding page gutters: four 270px cards with 24px gaps on desktop, two columns on tablet and one on small phones. It shares its content container with the apartment overview.
+- Essential browser checks: measured all four cards at 270 × 168px on a 1440px viewport, with 24px padding, 12px radius and no shadow. DE/EN bodies fit one or two lines. The 820px viewport shows two columns; 390px shows one with no overflow inside the section. These are targeted component checks; the full responsive/site review remains deferred.
+- Svelte check: 0 errors and 0 warnings. Static production build passed. Desktop evidence: `C:/Users/hueberl/.codex/visualizations/2026/10/10/01a126b2-09ed-7f50-9f06-beba60c69376/usp-cards-clean-desktop.png`.
+
 ## Carousel expansion — 2026-10-10
 
+- Faster carousel: slide duration reduced from 7 to 5 seconds. Resume still starts at 50%, now leaving 2.5 seconds to the next image. This supersedes earlier duration notes; progress fill shares the same timer.
 - Apartment kicker restored at the user's request: “Ein Blick in unsere Appartements” and its existing English translation appear above apartment titles again, with the original title spacing. This supersedes the removal note below.
 - Hero loading copy: removed the visible “Bild wird geladen …” / “Loading image …” message. Image loading and actual failure feedback are unchanged; no placeholder text appears while a photo loads.
 - Resume tooltip: the paused active dot now shows only “Karussell fortsetzen” / “Resume slideshow”, also used as its accessible name. Other dots retain their image titles. This supersedes earlier resume labels containing the current image title.

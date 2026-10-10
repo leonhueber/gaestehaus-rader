@@ -125,7 +125,7 @@ import { localizePath } from '$lib/routing';
 	});
 	let heroElement: HTMLElement;
 	let heroProgress = $state(0);
-	const heroSlideDuration = 7000;
+	const heroSlideDuration = 5000;
 	let heroAutoplayPaused = $state(true);
 	let heroDocumentVisible = $state(true);
 	let heroImageStates = $state<Record<string, 'loaded' | 'error'>>({});
@@ -1036,28 +1036,22 @@ import { localizePath } from '$lib/routing';
 		</div> -->
 	</section>
 
-	<div class="mx-auto w-full max-w-6xl px-4 pt-8 sm:px-6 sm:pt-14 lg:px-8">
+	<div class="mx-auto w-full max-w-[76rem] px-4 pt-8 sm:px-6 sm:pt-14 lg:px-8">
 		<div class="space-y-20">
 			<section
-				use:reveal class="opacity-0 translate-y-8 transition-all duration-700 ease-out -mx-4 mt-1 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 scroll-pl-4 scroll-pr-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-6 sm:overflow-visible sm:px-0 sm:pb-0 sm:scroll-pl-0 sm:scroll-pr-0 lg:grid-cols-4"
+				aria-label={$t('usp.title')}
+				class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4"
 			>
 				{#each usps as item}
-					<div
-						class="group w-[84vw] max-w-[320px] shrink-0 snap-start rounded-2xl border border-slate-200/50 bg-white/80 p-5 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand/30 hover:shadow-md sm:w-auto sm:max-w-none sm:p-6"
-					>
-						<div
-							class="flex h-10 w-10 items-center justify-center rounded-full bg-brand/10 text-brand transition-all duration-300 group-hover:bg-brand group-hover:text-white"
-						>
-							<item.icon class="h-5 w-5" aria-hidden="true" strokeWidth={1.25} />
-						</div>
-						<h3 class="mt-4 text-base font-semibold text-slate-900">
+					<Card as="article" tone="quiet" padding="compact" class="min-w-0">
+						<item.icon class="h-5 w-5 text-brand" aria-hidden="true" strokeWidth={1.5} />
+						<h3 class="mt-4 text-base font-semibold leading-snug text-slate-900">
 							{$t(`usp.${item.key}.title`)}
 						</h3>
-						<div class="mt-3 h-[2px] w-8 bg-brand/40 transition-all duration-300 group-hover:w-12"></div>
-						<p class="mt-2 text-sm leading-relaxed text-slate-600">
+						<p class="mt-2 text-base leading-relaxed text-slate-600">
 							{$t(`usp.${item.key}.body`)}
 						</p>
-					</div>
+					</Card>
 				{/each}
 			</section>
 

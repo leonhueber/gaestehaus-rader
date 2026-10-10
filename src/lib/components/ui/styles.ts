@@ -18,21 +18,23 @@ const buttonSizes: Record<ButtonSize, string> = {
 export const buttonClasses = (variant: ButtonVariant, size: ButtonSize, className = '') =>
 	`inline-flex items-center justify-center gap-2 rounded-xl border font-semibold leading-snug text-center transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate-900 disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none [&_svg]:shrink-0 ${buttonVariants[variant]} ${buttonSizes[size]} ${className}`;
 
-export type CardTone = 'default' | 'muted' | 'accent';
-export type CardPadding = 'none' | 'sm' | 'md' | 'lg';
+export type CardTone = 'default' | 'muted' | 'accent' | 'quiet';
+export type CardPadding = 'none' | 'sm' | 'compact' | 'md' | 'lg';
 
 const cardTones: Record<CardTone, string> = {
 	default: 'border-slate-200 bg-white',
 	muted: 'border-slate-200 bg-slate-50',
 	accent: 'border-brand/25 bg-brand/5',
+	quiet: 'border-slate-200/70 bg-white',
 };
 
 const cardPaddings: Record<CardPadding, string> = {
 	none: '',
 	sm: 'p-4 sm:p-5',
+	compact: 'p-6',
 	md: 'p-6 sm:p-8',
 	lg: 'p-6 sm:p-10 lg:p-12',
 };
 
 export const cardClasses = (tone: CardTone, padding: CardPadding, interactive = false, className = '') =>
-	`rounded-2xl border ${cardTones[tone]} ${cardPaddings[padding]} ${interactive ? 'text-left transition-colors duration-150 hover:border-slate-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate-900 motion-reduce:transition-none' : ''} ${className}`;
+	`${tone === 'quiet' ? 'rounded-xl' : 'rounded-2xl'} border ${cardTones[tone]} ${cardPaddings[padding]} ${interactive ? 'text-left transition-colors duration-150 hover:border-slate-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate-900 motion-reduce:transition-none' : ''} ${className}`;

@@ -27,11 +27,12 @@ Use `src/lib/components/ui/` for repeated controls and surfaces:
 | --- | --- | --- |
 | `Button` | An action; defaults to `type="button"` | `variant`: primary, secondary, overlay, ghost; `size`: sm, md, lg, icon |
 | `ButtonLink` | Navigation styled as a button; requires `href` | Same variants; sm, md, lg sizes |
-| `Card` | Non-interactive content; `as`: div, section, article | `tone`: default, muted, accent; `padding`: none, sm, md, lg |
+| `Card` | Non-interactive content; `as`: div, section, article | `tone`: default, muted, accent, quiet; `padding`: none, sm, compact, md, lg |
 | `CardLink` | A whole card that navigates; requires `href` | Same tone and padding options |
 | `CardButton` | A whole card that performs an action, such as opening a gallery | Same tone and padding options |
 
 - Native attributes, event handlers and ARIA labels pass through to the element. Use `bind:element` on buttons/links when a DOM reference is needed. Icon-only buttons need an accessible label; form submission requires `type="submit"`.
+- Use `quiet` for small supporting cards: white surface, subtle border, 12px corners. `compact` keeps padding at 24px across breakpoints.
 - Keep localized URL creation in the page. Do not nest links or buttons inside interactive cards.
 - Use `class` for placement, width and content layout. Change colors, corners, padding, focus and hover styles centrally in `ui/styles.ts`, not at each call site. Primary buttons use dark text on orange for contrast; overlay buttons are for dark/image backgrounds.
 - If a native element must retain a Svelte transition directive, reuse `buttonClasses` or `cardClasses` from `ui/styles.ts`. Specialized controls such as tabs, thumbnails and modal backdrops can retain their own behavior and layout.
