@@ -36,6 +36,7 @@ import { localizePath } from '$lib/routing';
 		ArrowRight,
 		ChevronLeft,
 		ChevronRight,
+		Play,
 		Leaf,
 		Sun,
 		Flame,
@@ -85,7 +86,7 @@ import { localizePath } from '$lib/routing';
 	const heroSlides = $derived.by((): HeroSlide[] => {
 		const apartmentSlides = ['nr-2', 'nr-3'].map((slug) => {
 			const apartment = accommodations.find((room) => room.slug === slug)!;
-			return { id: slug, apartment, src: slug === 'nr-2' ? '/images/Nr2/nr2-bedroom-overview-bright.jpg' : apartment.images.main, position: '50% 55%' };
+			return { id: slug, apartment, src: slug === 'nr-2' ? '/images/Nr2/nr2-bedroom-overview-original.jpg' : apartment.images.main, position: '50% 55%' };
 		});
 		const highlights = getHeroExperienceIds(heroMonth ?? 0)
 			.map((id) => experienceEvents.find((event) => event.id === id))
@@ -113,7 +114,7 @@ import { localizePath } from '$lib/routing';
 		return {
 			kicker: $t(room ? 'hero.apartment.kicker' : 'hero.experience.kicker'),
 			title: heroCaption(heroSlide),
-			meta: room ? `${room.attributes.size} · ${room.attributes.guests[$lang]}` : event?.location?.[$lang],
+			meta: room ? `${room.attributes.size} · ${room.attributes.guests[$lang]}` : undefined,
 			description: room ? room.description[$lang][0] : event?.description?.[$lang],
 			href: room ? `/unterkuenfte-preise/${room.slug}` : `/erlebnisse/${event?.season === 'winter' ? 'winter' : 'sommer'}`,
 			hash: event ? `#${event.id}` : '',
@@ -124,15 +125,17 @@ import { localizePath } from '$lib/routing';
 	});
 	let heroElement: HTMLElement;
 	let heroProgress = $state(0);
-	let heroTransferProgress = $state<number | null>(null);
 	const heroSlideDuration = 7000;
-	const heroTransferDuration = 450;
 	let heroAutoplayPaused = $state(true);
 	let heroDocumentVisible = $state(true);
 	let heroImageStates = $state<Record<string, 'loaded' | 'error'>>({});
-	const stopHeroAutoplay = () => {
+	const stopHeroAutoplay = (event?: Event) => {
+		if (event?.target instanceof Element && event.target.closest('.hero-dot')) return;
 		heroAutoplayPaused = true;
-		heroTransferProgress = null;
+	};
+	const resumeHeroAutoplay = () => {
+		heroProgress = 0.5;
+		heroAutoplayPaused = false;
 	};
 	const selectHeroSlide = (index: number) => {
 		stopHeroAutoplay();
@@ -164,28 +167,15 @@ import { localizePath } from '$lib/routing';
 		const advance = (now: number) => {
 			const elapsed = now - lastFrame;
 			lastFrame = now;
-			if (heroTransferProgress !== null) {
-				heroTransferProgress = Math.min(1, heroTransferProgress + elapsed / heroTransferDuration);
-				if (heroTransferProgress === 1) {
-					activeHeroSlide = (activeHeroSlide + 1) % heroSlides.length;
-					heroProgress = 0;
-					heroTransferProgress = null;
-				}
-			} else {
-				heroProgress = Math.min(1, heroProgress + elapsed / heroSlideDuration);
-				if (heroProgress === 1) heroTransferProgress = 0;
+			heroProgress = Math.min(1, heroProgress + elapsed / heroSlideDuration);
+			if (heroProgress === 1) {
+				activeHeroSlide = (activeHeroSlide + 1) % heroSlides.length;
+				heroProgress = 0;
 			}
 			frame = window.requestAnimationFrame(advance);
 		};
 		frame = window.requestAnimationFrame(advance);
 		return () => window.cancelAnimationFrame(frame);
-	});
-	const heroFlyingDotStyle = $derived.by(() => {
-		const progress = heroTransferProgress ?? 0;
-		const eased = progress * progress * (3 - 2 * progress);
-		const nextSlide = (activeHeroSlide + 1) % heroSlides.length;
-		const position = activeHeroSlide + (nextSlide - activeHeroSlide) * eased;
-		return `translate3d(${position * 2.25}rem, ${-Math.sin(progress * Math.PI) * 10}px, 0)`;
 	});
 	const guestCardVisual = isSummerSeason
 		? {
@@ -545,6 +535,12 @@ import { localizePath } from '$lib/routing';
 
 	const galleryImages = destinationImages;
 	let heroHeaderOffset = $state('113px');
+	// Covering a tall hero needs more source pixels than the visible viewport width.
+	const heroImageSizes = (slide: HeroSlide) => {
+		if (!slide.apartment) return '100vw';
+		const aspectRatio = slide.id === 'nr-2' ? 4 / 3 : 16 / 9;
+		return `max(100vw, ${38 * aspectRatio}rem, calc(${100 * aspectRatio}svh - ${parseFloat(heroHeaderOffset) * aspectRatio}px))`;
+	};
 	let isGalleryOpen = $state(false);
 	let activeGalleryIndex = $state(0);
 	let activeSeasonGallery = $state<'summer' | 'winter' | null>(null);
@@ -678,12 +674,12 @@ import { localizePath } from '$lib/routing';
 		aria-labelledby="home-hero-title"
 		aria-roledescription={$t('hero.carousel.role')}
 		onfocusin={stopHeroAutoplay}
-		style={`--hero-header-offset: ${heroHeaderOffset};`}
+		style={`--hero-header-offset: ${heroHeaderOffset}; min-height: max(38rem, calc(100svh - var(--hero-header-offset)));`}
 	>
 		<div class="absolute inset-0">
 			{#each heroSlides as slide, index (slide.id)}
 				<img
-					{...imageAttrs(slide.src, '100vw')}
+					{...imageAttrs(slide.src, heroImageSizes(slide))}
 					alt=""
 					class="absolute inset-0 h-full w-full object-cover transition-opacity duration-500 motion-reduce:transition-none"
 					style:object-position={slide.position}
@@ -702,16 +698,19 @@ import { localizePath } from '$lib/routing';
 
 		<div
 			class={`hero-content relative flex flex-col px-6 pb-28 pt-32 sm:px-10 lg:px-[6vw] ${isLeftAlignedHero ? 'items-start justify-end' : 'items-center justify-center'}`}
+			style:min-height="inherit"
 		>
 			{#each [isLeftAlignedHero] as leftAligned ('hero-copy')}
 				<div animate:flip={{ duration: prefersReducedMotion() ? 0 : 650 }} class={`flex w-full max-w-3xl flex-col ${leftAligned ? 'items-start text-left' : 'items-center text-center'}`}>
-					<p class="text-sm font-medium leading-relaxed text-white">
-						{isInfoHero ? heroInfo.kicker : $t('hero.kicker')}
-					</p>
-					<h1 id="home-hero-title" class="mt-5 max-w-4xl whitespace-pre-line text-balance font-serif text-4xl font-medium leading-[1.1] tracking-normal sm:text-6xl sm:leading-[1.1]">
+					{#if !heroSlide.apartment}
+						<p class="text-sm font-medium leading-relaxed text-white">
+							{isInfoHero ? heroInfo.kicker : $t('hero.kicker')}
+						</p>
+					{/if}
+					<h1 id="home-hero-title" class:mt-5={!heroSlide.apartment} class="max-w-4xl whitespace-pre-line text-balance font-serif text-4xl font-medium leading-[1.1] tracking-normal sm:text-6xl sm:leading-[1.1]">
 						{isInfoHero ? heroInfo.title : $t('hero.title')}
 					</h1>
-					{#if isInfoHero}
+					{#if isInfoHero && heroInfo.meta}
 						<p class="mt-4 text-sm font-medium text-white/90">
 							{heroInfo.meta}
 						</p>
@@ -720,20 +719,22 @@ import { localizePath } from '$lib/routing';
 						{isInfoHero ? heroInfo.description : $t('hero.subtitle')}
 					</p>
 
-					<div class={`mt-8 flex flex-wrap items-center gap-x-8 gap-y-4 ${leftAligned ? 'justify-start' : 'justify-center'}`}>
-						<ButtonLink variant="primary" size="lg"
-							href={localizedHref(isInfoHero ? heroInfo.href : '/unterkuenfte-preise') + (isInfoHero ? heroInfo.hash : '')}
-						>
-							{$t(isInfoHero ? heroInfo.primaryKey : 'hero.cta.primary')}
-						</ButtonLink>
-						<a
-							href={localizedHref(isInfoHero ? heroInfo.secondaryHref : '/erlebnisse')}
-							class="inline-flex min-h-12 items-center gap-2 py-3 text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:text-base"
-						>
-							{$t(isInfoHero ? heroInfo.secondaryKey : 'hero.cta.secondary')}
-							<ArrowRight class="h-4 w-4" aria-hidden="true" />
-						</a>
-					</div>
+					{#if !heroSlide.experience}
+						<div class={`mt-8 flex flex-wrap items-center gap-x-8 gap-y-4 ${leftAligned ? 'justify-start' : 'justify-center'}`}>
+							<ButtonLink variant="primary" size="lg"
+								href={localizedHref(isInfoHero ? heroInfo.href : '/unterkuenfte-preise') + (isInfoHero ? heroInfo.hash : '')}
+							>
+								{$t(isInfoHero ? heroInfo.primaryKey : 'hero.cta.primary')}
+							</ButtonLink>
+							<a
+								href={localizedHref(isInfoHero ? heroInfo.secondaryHref : '/erlebnisse')}
+								class="inline-flex min-h-12 items-center gap-2 py-3 text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:text-base"
+							>
+								{$t(isInfoHero ? heroInfo.secondaryKey : 'hero.cta.secondary')}
+								<ArrowRight class="h-4 w-4" aria-hidden="true" />
+							</a>
+						</div>
+					{/if}
 				</div>
 			{/each}
 		</div>
@@ -742,32 +743,36 @@ import { localizePath } from '$lib/routing';
 				<p class="sr-only">{heroCaption(heroSlide)}</p>
 				{#if heroImageStates[heroSlide.id] === 'error'}
 					<p>{$t('hero.carousel.error')}</p>
-				{:else if !heroImageStates[heroSlide.id]}
-					<p>{$t('hero.carousel.loading')}</p>
 				{/if}
 			</div>
 			<div class="relative flex" role="group" aria-label={$t('hero.carousel.controls')}>
 				{#each heroSlides as slide, index (slide.id)}
+					{@const canResume = activeHeroSlide === index && heroAutoplayPaused}
 					<button
 						type="button"
 						class="hero-dot group/hero-dot flex h-11 w-9 items-center justify-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-						aria-label={heroCaption(slide)}
+						aria-label={canResume ? $t('hero.carousel.play') : heroCaption(slide)}
 						aria-pressed={activeHeroSlide === index}
-						onclick={() => selectHeroSlide(index)}
+						onclick={(event) => {
+							event.stopPropagation();
+							if (canResume) resumeHeroAutoplay();
+							else selectHeroSlide(index);
+						}}
 					>
 						<span class="pointer-events-none absolute bottom-full left-1/2 mb-1 -translate-x-1/2 w-max max-w-[80vw] whitespace-normal text-center rounded-lg bg-slate-900/90 px-3 py-2 text-sm font-medium text-white opacity-0 transition-opacity duration-150 group-hover/hero-dot:opacity-100 group-focus-visible/hero-dot:opacity-100 motion-reduce:transition-none" aria-hidden="true">
-							{heroCaption(slide)}
+							{canResume ? $t('hero.carousel.play') : heroCaption(slide)}
 						</span>
-						<span class="hero-dot-track" class:active={activeHeroSlide === index && heroAutoplayPaused} aria-hidden="true">
-							{#if activeHeroSlide === index && !heroAutoplayPaused && heroTransferProgress === null}
-								<span class="hero-dot-progress" style:background={`conic-gradient(from 0deg, white ${heroProgress * 360}deg, transparent 0deg)`}></span>
-							{/if}
-						</span>
+						{#if canResume}
+							<Play class="h-4 w-4 fill-current text-white" aria-hidden="true" />
+						{:else}
+							<span class="hero-dot-track" aria-hidden="true">
+								{#if activeHeroSlide === index && !heroAutoplayPaused}
+									<span class="hero-dot-progress" style:background={`conic-gradient(from 0deg, white ${heroProgress * 360}deg, transparent 0deg)`}></span>
+								{/if}
+							</span>
+						{/if}
 					</button>
 				{/each}
-				{#if heroTransferProgress !== null}
-					<span class="hero-dot-flight" style:transform={heroFlyingDotStyle} aria-hidden="true"></span>
-				{/if}
 			</div>
 		</div>
 
@@ -2047,9 +2052,6 @@ import { localizePath } from '$lib/routing';
 		border-radius: 50%;
 		background: rgb(255 255 255 / 35%);
 	}
-	.hero-dot-track.active {
-		background: white;
-	}
 	.hero-dot:hover .hero-dot-track {
 		box-shadow: 0 0 0 3px rgb(255 255 255 / 15%);
 	}
@@ -2057,20 +2059,6 @@ import { localizePath } from '$lib/routing';
 		position: absolute;
 		inset: 0;
 		border-radius: 50%;
-	}
-	.hero-dot-flight {
-		position: absolute;
-		left: calc(1.125rem - 6px);
-		top: calc(1.375rem - 6px);
-		width: 12px;
-		height: 12px;
-		border-radius: 50%;
-		background: white;
-		pointer-events: none;
-		will-change: transform;
-	}
-	.hero-content {
-		min-height: max(38rem, calc(100svh - var(--hero-header-offset, 141px)));
 	}
 	.hero-info-shade {
 		background:

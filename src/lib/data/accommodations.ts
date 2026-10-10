@@ -466,7 +466,7 @@ export const accommodations: Accommodation[] = [
 			],
 		},
 		images: {
-			main: '/images/Nr3/main.jpg',
+			main: '/images/Nr3/bedroom-overview-original.jpg',
 			gallery: [
 				{
 					src: '/images/Nr3/sofa.jpeg',
@@ -485,11 +485,11 @@ export const accommodations: Accommodation[] = [
 					},
 				},
 				{
-					src: '/images/Nr3/kitchen-tools.jpeg',
+					src: '/images/Nr3/kitchenette-original.jpg',
 					category: 'kitchen',
 					alt: {
-						de: 'Küchenbereich im Appartement Nr. 3',
-						en: 'Kitchen area in Apartment Nr. 3',
+						de: 'Kochnische mit Sitzecke im Appartement Nr. 3',
+						en: 'Kitchenette with dining nook in Apartment Nr. 3',
 					},
 				},
 				{
@@ -501,11 +501,11 @@ export const accommodations: Accommodation[] = [
 					},
 				},
 				{
-					src: '/images/Nr3/shoe-rack.jpeg',
-					category: 'other',
+					src: '/images/Nr3/balcony-original.jpg',
+					category: 'balcony',
 					alt: {
-						de: 'Eingangsbereich im Appartement Nr. 3',
-						en: 'Entry area in Apartment Nr. 3',
+						de: 'Südbalkon mit Garten- und Bergblick im Appartement Nr. 3',
+						en: 'South-facing balcony with garden and mountain views in Apartment Nr. 3',
 					},
 				},
 				{

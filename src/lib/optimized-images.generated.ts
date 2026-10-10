@@ -1112,6 +1112,140 @@ export const responsiveImages = {
         "src": "/images/optimized/Logo/kaernten-logo-277.webp"
       }
     ]
+  },
+  "/images/Nr2/nr2-bedroom-overview-original.jpg": {
+    "width": 4032,
+    "height": 3024,
+    "variants": [
+      {
+        "width": 480,
+        "height": 360,
+        "src": "/images/optimized/Nr2/nr2-bedroom-overview-original-480.webp"
+      },
+      {
+        "width": 768,
+        "height": 576,
+        "src": "/images/optimized/Nr2/nr2-bedroom-overview-original-768.webp"
+      },
+      {
+        "width": 1280,
+        "height": 960,
+        "src": "/images/optimized/Nr2/nr2-bedroom-overview-original-1280.webp"
+      },
+      {
+        "width": 1920,
+        "height": 1440,
+        "src": "/images/optimized/Nr2/nr2-bedroom-overview-original-1920.webp"
+      },
+      {
+        "width": 2560,
+        "height": 1920,
+        "src": "/images/optimized/Nr2/nr2-bedroom-overview-original-2560.webp"
+      },
+      {
+        "width": 3840,
+        "height": 2880,
+        "src": "/images/optimized/Nr2/nr2-bedroom-overview-original-3840.webp"
+      }
+    ]
+  },
+  "/images/Nr3/bedroom-overview-original.jpg": {
+    "width": 4032,
+    "height": 2268,
+    "variants": [
+      {
+        "width": 480,
+        "height": 270,
+        "src": "/images/optimized/Nr3/bedroom-overview-original-480.webp"
+      },
+      {
+        "width": 768,
+        "height": 432,
+        "src": "/images/optimized/Nr3/bedroom-overview-original-768.webp"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "src": "/images/optimized/Nr3/bedroom-overview-original-1280.webp"
+      },
+      {
+        "width": 1920,
+        "height": 1080,
+        "src": "/images/optimized/Nr3/bedroom-overview-original-1920.webp"
+      },
+      {
+        "width": 2560,
+        "height": 1440,
+        "src": "/images/optimized/Nr3/bedroom-overview-original-2560.webp"
+      },
+      {
+        "width": 3840,
+        "height": 2160,
+        "src": "/images/optimized/Nr3/bedroom-overview-original-3840.webp"
+      }
+    ]
+  },
+  "/images/Nr3/kitchenette-original.jpg": {
+    "width": 4032,
+    "height": 2268,
+    "variants": [
+      {
+        "width": 480,
+        "height": 270,
+        "src": "/images/optimized/Nr3/kitchenette-original-480.webp"
+      },
+      {
+        "width": 768,
+        "height": 432,
+        "src": "/images/optimized/Nr3/kitchenette-original-768.webp"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "src": "/images/optimized/Nr3/kitchenette-original-1280.webp"
+      },
+      {
+        "width": 1920,
+        "height": 1080,
+        "src": "/images/optimized/Nr3/kitchenette-original-1920.webp"
+      },
+      {
+        "width": 2560,
+        "height": 1440,
+        "src": "/images/optimized/Nr3/kitchenette-original-2560.webp"
+      }
+    ]
+  },
+  "/images/Nr3/balcony-original.jpg": {
+    "width": 4032,
+    "height": 2268,
+    "variants": [
+      {
+        "width": 480,
+        "height": 270,
+        "src": "/images/optimized/Nr3/balcony-original-480.webp"
+      },
+      {
+        "width": 768,
+        "height": 432,
+        "src": "/images/optimized/Nr3/balcony-original-768.webp"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "src": "/images/optimized/Nr3/balcony-original-1280.webp"
+      },
+      {
+        "width": 1920,
+        "height": 1080,
+        "src": "/images/optimized/Nr3/balcony-original-1920.webp"
+      },
+      {
+        "width": 2560,
+        "height": 1440,
+        "src": "/images/optimized/Nr3/balcony-original-2560.webp"
+      }
+    ]
   }
 } as const satisfies Record<string, ResponsiveImage>;
 

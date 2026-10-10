@@ -48,6 +48,7 @@ const translations: Record<Lang, Record<string, string>> = {
 		'hero.slide.summer': 'Unser Haus im Sommer',
 		'hero.carousel.role': 'Karussell',
 		'hero.carousel.controls': 'Hero-Bilder wechseln',
+		'hero.carousel.play': 'Karussell fortsetzen',
 		'hero.carousel.loading': 'Bild wird geladen …',
 		'hero.carousel.error': 'Bild nicht verfügbar. Bitte ein anderes Motiv wählen.',
 		'seo.default.title':
@@ -1187,6 +1188,7 @@ const translations: Record<Lang, Record<string, string>> = {
 		'hero.slide.summer': 'Our house in summer',
 		'hero.carousel.role': 'Carousel',
 		'hero.carousel.controls': 'Change hero image',
+		'hero.carousel.play': 'Resume slideshow',
 		'hero.carousel.loading': 'Loading image …',
 		'hero.carousel.error': 'Image unavailable. Please choose another image.',
 		'seo.default.title':
