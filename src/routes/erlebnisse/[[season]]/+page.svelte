@@ -264,7 +264,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 	const guestCardVisual = $derived.by(() =>
 		activeTab === 'winter'
 			? {
-					src: '/images/Umgebung/nassfeld-lift.jpg',
+					src: '/images/Umgebung/skigebiet-weissbriach-2.jpg',
 					altKey: 'experiences.guestcard.imageAlt.winter',
 				}
 			: {
@@ -398,7 +398,8 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 
 	function scrollToSeasonHighlightsFromUrl(behavior: ScrollBehavior = 'auto') {
 		if (!seoSeasonFromUrl) return;
-		const targetId = seoSeasonFromUrl === 'winter' ? 'highlights-winter' : 'highlights-summer';
+		const linkedExperience = events.find((event) => `#${event.id}` === page.url.hash && event.season === seoSeasonFromUrl);
+		const targetId = linkedExperience?.id ?? (seoSeasonFromUrl === 'winter' ? 'highlights-winter' : 'highlights-summer');
 		activeSectionId = 'highlights';
 		activeHighlightsSeason = seoSeasonFromUrl;
 		scrollToSection(targetId, behavior);
@@ -587,6 +588,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 
 	$effect(() => {
 		seoSeasonFromUrl;
+		page.url.hash;
 		queueMicrotask(scheduleSeasonHighlightsScroll);
 	});
 
@@ -911,7 +913,8 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 								<div class="mx-auto w-full max-w-6xl px-0 sm:px-0 lg:px-0">
 									<CardButton tone="default" padding="none"
 										type="button"
-									onclick={(clickEvent) => openExperienceModal(summerFeaturedEvent, clickEvent.currentTarget)}
+										id={summerFeaturedEvent.id}
+										onclick={(clickEvent) => openExperienceModal(summerFeaturedEvent, clickEvent.currentTarget)}
 										data-season={summerFeaturedEvent.season}
 										class="group block w-full cursor-pointer overflow-hidden text-left"
 									>
@@ -1013,6 +1016,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 									{#each summerSecondaryEvents as event, i (event.id)}
 										<button
 											type="button"
+											id={event.id}
 											onclick={(clickEvent) => openExperienceModal(event, clickEvent.currentTarget)}
 											use:reveal
 											data-season={event.season}
@@ -1107,7 +1111,8 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 								<div class="mx-auto w-full max-w-6xl px-0 sm:px-0 lg:px-0">
 									<CardButton tone="default" padding="none"
 										type="button"
-									onclick={(clickEvent) => openExperienceModal(winterFeaturedEvent, clickEvent.currentTarget)}
+										id={winterFeaturedEvent.id}
+										onclick={(clickEvent) => openExperienceModal(winterFeaturedEvent, clickEvent.currentTarget)}
 										data-season={winterFeaturedEvent.season}
 										class="group block w-full cursor-pointer overflow-hidden text-left"
 									>
@@ -1205,6 +1210,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 									{#each winterSecondaryEvents as event, i (event.id)}
 										<button
 											type="button"
+											id={event.id}
 											onclick={(clickEvent) => openExperienceModal(event, clickEvent.currentTarget)}
 											use:reveal
 											data-season={event.season}

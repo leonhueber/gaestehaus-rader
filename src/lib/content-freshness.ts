@@ -21,9 +21,9 @@ const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 const staticFreshnessEntries: Record<string, ContentFreshnessEntry> = {
 	'/': {
-		lastModified: '2026-04-25',
+		lastModified: '2026-10-10',
 		reviewGroup: 'core',
-		notes: 'Homepage hero, season teasers, trust elements, and Guest Card teaser reviewed.',
+		notes: 'Homepage hero introduces selected apartments and seasonal experiences in German and English.',
 	},
 	'/unterkuenfte-preise': {
 		lastModified: '2026-04-25',

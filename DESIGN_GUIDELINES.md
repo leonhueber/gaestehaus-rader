@@ -4,7 +4,7 @@ The website should feel **clean, modern and welcoming**. Convey the guesthouse's
 
 ## Visual system
 
-- Use the existing Montserrat family for headings and body text, with a clear hierarchy of size and weight. Keep body text comfortably readable, normally `text-base` with generous line height; reserve smaller text for secondary details.
+- Use Montserrat for navigation, buttons, body text and functional headings. The homepage hero uses the existing `font-serif` stack at medium weight as a deliberate brand accent. Use this serif style sparingly for selected large editorial headings; do not switch all headings globally. Keep body text comfortably readable, normally `text-base` with generous line height; reserve smaller text for secondary details.
 - Reuse shared colors and fonts from `tailwind.config.js` and `src/app.css`. The current foundation is warm off-white (`#fbfaf7`), dark neutral text and brand orange (`#f29200`). Use orange sparingly for primary actions and selected emphasis; verify text and control contrast for each pairing.
 - Let headings stand on their own. Add a short kicker only when it provides context. Decorative dividers, wide uppercase tracking and serif headings are not required patterns.
 - Use generous, consistent spacing and clear alignment. Prefer `max-w-6xl` for general content and narrower measures for reading-heavy sections; adapt to the content and viewport.

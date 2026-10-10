@@ -34,9 +34,22 @@ const translations: Record<Lang, Record<string, string>> = {
 		'deployment.previewNotice':
 			'Testversion auf GitHub Pages. Die offizielle Produktionsseite ist ',
 		'brand.name': 'Gästehaus Rader',
-		'hero.kicker': 'Gästehaus Rader • Kärnten',
-		'hero.title': 'Ihr Rückzugsort für alpine Gelassenheit',
-		'hero.subtitle': 'Entspannen Sie in unseren Ferienwohnungen in Weißbriach. Echte Kärntner Gastfreundschaft trifft auf unberührte Natur im Gitschtal.',
+		'hero.kicker': 'Gästehaus Rader · Weißbriach',
+		'hero.apartment.kicker': 'Ein Blick in unsere Appartements',
+		'hero.apartment.primary': 'Appartement ansehen',
+		'hero.apartment.secondary': 'Alle Appartements',
+		'hero.experience.kicker': 'Draußen wartet dein nächstes Erlebnis',
+		'hero.experience.primary': 'Erlebnis entdecken',
+		'hero.experience.secondary': 'Alle Erlebnisse',
+		'hero.title': 'Ihr Rückzugsort für\nalpine Gelassenheit',
+		'hero.subtitle': 'Entspann dich in unseren Ferienwohnungen in Weißbriach. Echte Kärntner Gastfreundschaft trifft auf unberührte Natur im Gitschtal.',
+		'hero.slide.winter': 'Winterlicher Balkon-Ausblick',
+		'hero.slide.apartment': 'Appartement Nr. 2',
+		'hero.slide.summer': 'Unser Haus im Sommer',
+		'hero.carousel.role': 'Karussell',
+		'hero.carousel.controls': 'Hero-Bilder wechseln',
+		'hero.carousel.loading': 'Bild wird geladen …',
+		'hero.carousel.error': 'Bild nicht verfügbar. Bitte ein anderes Motiv wählen.',
 		'seo.default.title':
 			'Ferienwohnungen Weißbriach / Gitschtal – Gästehaus Rader – Nähe Weissensee & Nassfeld',
 		'seo.default.description':
@@ -340,7 +353,7 @@ const translations: Record<Lang, Record<string, string>> = {
 		'experiences.destinations.subtitle':
 			'In der Umgebung entdecken Sie vom Gästehaus Rader aus Seen, Berge und Ausflugsideen in kurzer Zeit - von Sommer-Erlebnissen bis Winter-Erlebnissen in Kärnten, passend zu Ihrem Urlaubsstil.',
 		'experiences.guestcard.imageAlt.summer': 'Bergbahn-Erlebnis in Kärnten mit GästeCard-Vorteilen',
-		'experiences.guestcard.imageAlt.winter': 'Skierlebnis in Kärnten mit GästeCard-Vorteilen',
+		'experiences.guestcard.imageAlt.winter': 'Sonnige Skipiste im Skigebiet Weißbriach',
 		'experiences.destinations.topHighlights': 'Highlights rund ums Gästehaus',
 		'experiences.destinations.popular': 'Weitere Ausflugsideen',
 		'experiences.interests.title': 'Urlaub nach Ihren Interessen',
@@ -1159,10 +1172,23 @@ const translations: Record<Lang, Record<string, string>> = {
 		'deployment.previewNotice':
 			'Test version on GitHub Pages. The official production site is ',
 		'brand.name': 'Gästehaus Rader',
-		'hero.kicker': 'Guesthouse Rader • Carinthia',
-		'hero.title': 'Your retreat for alpine serenity',
+		'hero.kicker': 'Guesthouse Rader · Weissbriach',
+		'hero.apartment.kicker': 'A look inside our apartments',
+		'hero.apartment.primary': 'Explore this apartment',
+		'hero.apartment.secondary': 'All apartments',
+		'hero.experience.kicker': 'Your next adventure awaits',
+		'hero.experience.primary': 'Explore this experience',
+		'hero.experience.secondary': 'All experiences',
+		'hero.title': 'Your retreat for\nalpine serenity',
 		'hero.subtitle':
-			'Relax in our holiday apartments in Weissbriach. Authentic Carinthian hospitality meets untouched nature in the Gitschtal.',
+			'Relax in our holiday apartments in Weissbriach. Authentic Carinthian hospitality meets unspoilt nature in the Gitschtal.',
+		'hero.slide.winter': 'Winter view from the balcony',
+		'hero.slide.apartment': 'Apartment Nr. 2',
+		'hero.slide.summer': 'Our house in summer',
+		'hero.carousel.role': 'Carousel',
+		'hero.carousel.controls': 'Change hero image',
+		'hero.carousel.loading': 'Loading image …',
+		'hero.carousel.error': 'Image unavailable. Please choose another image.',
 		'seo.default.title':
 			'Holiday apartments in Weissbriach / Gitschtal – Guesthouse Rader – near Weissensee & Nassfeld',
 		'seo.default.description':
@@ -1468,7 +1494,7 @@ const translations: Record<Lang, Record<string, string>> = {
 		'experiences.guestcard.imageAlt.summer':
 			'Cable car experience in Carinthia with Guest Card benefits',
 		'experiences.guestcard.imageAlt.winter':
-			'Ski experience in Carinthia with Guest Card benefits',
+			'Sunny ski slope in the Weissbriach ski area',
 		'experiences.destinations.topHighlights': 'Highlights around the guesthouse',
 		'experiences.destinations.popular': 'More excursion ideas',
 		'experiences.interests.title': 'Holiday by your interests',

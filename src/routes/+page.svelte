@@ -9,7 +9,9 @@
 	import { asset, resolve } from '$app/paths';
 	import { browser } from '$app/environment';
 import { page } from '$app/state';
-	import { accommodations, getAccommodationGallerySources } from '$lib/data/accommodations';
+	import { accommodations, getAccommodationGallerySources, type Accommodation } from '$lib/data/accommodations';
+	import { experienceEvents, type ExperienceEvent } from '$lib/data/experience';
+	import { getHeroExperienceIds } from '$lib/hero-season';
 	import { imageAttrs, largestImageUrl } from '$lib/images';
 	import { homeTrustReviews } from '$lib/data/reviews';
 	import { trackEvent } from '$lib/analytics/plausible';
@@ -25,6 +27,7 @@ import { localizePath } from '$lib/routing';
 		buildVacationRentalSchema,
 	} from '$lib/structured-data';
 	import { onMount } from 'svelte';
+	import { flip } from 'svelte/animate';
 	import {
 		Mountain,
 		HeartHandshake,
@@ -77,17 +80,120 @@ import { localizePath } from '$lib/routing';
 	const localizedHref = (path: string) => localizePath(path, page.url.pathname);
 	const currentMonth = new Date().getMonth();
 	const isSummerSeason = currentMonth >= 4 && currentMonth <= 8;
-	const heroImagePath =
-		isSummerSeason
-			? '/images/Haus/gaestehaus-sommer.jpg'
-			: '/images/Haus/balkon-ausblick-winter.jpg';
+	type HeroSlide = { id: string; src: string; position: string; captionKey?: string; apartment?: Accommodation; experience?: ExperienceEvent };
+	let heroMonth = $state<number | null>(null);
+	const heroSlides = $derived.by((): HeroSlide[] => {
+		const apartmentSlides = ['nr-2', 'nr-3'].map((slug) => {
+			const apartment = accommodations.find((room) => room.slug === slug)!;
+			return { id: slug, apartment, src: slug === 'nr-2' ? '/images/Nr2/nr2-bedroom-overview-bright.jpg' : apartment.images.main, position: '50% 55%' };
+		});
+		const highlights = getHeroExperienceIds(heroMonth ?? 0)
+			.map((id) => experienceEvents.find((event) => event.id === id))
+			.filter((event): event is ExperienceEvent => !!event)
+			.map((experience) => ({ id: experience.id, experience, src: experience.image, position: '50% 50%' }));
+		return [
+			{ id: 'winter-view', src: '/images/Haus/balkon-ausblick-winter.jpg', captionKey: 'hero.slide.winter', position: '50% 50%' },
+			...apartmentSlides,
+			{ id: 'summer-house', src: '/images/Haus/gaestehaus-sommer.jpg', captionKey: 'hero.slide.summer', position: '40% 65%' },
+			...highlights,
+		];
+	});
+	let activeHeroSlide = $state(0);
+	const heroSlide = $derived(heroSlides[activeHeroSlide]);
+	const isInfoHero = $derived(!!(heroSlide.apartment || heroSlide.experience));
+	const isLeftAlignedHero = $derived(isInfoHero || (
+		heroSlide.id === 'summer-house' && heroMonth !== null && (heroMonth < 5 || heroMonth > 9)
+	));
+	const heroCaption = (slide: HeroSlide) => slide.apartment
+		? `${slide.apartment.typeLabel[$lang]} ${slide.apartment.title}`
+		: slide.experience ? slide.experience.title[$lang] : $t(slide.captionKey!);
+	const heroInfo = $derived.by(() => {
+		const room = heroSlide.apartment;
+		const event = heroSlide.experience;
+		return {
+			kicker: $t(room ? 'hero.apartment.kicker' : 'hero.experience.kicker'),
+			title: heroCaption(heroSlide),
+			meta: room ? `${room.attributes.size} · ${room.attributes.guests[$lang]}` : event?.location?.[$lang],
+			description: room ? room.description[$lang][0] : event?.description?.[$lang],
+			href: room ? `/unterkuenfte-preise/${room.slug}` : `/erlebnisse/${event?.season === 'winter' ? 'winter' : 'sommer'}`,
+			hash: event ? `#${event.id}` : '',
+			primaryKey: room ? 'hero.apartment.primary' : 'hero.experience.primary',
+			secondaryKey: room ? 'hero.apartment.secondary' : 'hero.experience.secondary',
+			secondaryHref: room ? '/unterkuenfte-preise' : '/erlebnisse',
+		};
+	});
+	let heroElement: HTMLElement;
+	let heroProgress = $state(0);
+	let heroTransferProgress = $state<number | null>(null);
+	const heroSlideDuration = 7000;
+	const heroTransferDuration = 450;
+	let heroAutoplayPaused = $state(true);
+	let heroDocumentVisible = $state(true);
+	let heroImageStates = $state<Record<string, 'loaded' | 'error'>>({});
+	const stopHeroAutoplay = () => {
+		heroAutoplayPaused = true;
+		heroTransferProgress = null;
+	};
+	const selectHeroSlide = (index: number) => {
+		stopHeroAutoplay();
+		activeHeroSlide = index;
+		heroProgress = 0;
+	};
+	onMount(() => {
+		heroMonth = Number(new Intl.DateTimeFormat('en', { month: 'numeric', timeZone: 'Europe/Vienna' }).format(new Date()));
+		const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+		heroAutoplayPaused = reducedMotion.matches;
+		const updateVisibility = () => { heroDocumentVisible = !document.hidden; };
+		const updateMotion = () => {
+			if (reducedMotion.matches) stopHeroAutoplay();
+		};
+		updateVisibility();
+		heroElement.addEventListener('click', stopHeroAutoplay);
+		document.addEventListener('visibilitychange', updateVisibility);
+		reducedMotion.addEventListener('change', updateMotion);
+		return () => {
+			heroElement.removeEventListener('click', stopHeroAutoplay);
+			document.removeEventListener('visibilitychange', updateVisibility);
+			reducedMotion.removeEventListener('change', updateMotion);
+		};
+	});
+	$effect(() => {
+		if (heroAutoplayPaused || !heroDocumentVisible) return;
+		let lastFrame = performance.now();
+		let frame: number;
+		const advance = (now: number) => {
+			const elapsed = now - lastFrame;
+			lastFrame = now;
+			if (heroTransferProgress !== null) {
+				heroTransferProgress = Math.min(1, heroTransferProgress + elapsed / heroTransferDuration);
+				if (heroTransferProgress === 1) {
+					activeHeroSlide = (activeHeroSlide + 1) % heroSlides.length;
+					heroProgress = 0;
+					heroTransferProgress = null;
+				}
+			} else {
+				heroProgress = Math.min(1, heroProgress + elapsed / heroSlideDuration);
+				if (heroProgress === 1) heroTransferProgress = 0;
+			}
+			frame = window.requestAnimationFrame(advance);
+		};
+		frame = window.requestAnimationFrame(advance);
+		return () => window.cancelAnimationFrame(frame);
+	});
+	const heroFlyingDotStyle = $derived.by(() => {
+		const progress = heroTransferProgress ?? 0;
+		const eased = progress * progress * (3 - 2 * progress);
+		const nextSlide = (activeHeroSlide + 1) % heroSlides.length;
+		const position = activeHeroSlide + (nextSlide - activeHeroSlide) * eased;
+		return `translate3d(${position * 2.25}rem, ${-Math.sin(progress * Math.PI) * 10}px, 0)`;
+	});
 	const guestCardVisual = isSummerSeason
 		? {
 				src: '/images/Umgebung/nassfeld-lift.jpg',
 				altKey: 'experiences.guestcard.imageAlt.summer',
 			}
 		: {
-				src: '/images/Umgebung/ski_nassfeld.jpg',
+				src: '/images/Umgebung/skigebiet-weissbriach-2.jpg',
 				altKey: 'experiences.guestcard.imageAlt.winter',
 			};
 	const guestCardCardVisual = {
@@ -567,54 +673,101 @@ import { localizePath } from '$lib/routing';
 
 <div class="space-y-16 pb-16">
 	<section
-		class="relative min-h-[calc(100lvh-var(--hero-header-offset,141px))]"
+		bind:this={heroElement}
+		class="home-hero relative bg-slate-900 text-white"
+		aria-labelledby="home-hero-title"
+		aria-roledescription={$t('hero.carousel.role')}
+		onfocusin={stopHeroAutoplay}
 		style={`--hero-header-offset: ${heroHeaderOffset};`}
 	>
 		<div class="absolute inset-0">
-			<img
-				src={withAsset(heroImagePath)}
-				alt=""
-				class="h-full w-full object-cover"
-				loading="eager"
-				fetchpriority="high"
-				decoding="sync"
-				aria-hidden="true"
-			/>
-			<div
-				class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/40 to-black/10"
-				aria-hidden="true"
-			></div>
-			<div
-				class="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.08),_transparent_60%)]"
-				aria-hidden="true"
-			></div>
+			{#each heroSlides as slide, index (slide.id)}
+				<img
+					{...imageAttrs(slide.src, '100vw')}
+					alt=""
+					class="absolute inset-0 h-full w-full object-cover transition-opacity duration-500 motion-reduce:transition-none"
+					style:object-position={slide.position}
+					style:opacity={activeHeroSlide === index && heroImageStates[slide.id] !== 'error' ? 1 : 0}
+					loading={index === 0 ? 'eager' : 'lazy'}
+					fetchpriority={index === 0 ? 'high' : 'low'}
+					decoding="async"
+					onload={() => { heroImageStates[slide.id] = 'loaded'; }}
+					onerror={() => { heroImageStates[slide.id] = 'error'; }}
+					aria-hidden="true"
+				/>
+			{/each}
+			<div class="hero-shade absolute inset-0 transition-opacity duration-700 motion-reduce:transition-none" style:opacity={isLeftAlignedHero ? 0 : 1} aria-hidden="true"></div>
+			<div class="hero-info-shade absolute inset-0 transition-opacity duration-700 motion-reduce:transition-none" style:opacity={isLeftAlignedHero ? 1 : 0} aria-hidden="true"></div>
 		</div>
 
 		<div
-			class="relative flex min-h-[calc(100svh-var(--hero-header-offset,141px))] flex-col items-center justify-center px-6 pt-20 text-center text-white sm:px-10"
+			class={`hero-content relative flex flex-col px-6 pb-28 pt-32 sm:px-10 lg:px-[6vw] ${isLeftAlignedHero ? 'items-start justify-end' : 'items-center justify-center'}`}
 		>
-			<p use:reveal class="opacity-0 translate-y-4 transition-all duration-700 ease-out text-[11px] font-semibold uppercase tracking-[0.4em] text-white/90">
-				{$t('hero.kicker')}
-			</p>
-			<h1 use:reveal class="opacity-0 translate-y-4 transition-all duration-700 ease-out delay-150 mx-auto mt-5 max-w-4xl font-serif text-4xl font-medium leading-[1.05] text-shadow-sm sm:text-6xl sm:leading-[1.1]">
-				{$t('hero.title')}
-			</h1>
-			<div use:reveal class="opacity-0 translate-y-4 transition-all duration-700 ease-out delay-300 mt-6 mx-auto h-[1px] w-16 bg-white/40"></div>
-			<p use:reveal class="opacity-0 translate-y-4 transition-all duration-700 ease-out delay-500 mx-auto mt-6 max-w-2xl text-sm font-light leading-relaxed text-white/95 sm:text-base">
-				{$t('hero.subtitle')}
-			</p>
+			{#each [isLeftAlignedHero] as leftAligned ('hero-copy')}
+				<div animate:flip={{ duration: prefersReducedMotion() ? 0 : 650 }} class={`flex w-full max-w-3xl flex-col ${leftAligned ? 'items-start text-left' : 'items-center text-center'}`}>
+					<p class="text-sm font-medium leading-relaxed text-white">
+						{isInfoHero ? heroInfo.kicker : $t('hero.kicker')}
+					</p>
+					<h1 id="home-hero-title" class="mt-5 max-w-4xl whitespace-pre-line text-balance font-serif text-4xl font-medium leading-[1.1] tracking-normal sm:text-6xl sm:leading-[1.1]">
+						{isInfoHero ? heroInfo.title : $t('hero.title')}
+					</h1>
+					{#if isInfoHero}
+						<p class="mt-4 text-sm font-medium text-white/90">
+							{heroInfo.meta}
+						</p>
+					{/if}
+					<p class={`mt-6 whitespace-pre-line text-base font-normal leading-relaxed text-white sm:text-lg ${leftAligned ? 'max-w-lg' : 'max-w-2xl'}`}>
+						{isInfoHero ? heroInfo.description : $t('hero.subtitle')}
+					</p>
 
-			<div use:reveal class="opacity-0 translate-y-4 transition-all duration-700 ease-out delay-700 mt-10 flex flex-wrap justify-center gap-4 sm:gap-5">
-				<ButtonLink variant="primary" size="lg"
-					href={localizedHref('/unterkuenfte-preise')}
-				>
-					{$t('hero.cta.primary')}
-				</ButtonLink>
-				<ButtonLink variant="overlay" size="lg"
-					href={localizedHref('/erlebnisse')}
-				>
-					{$t('hero.cta.secondary')}
-				</ButtonLink>
+					<div class={`mt-8 flex flex-wrap items-center gap-x-8 gap-y-4 ${leftAligned ? 'justify-start' : 'justify-center'}`}>
+						<ButtonLink variant="primary" size="lg"
+							href={localizedHref(isInfoHero ? heroInfo.href : '/unterkuenfte-preise') + (isInfoHero ? heroInfo.hash : '')}
+						>
+							{$t(isInfoHero ? heroInfo.primaryKey : 'hero.cta.primary')}
+						</ButtonLink>
+						<a
+							href={localizedHref(isInfoHero ? heroInfo.secondaryHref : '/erlebnisse')}
+							class="inline-flex min-h-12 items-center gap-2 py-3 text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:text-base"
+						>
+							{$t(isInfoHero ? heroInfo.secondaryKey : 'hero.cta.secondary')}
+							<ArrowRight class="h-4 w-4" aria-hidden="true" />
+						</a>
+					</div>
+				</div>
+			{/each}
+		</div>
+		<div class="absolute inset-x-6 bottom-6 flex flex-col items-center">
+			<div class="text-center text-sm leading-relaxed" aria-live={heroAutoplayPaused ? 'polite' : 'off'} aria-atomic="true">
+				<p class="sr-only">{heroCaption(heroSlide)}</p>
+				{#if heroImageStates[heroSlide.id] === 'error'}
+					<p>{$t('hero.carousel.error')}</p>
+				{:else if !heroImageStates[heroSlide.id]}
+					<p>{$t('hero.carousel.loading')}</p>
+				{/if}
+			</div>
+			<div class="relative flex" role="group" aria-label={$t('hero.carousel.controls')}>
+				{#each heroSlides as slide, index (slide.id)}
+					<button
+						type="button"
+						class="hero-dot group/hero-dot flex h-11 w-9 items-center justify-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+						aria-label={heroCaption(slide)}
+						aria-pressed={activeHeroSlide === index}
+						onclick={() => selectHeroSlide(index)}
+					>
+						<span class="pointer-events-none absolute bottom-full left-1/2 mb-1 -translate-x-1/2 w-max max-w-[80vw] whitespace-normal text-center rounded-lg bg-slate-900/90 px-3 py-2 text-sm font-medium text-white opacity-0 transition-opacity duration-150 group-hover/hero-dot:opacity-100 group-focus-visible/hero-dot:opacity-100 motion-reduce:transition-none" aria-hidden="true">
+							{heroCaption(slide)}
+						</span>
+						<span class="hero-dot-track" class:active={activeHeroSlide === index && heroAutoplayPaused} aria-hidden="true">
+							{#if activeHeroSlide === index && !heroAutoplayPaused && heroTransferProgress === null}
+								<span class="hero-dot-progress" style:background={`conic-gradient(from 0deg, white ${heroProgress * 360}deg, transparent 0deg)`}></span>
+							{/if}
+						</span>
+					</button>
+				{/each}
+				{#if heroTransferProgress !== null}
+					<span class="hero-dot-flight" style:transform={heroFlyingDotStyle} aria-hidden="true"></span>
+				{/if}
 			</div>
 		</div>
 
@@ -1887,6 +2040,68 @@ import { localizePath } from '$lib/routing';
 </div>
 
 <style>
+	.hero-dot-track {
+		position: relative;
+		width: 12px;
+		height: 12px;
+		border-radius: 50%;
+		background: rgb(255 255 255 / 35%);
+	}
+	.hero-dot-track.active {
+		background: white;
+	}
+	.hero-dot:hover .hero-dot-track {
+		box-shadow: 0 0 0 3px rgb(255 255 255 / 15%);
+	}
+	.hero-dot-progress {
+		position: absolute;
+		inset: 0;
+		border-radius: 50%;
+	}
+	.hero-dot-flight {
+		position: absolute;
+		left: calc(1.125rem - 6px);
+		top: calc(1.375rem - 6px);
+		width: 12px;
+		height: 12px;
+		border-radius: 50%;
+		background: white;
+		pointer-events: none;
+		will-change: transform;
+	}
+	.hero-content {
+		min-height: max(38rem, calc(100svh - var(--hero-header-offset, 141px)));
+	}
+	.hero-info-shade {
+		background:
+			radial-gradient(ellipse 100% 75% at 15% 80%, rgb(15 23 32 / 76%) 0%, rgb(15 23 32 / 60%) 38%, rgb(15 23 32 / 28%) 65%, transparent 100%),
+			radial-gradient(ellipse 18% 8% at 50% 96%, rgb(15 23 32 / 25%), transparent 100%);
+	}
+
+	.hero-shade {
+		background:
+			radial-gradient(ellipse at 50% 54%, rgb(15 23 32 / 62%) 0%, rgb(15 23 32 / 42%) 38%, transparent 76%),
+			radial-gradient(ellipse 18% 8% at 50% 96%, rgb(15 23 32 / 25%), transparent 100%);
+	}
+
+	.home-hero :global(a:focus-visible) {
+		outline-color: white;
+	}
+
+	@media (min-width: 1024px) {
+		.hero-info-shade {
+			background:
+				radial-gradient(ellipse 65% 75% at 12% 80%, rgb(15 23 32 / 76%) 0%, rgb(15 23 32 / 60%) 38%, rgb(15 23 32 / 28%) 65%, transparent 100%),
+				radial-gradient(ellipse 18% 8% at 50% 96%, rgb(15 23 32 / 25%), transparent 100%);
+		}
+
+		.hero-shade {
+			background:
+				radial-gradient(ellipse 46% 52% at 50% 54%, rgb(15 23 32 / 60%) 0%, rgb(15 23 32 / 40%) 42%, transparent 100%),
+				radial-gradient(ellipse 18% 8% at 50% 96%, rgb(15 23 32 / 25%), transparent 100%);
+		}
+	}
+
 	.guestcard-card-crop {
 		left: -142.5%;
 		top: -37.2%;

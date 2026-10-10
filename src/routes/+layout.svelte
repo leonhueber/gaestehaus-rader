@@ -233,19 +233,19 @@
 				headerHidden ? '-translate-y-full' : 'translate-y-0'
 			}`}
 		>
-		<div class="mx-auto flex w-full max-w-6xl items-center justify-between gap-6 px-4 py-4 sm:px-6">
+		<div class="mx-auto flex w-full items-center justify-between gap-6 px-4 py-4 sm:px-6 lg:px-[6vw] lg:py-6">
 			<a
 				href={localizedHref('/')}
 				class="flex items-center rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/40"
 				aria-label="Gästehaus Rader - Startseite"
 			>
 				<div
-					class="flex h-16 w-32 items-center justify-center rounded-xl bg-white shadow-sm sm:h-20 sm:w-52"
+					class="flex h-16 w-32 items-center justify-center bg-white"
 				>
 					<img
 						{...imageAttrs('/images/Logo/logo-rader-gitschtal.jpg', '(max-width: 640px) 128px, 208px')}
 						alt="Gästehaus Rader"
-						class="h-12 w-auto object-contain sm:h-14"
+						class="h-12 w-auto object-contain sm:h-14 lg:h-16"
 						loading="eager"
 						fetchpriority="high"
 					/>
