@@ -2,6 +2,27 @@
 
 Current status: implementation in progress; final visual review deferred at the user's request.
 
+## Contact page — 2026-10-10
+
+- Reworked DE/EN contact pages with the homepage's content width, serif headline and restrained shared components. Removed duplicate quick actions and nested cards; kept the four direct contact methods, a bright house/map panel, address and route link. Practical information is an open list; payment details use a native disclosure.
+- Contact and bank details remain unchanged. Map iframe is absent initially and is inserted only on demand, with a close control. Copy controls now use Svelte state, announce success/failure and clear their timer on unmount.
+- Essential verification: Svelte check passed with 0 errors/warnings; static build passed and generated output was restored. Browser verified German desktop layout, DE → EN → DE, unchanged contact/route URLs, map iframe insertion/removal, disclosure and successful feedback from both copy buttons. External phone/mail/WhatsApp actions were not launched; Google Maps rendering and the clipboard-denied path were not separately verified. Full responsive/accessibility review remains deferred.
+- Screenshot: `C:/Users/hueberl/.codex/visualizations/2026/10/10/01a126b2-09ed-7f50-9f06-beba60c69376/contact-clean.png`.
+
+## Homepage gallery — 2026-10-10
+
+- Replaced the two-row horizontal photo strip with a large house photograph and two supporting views (pavilion and balcony). Reused shared CardButton styling, moved captions below the images and removed dark overlays. A single localized button opens all 13 existing photographs; each preview opens the correct lightbox index.
+- Essential checks: Svelte check passed with 0 errors/warnings. German desktop composition and English text verified in the browser. Balcony preview opened image 7/13; the full-gallery button opened at the beginning, Next advanced to 2/13, and Escape closed the lightbox.
+- Full responsive and accessibility review remains deferred. No new carousel or autoplay was introduced.
+- Static production build passed; generated build changes were restored. Screenshot: `C:/Users/hueberl/.codex/visualizations/2026/10/10/01a126b2-09ed-7f50-9f06-beba60c69376/gallery-clean.png`.
+
+## Apartment preview — 2026-10-10
+
+- Retained the shared photo cards; added “Dein Platz im Gitschtal”, a short introduction, individual apartment titles/descriptions and a personal contact line in DE/EN. Size, occupancy and base prices still come from shared accommodation data. Desktop cards fill the available row equally; photos use existing responsive variants.
+- Essential checks: `npm run check` passed with 0 errors/warnings; production build passed. Homepage DE/EN sitemap dates remain 2026-10-10. Generated build changes were restored.
+- Browser: inspected the German desktop layout and all three loaded images; checked translated English copy and localized card/contact URLs. Opened Nr. 2 through its English card successfully, then returned to German. Keyboard focus is visible on cards. No full mobile/responsive or accessibility review was performed; these remain deferred.
+- Screenshot: `C:/Users/hueberl/.codex/visualizations/2026/10/10/01a126b2-09ed-7f50-9f06-beba60c69376/apartments-personal-copy.png`.
+
 ## Supporting benefit cards — 2026-10-10
 
 - Rebuilt the four cards using shared `Card` with a `quiet` tone (white, subtle border, 12px corners) and `compact` padding (24px). Removed icon circles, decorative dividers, shadows, hover movement and reveal animation. Shortened DE/EN titles and body copy; supporting text stays at 16px.
@@ -116,3 +137,33 @@ The results below describe earlier iterations, not final approval of the current
 - Winter imagery verified visually; summer imagery and a simulated image network failure were not separately exercised.
 - This review covers the changed header and hero, not a full-site accessibility audit or booking-widget regression test.
 - Existing small-screen navigation remains horizontally scrollable. No redesign of that interaction is included.
+# Interactive area map — 2026-10-10 UTC / 2026-10-11 Vienna
+
+Latest design revision: moved after “Bereit für Ihre Auszeit?” and before the footer. Open list/map layout replaces the enclosing white panel; restrained map colors, underlined scope tabs, native category selector and the established brand kicker/serif heading/divider. `npm run check` passed with zero errors/warnings. Desktop DE/EN, category selection, regional switch and rendered route checked in the browser. Full responsive QA remains deferred. Screenshot: `C:/Users/hueberl/.codex/visualizations/2026/10/10/01a126b2-09ed-7f50-9f06-beba60c69376/nearby-map-clean.png`.
+
+- Added before the final homepage booking invitation: six village destinations in food, groceries and experiences, plus three regional excursions. Both walking and driving geometries are stored from FOSSGIS/OSRM; details and refresh instructions are in `docs/nearby-map.md`.
+- Passed: `npm run check` (0 errors, 0 warnings), static `npm run build`, and four `tests/nearby.test.cjs` tests covering all 18 routes, endpoints, shared origin consistency, filtering, time/distance formatting and navigation links. Build output and research scratch files removed after verification. Freshness dates use the UTC day required by the existing validator.
+- Browser essentials passed: DE → EN → DE, OSM tile loading, restaurant and supermarket filters, foot/car estimates and drawn routes, regional scope, marker-to-list selection, Enter activation on a named regional marker, retained keyboard focus, close/reopen with selected destination preserved. No captured browser console errors. Map library and tile loading are gated behind activation; the initial list and estimates remain visible before activation.
+- Evidence: `C:/Users/hueberl/.codex/visualizations/2026/10/10/01a126b2-09ed-7f50-9f06-beba60c69376/nearby-map-village.png`.
+- Still deferred: full mobile/tablet layout and screen-reader audit, simulated tile/import failure, slow networks and production-host verification. At the current desktop viewport the document has 8px horizontal overflow; the map section itself fits within the viewport. Investigate the page-wide overflow during the deferred responsive review. Route estimates are not live traffic, route safety or opening-hour guarantees.
+
+## Regional experience coverage — 2026-10-11 Vienna
+
+- Expanded to 14 destinations (6 village, 8 regional), with all 13 seasonal experiences linked to their appropriate access points. Refreshed all 28 walking/driving approach routes; touring times are explicitly separate.
+- Corrected inconsistent Reißkofel and snowshoeing locations using official regional sources. Verified DE/EN links to seasonal experience anchors and localized privacy pages.
+- Passed: `npm run check` (0 errors/warnings), 10 map/WebMCP tests, static build and generated DE/EN page assertions. Generated build changes were removed after verification.
+- Browser: regional selection, rendered approach route and experience detail navigation verified in DE/EN. Full responsive review remains deferred.
+- Screenshot: `C:/Users/hueberl/.codex/visualizations/2026/10/10/01a126b2-09ed-7f50-9f06-beba60c69376/nearby-map-experiences.png`.
+
+## Contact Google Maps consent — 2026-10-11 Vienna
+
+- “Karte laden” / “Load map” now opens an inline privacy notice in the photo area. Only the explicit consent action creates the Google iframe. The notice links to the localized privacy section; legal copy and implementation notes match the two-step flow.
+- Browser verified: no iframe initially or while the notice is open; Cancel/Escape leaves no iframe; consent creates one; closing removes it; reloading requires consent again. German desktop and English at 320px reviewed; keyboard focus returns to the map toggle.
+- Passed Svelte/type check with 0 errors/warnings and static build. Final mobile spacing increased to keep the close icon clear of the heading.
+- Screenshot: `C:/Users/hueberl/.codex/visualizations/2026/10/10/01a126b2-09ed-7f50-9f06-beba60c69376/contact-map-consent.png`.
+
+## Area map width — 2026-10-11 Vienna
+
+- Restored the centered 76rem (1216px) maximum width with the existing responsive page gutters. Position after the booking invitation is unchanged.
+- Passed Svelte/type check with 0 errors/warnings. At a 1440px desktop viewport the section measures 1216px; destination selection and the loaded route remain functional. Browser viewport override reset after inspection.
+- Reference: `C:/Users/hueberl/.codex/visualizations/2026/10/10/01a126b2-09ed-7f50-9f06-beba60c69376/nearby-map-maxwidth-reference.png`. Three design mockups are alternatives for a later selected implementation.

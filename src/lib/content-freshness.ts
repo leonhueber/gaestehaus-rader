@@ -23,7 +23,7 @@ const staticFreshnessEntries: Record<string, ContentFreshnessEntry> = {
 	'/': {
 		lastModified: '2026-10-10',
 		reviewGroup: 'core',
-		notes: 'Homepage hero introduces selected apartments and seasonal experiences in German and English.',
+		notes: 'Homepage map covers all 13 summer/winter experience entries across 14 sourced destinations, with trailhead access routes and localized experience links.',
 	},
 	'/unterkuenfte-preise': {
 		lastModified: '2026-04-25',
@@ -31,19 +31,19 @@ const staticFreshnessEntries: Record<string, ContentFreshnessEntry> = {
 		notes: 'Accommodation overview and pricing presentation updated with current room content.',
 	},
 	'/erlebnisse': {
-		lastModified: '2026-04-25',
+		lastModified: '2026-10-10',
 		reviewGroup: 'activities',
-		notes: 'Seasonal activities hub aligned with summer, winter, events, and Guest Card review.',
+		notes: 'Reisskofel and Nassfeld snowshoe access points, links and approach estimates aligned with the homepage map.',
 	},
 	'/erlebnisse/sommer': {
-		lastModified: '2026-04-25',
+		lastModified: '2026-10-10',
 		reviewGroup: 'summer',
-		notes: 'Summer activities and seasonal positioning reviewed.',
+		notes: 'Reisskofel location and provider link corrected; unsupported fixed tour metrics removed and summit difficulty clarified.',
 	},
 	'/erlebnisse/winter': {
-		lastModified: '2026-04-25',
+		lastModified: '2026-10-10',
 		reviewGroup: 'winter',
-		notes: 'Winter activities and seasonal positioning reviewed.',
+		notes: 'Snowshoe experience located at Nassfeld with matching access point and provider link.',
 	},
 	'/faq': {
 		lastModified: '2026-04-25',
@@ -56,9 +56,9 @@ const staticFreshnessEntries: Record<string, ContentFreshnessEntry> = {
 		notes: 'About page and host positioning.',
 	},
 	'/kontakt': {
-		lastModified: '2026-03-25',
+		lastModified: '2026-10-10',
 		reviewGroup: 'trust',
-		notes: 'Contact and inquiry handoff content.',
+		notes: 'Google Maps activation now requires an explicit consent action after a localized privacy notice.',
 	},
 	'/buchen': {
 		lastModified: '2026-01-22',
@@ -76,9 +76,9 @@ const staticFreshnessEntries: Record<string, ContentFreshnessEntry> = {
 		notes: 'Legal notice content.',
 	},
 	'/datenschutz': {
-		lastModified: '2026-02-20',
+		lastModified: '2026-10-10',
 		reviewGroup: 'legal',
-		notes: 'Privacy policy content.',
+		notes: 'Google Maps consent flow, OpenStreetMap and stored FOSSGIS routes documented in German and English.',
 	},
 	'/agb': {
 		lastModified: '2026-01-22',
@@ -91,9 +91,9 @@ const staticFreshnessEntries: Record<string, ContentFreshnessEntry> = {
 		notes: 'Accessibility statement.',
 	},
 	'/bildnachweise': {
-		lastModified: '2026-02-20',
+		lastModified: '2026-10-10',
 		reviewGroup: 'legal',
-		notes: 'Image credits.',
+		notes: 'Image and map credits, including OpenStreetMap, FOSSGIS and Leaflet license.',
 	},
 };
 

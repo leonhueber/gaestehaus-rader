@@ -1,4 +1,5 @@
 <script lang="ts">
+	import NearbyMap from '$lib/components/NearbyMap.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import ButtonLink from '$lib/components/ui/ButtonLink.svelte';
 	import Card from '$lib/components/ui/Card.svelte';
@@ -34,6 +35,8 @@ import { localizePath } from '$lib/routing';
 		Snowflake,
 		Check,
 		ArrowRight,
+		Images,
+		Expand,
 		ChevronLeft,
 		ChevronRight,
 		Play,
@@ -509,7 +512,6 @@ import { localizePath } from '$lib/routing';
 		],
 	};
 
-	const galleryImageSizes = '(min-width: 640px) 360px, 260px';
 	const destinationImages = [
 		// Starker erster Eindruck vom Haus, dann direkt den Pavillon als Außen-Highlight zeigen
 		{ base: 'gaestehaus-sommer', altKey: 'home.gallery.imageAlt.sommer' },
@@ -534,6 +536,7 @@ import { localizePath } from '$lib/routing';
 	];
 
 	const galleryImages = destinationImages;
+	const galleryPreview = [0, 1, 6].map((index) => ({ ...galleryImages[index], index }));
 	let heroHeaderOffset = $state('113px');
 	// Covering a tall hero needs more source pixels than the visible viewport width.
 	const heroImageSizes = (slide: HeroSlide) => {
@@ -616,16 +619,6 @@ import { localizePath } from '$lib/routing';
 			window.removeEventListener('resize', updateHeroHeaderOffset);
 		};
 	});
-
-	let galleryTrack: HTMLDivElement | null = null;
-	const scrollGallery = (direction: 'prev' | 'next') => {
-		if (!galleryTrack) return;
-		const amount = galleryTrack.clientWidth * 0.8;
-		galleryTrack.scrollBy({
-			left: direction === 'prev' ? -amount : amount,
-			behavior: 'smooth',
-		});
-	};
 
 	const trustStars = Array.from({ length: 5 });
 	const googleProfileUrl = 'https://maps.app.goo.gl/cXgd5iJbYPmSx2ad9';
@@ -1058,19 +1051,22 @@ import { localizePath } from '$lib/routing';
 			<!-- ROOMS -->
 			<section use:reveal class="opacity-0 translate-y-8 transition-all duration-700 ease-out mt-4 pt-2 sm:mt-0 sm:pt-4">
 				<div class="flex flex-wrap items-end justify-between gap-3 sm:gap-6">
-					<div class="pb-2 sm:pb-10">
+					<div class="max-w-2xl">
 						<p class="text-xs font-semibold uppercase tracking-[0.2em] text-brand">
 							{$t('rooms.section.kicker')}
 						</p>
-						<h2 class="mt-3 text-4xl font-serif font-medium leading-[0.95] text-slate-900">
+						<h2 class="mt-3 text-4xl font-serif font-medium leading-tight text-slate-900">
 							{$t('rooms.section.title')}
 						</h2>
 						<div class="mt-4 h-[3px] w-16 rounded-full bg-brand"></div>
+						<p class="mt-5 max-w-xl text-base leading-relaxed text-slate-600">
+							{$t('home.rooms.intro')}
+						</p>
 					</div>
 
 					<a
 						href={localizedHref('/unterkuenfte-preise')}
-						class="ml-auto inline-flex w-full items-center justify-end gap-2 pt-0 text-sm font-semibold text-brand/80 transition hover:text-brand sm:w-auto sm:pt-2"
+						class="inline-flex items-center gap-2 py-2 text-sm font-semibold text-slate-700 underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
 					>
 						{$t('rooms.section.cta')}
 						<ArrowRight class="h-4 w-4" aria-hidden="true" strokeWidth={1.25} />
@@ -1084,13 +1080,13 @@ import { localizePath } from '$lib/routing';
 						{#each rooms as r}
 							<CardLink tone="default" padding="none"
 								href={`${accommodationsBase}${r.slug}/`}
-								class="group relative w-[280px] shrink-0 snap-start overflow-hidden sm:w-[340px]"
+								class="group relative flex w-[280px] shrink-0 snap-start flex-col overflow-hidden sm:w-[340px] lg:w-0 lg:flex-1"
 								onclick={() => trackEvent('Content: Room Card Click', { source: 'home', room: r.slug })}
 							>
 								<!-- Image -->
 								<div class="relative aspect-[4/3] overflow-hidden">
 									<img
-										src={withAsset(r.images.main)}
+										{...imageAttrs(r.images.main, '(min-width: 1280px) 363px, (min-width: 1024px) calc((100vw - 128px) / 3), (min-width: 640px) 340px, 280px')}
 										alt={`${$t('home.rooms.card.imageAltPrefix')} ${r.title}`}
 										class="h-full w-full object-cover transition duration-1000 ease-out group-hover:scale-105"
 										loading="lazy"
@@ -1120,22 +1116,26 @@ import { localizePath } from '$lib/routing';
 								</div>
 
 								<!-- Content -->
-								<div class="px-6 pb-5 pt-5">
-									<h3 class="text-base font-semibold tracking-tight text-slate-900">
-										{r.title}
+								<div class="flex flex-1 flex-col p-6">
+									<p class="text-sm font-medium text-slate-500">{r.typeLabel[$lang]} {r.title}</p>
+									<h3 class="mt-2 text-lg font-semibold leading-snug tracking-tight text-slate-900">
+										{$t(`home.rooms.${r.slug}.title`)}
 									</h3>
-									<div class="mt-1 flex items-baseline gap-2">
-										<p class="text-sm font-semibold text-slate-500">
-											{$t('price.from')} <span class="text-slate-500">{r.pricePerNightBase}</span>
-										</p>
-										<span class="text-xs text-slate-500">/ {$t('price.night')}</span>
-									</div>
-
-									<!-- Meta line (small, muted) -->
-									<p class="mt-2 text-xs text-slate-500">
-										{r.cardMeta[$lang]}
+									<p class="mt-3 text-base leading-relaxed text-slate-600">
+										{$t(`home.rooms.${r.slug}.body`)}
 									</p>
-
+									<p class="mb-5 mt-4 text-sm text-slate-500">
+										{r.attributes.size} · {r.attributes.guests[$lang]}
+									</p>
+									<div class="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">
+										<p class="text-sm text-slate-600">
+											<span class="font-semibold text-slate-900">{$t('price.from')} {r.pricePerNightBase}</span> / {$t('price.night')}
+										</p>
+										<span class="inline-flex items-center gap-2 text-sm font-semibold text-slate-900">
+											{$t('rooms.card.cta')}
+											<ArrowRight class="h-4 w-4 text-brand" aria-hidden="true" strokeWidth={1.5} />
+										</span>
+									</div>
 								</div>
 
 								<!-- Hover ring -->
@@ -1146,77 +1146,56 @@ import { localizePath } from '$lib/routing';
 						{/each}
 					</div>
 				</div>
+				<div class="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-2 text-base leading-relaxed text-slate-600">
+					<p>{$t('home.rooms.help')}</p>
+					<a href={localizedHref('/kontakt')} class="inline-flex items-center gap-2 py-2 font-semibold text-slate-900 underline decoration-slate-300 underline-offset-4 hover:decoration-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand">
+						{$t('home.rooms.contact')}
+						<ArrowRight class="h-4 w-4 text-brand" aria-hidden="true" strokeWidth={1.5} />
+					</a>
+				</div>
 			</section>
 
 			<!-- Gallery -->
-			<section class="py-2 lg:py-8">
-				<div class="flex items-start gap-4">
-					<div class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand">
-						<Sun class="h-5 w-5" aria-hidden="true" strokeWidth={1.25} />
+			<section aria-labelledby="home-gallery-heading" class="py-2 lg:py-8">
+				<div class="flex flex-wrap items-end justify-between gap-6">
+					<div class="max-w-2xl">
+						<p class="text-xs font-semibold uppercase tracking-[0.2em] text-brand">{$t('home.gallery.kicker')}</p>
+						<h2 id="home-gallery-heading" class="mt-3 text-4xl font-serif font-medium leading-tight text-slate-900">{$t('home.gallery.title')}</h2>
+						<div class="mt-4 h-[3px] w-16 rounded-full bg-brand"></div>
+						<p class="mt-5 text-base leading-relaxed text-slate-600">{$t('home.gallery.subtitle')}</p>
 					</div>
-					<div>
-						<p class="text-xs font-semibold uppercase tracking-[0.35em] text-brand">
-							{$t('home.gallery.kicker')}
-						</p>
-						<h2 class="mt-2 text-4xl font-serif font-medium leading-[0.98] text-slate-900">
-							{$t('home.gallery.title')}
-						</h2>
-						<div class="mt-3 h-[3px] w-14 rounded-full bg-brand"></div>
-					</div>
-				</div>
-
-				<p class="mt-4 max-w-3xl text-sm leading-relaxed text-slate-600 sm:text-base">
-					{$t('home.gallery.subtitle')}
-				</p>
-
-				<div class="mt-6 flex items-center justify-end gap-2">
-					<Button variant="secondary" size="icon"
-						type="button"
-						onclick={() => scrollGallery('prev')}
-						aria-label={$t('room.detail.gallery.prev')}
-					>
-						<ChevronLeft class="h-5 w-5" strokeWidth={1.25} />
-					</Button>
-					<Button variant="secondary" size="icon"
-						type="button"
-						onclick={() => scrollGallery('next')}
-						aria-label={$t('room.detail.gallery.next')}
-					>
-						<ChevronRight class="h-5 w-5" strokeWidth={1.25} />
+					<Button variant="secondary" onclick={() => openGallery(0)}>
+						<Images class="h-4 w-4" aria-hidden="true" strokeWidth={1.5} />
+						{$t('home.gallery.cta')}
+						<span class="font-normal text-slate-500">({galleryImages.length})</span>
 					</Button>
 				</div>
 
-				<div
-					class="mt-4 -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 scroll-pl-4 scroll-pr-4 [scrollbar-width:thin] [scrollbar-color:theme(colors.slate.300)_transparent] [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-200 hover:[&::-webkit-scrollbar-thumb]:bg-slate-300 sm:mx-0 sm:px-0 sm:scroll-pl-0 sm:scroll-pr-0 lg:grid lg:auto-cols-[420px] lg:grid-flow-col lg:grid-rows-2"
-					bind:this={galleryTrack}
-				>
-					{#each galleryImages as image, index}
+				<div class="mt-8 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3 lg:grid-rows-2">
+					{#each galleryPreview as image, position}
 						<CardButton tone="default" padding="none"
-							type="button"
-							class="group relative aspect-[4/3] w-[300px] shrink-0 snap-start overflow-hidden text-left sm:aspect-[16/10] sm:w-[380px] lg:w-auto"
-							onclick={() => openGallery(index)}
-							aria-label={`${$t('home.gallery.kicker')}: ${$t(image.altKey)}`}
+							class={position === 0
+								? 'group col-span-2 flex flex-col overflow-hidden lg:row-span-2'
+								: 'group flex flex-col overflow-hidden'}
+							onclick={() => openGallery(image.index)}
+							aria-label={`${$t('home.gallery.open')}: ${$t(image.altKey)}`}
 						>
-							<img
-								src={withAsset(`/images/Galerie/${image.base}-720.jpg`)}
-								srcset={`${withAsset(`/images/Galerie/${image.base}-720.jpg`)} 720w, ${withAsset(`/images/Galerie/${image.base}-1080.jpg`)} 1080w, ${withAsset(`/images/Galerie/${image.base}-1440.jpg`)} 1440w`}
-								sizes={galleryImageSizes}
-								alt={$t(image.altKey)}
-								class="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
-								loading="lazy"
-								decoding="async"
-							/>
-							<div
-								class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent"
-							></div>
-							<div class="pointer-events-none absolute bottom-4 left-4 right-4">
-								<p class="text-[11px] font-medium uppercase tracking-[0.18em] text-white/85">
-									{$t(image.altKey)}
-								</p>
+							<div class={position === 0
+								? 'relative aspect-[4/3] w-full flex-1 overflow-hidden sm:aspect-[16/10] lg:aspect-auto lg:min-h-[400px]'
+								: 'relative aspect-[4/3] w-full overflow-hidden sm:aspect-[16/9]'}>
+								<img
+									src={withAsset(`/images/Galerie/${image.base}-720.jpg`)}
+									srcset={`${withAsset(`/images/Galerie/${image.base}-720.jpg`)} 720w, ${withAsset(`/images/Galerie/${image.base}-1080.jpg`)} 1080w, ${withAsset(`/images/Galerie/${image.base}-1440.jpg`)} 1440w`}
+									sizes={position === 0 ? '(min-width: 1280px) 760px, (min-width: 1024px) 66vw, 100vw' : '(min-width: 1280px) 368px, (min-width: 1024px) 33vw, 50vw'}
+									alt={$t(image.altKey)}
+									class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.025] motion-reduce:transform-none motion-reduce:transition-none"
+									loading="lazy" decoding="async"
+								/>
 							</div>
-							<div
-								class="pointer-events-none absolute inset-0 ring-1 ring-transparent transition group-hover:ring-brand/20"
-							></div>
+							<div class="flex w-full items-center justify-between gap-3 px-4 py-4 sm:px-5">
+								<span class="text-sm font-medium leading-snug text-slate-700">{$t(image.altKey)}</span>
+								<Expand class="h-4 w-4 shrink-0 text-slate-400 transition-colors group-hover:text-slate-900" aria-hidden="true" strokeWidth={1.5} />
+							</div>
 						</CardButton>
 					{/each}
 				</div>
@@ -2034,6 +2013,7 @@ import { localizePath } from '$lib/routing';
 			</div>
 		</div>
 	</section>
+	<NearbyMap />
 </div>
 
 <style>

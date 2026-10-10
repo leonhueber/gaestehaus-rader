@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Card from '$lib/components/ui/Card.svelte';
-	import { t } from '$lib/i18n';
+	import { mapLegal } from '$lib/data/map-legal';
+	import { lang, t } from '$lib/i18n';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 </script>
 
@@ -168,34 +169,18 @@
 				</p>
 			</section>
 
-			<section>
+			<section id="google-maps">
 				<h2 class="text-base font-semibold text-slate-900">8. Google Maps</h2>
-				<p class="mt-3">
-					Auf unserer Website ist Google Maps eingebunden, um unseren Standort darzustellen. Die Karte
-					wird erst nach Aktivierung geladen.
-				</p>
-				<p class="mt-3">
-					Beim Aufruf der Kartenfunktion wird eine Verbindung zu Servern von Google Ireland Limited,
-					Gordon House, Barrow Street, Dublin 4, Irland hergestellt. Dabei können folgende Daten
-					verarbeitet werden:
-				</p>
-				<ul class="mt-2 list-inside list-disc space-y-1">
-					<li>IP-Adresse</li>
-					<li>ggf. Standortdaten (abhängig von Ihren Geräteeinstellungen)</li>
-					<li>Nutzungsdaten (Interaktion mit der Karte)</li>
-				</ul>
-				<p class="mt-3">
-					Eine Übermittlung von Daten an Google-Server in den USA kann nicht ausgeschlossen werden.
-				</p>
-				<p class="mt-3">
-					Zweck: Darstellung unseres Standorts und erleichterte Anfahrt<br />
-					Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO (Einwilligung)
-				</p>
-				<p class="mt-3">
-					Wenn Sie mit der Datenübertragung an Google nicht einverstanden sind, können Sie Google Maps
-					deaktivieren, indem Sie JavaScript in Ihrem Browser deaktivieren. Die Kartenanzeige steht dann
-					nicht zur Verfügung.
-				</p>
+				{#each mapLegal[$lang].google as paragraph}<p class="mt-3">{paragraph}</p>{/each}
+				<p class="mt-3">{mapLegal[$lang].basis}</p>
+				<p class="mt-3"><a class="underline underline-offset-4" href={`https://policies.google.com/privacy?hl=${$lang}`} target="_blank" rel="noopener noreferrer">Google: {mapLegal[$lang].privacy}</a> · <a class="underline underline-offset-4" href="https://www.google.com/help/terms_maps/" target="_blank" rel="noopener noreferrer">Google Maps: {mapLegal[$lang].terms}</a></p>
+			</section>
+
+			<section id="openstreetmap">
+				<h2 class="text-base font-semibold text-slate-900">8a. OpenStreetMap &amp; FOSSGIS</h2>
+				{#each mapLegal[$lang].osm as paragraph}<p class="mt-3">{paragraph}</p>{/each}
+				<p class="mt-3">{mapLegal[$lang].basis}</p>
+				<p class="mt-3"><a class="underline underline-offset-4" href="https://osmfoundation.org/wiki/Privacy_Policy" target="_blank" rel="noopener noreferrer">OpenStreetMap Foundation: {mapLegal[$lang].privacy}</a> · <a class="underline underline-offset-4" href="https://routing.openstreetmap.de/about.html" target="_blank" rel="noopener noreferrer">{mapLegal[$lang].routing}</a></p>
 			</section>
 
 			<section>
@@ -290,7 +275,8 @@
 					Durch die Einbindung von Plausible Analytics und Google Maps k&ouml;nnen Plausible Insights
 					O&Uuml; sowie Google als Empf&auml;nger Ihrer Daten auftreten (siehe Punkte 3 und 8). Bei
 					Nutzung der Online-Buchung können die Nassfeld-Pressegger See Tourismus GmbH sowie feratel
-					als Empfänger auftreten (siehe Punkt 9).
+					als Empfänger auftreten (siehe Punkt 9). Nach Aktivierung der Umgebungskarte ist auch die
+					OpenStreetMap Foundation Empfänger der in Punkt 8a beschriebenen Zugriffsdaten.
 				</p>
 			</section>
 
@@ -335,7 +321,7 @@
 					Wir behalten uns vor, diese Datenschutzerklärung bei Bedarf anzupassen. Es gilt die jeweils
 					aktuelle Version auf unserer Website.
 				</p>
-				<p class="mt-3">Stand: 20.02.2026</p>
+				<p class="mt-3">Stand: 10.10.2026</p>
 			</section>
 		</div>
 	</Card>

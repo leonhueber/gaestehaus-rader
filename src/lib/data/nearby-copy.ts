@@ -1,0 +1,40 @@
+export const nearbyCopy = {
+	de: {
+		kicker: 'Von hier aus', title: 'Alles nah. Viel zu entdecken.',
+		intro: 'Frisches Gebäck, ein Sprung ins Wasser oder ein Tag am Berg. Schau dich um und finde deinen Weg ab Gästehaus Rader.',
+		village: 'Im Ort', region: 'In der Region', scope: 'Umgebung auswählen',
+		all: 'Alle', food: 'Gastronomie', shopping: 'Supermarkt', experiences: 'Erlebnisse', categories: 'Ziele nach Kategorie',
+		foot: 'Zu Fuß', car: 'Mit dem Auto', mode: 'Fortbewegung',
+		experiencesAtDestination: 'Unsere Erlebnisse dazu', summer: 'Sommer', winter: 'Winter',
+		start: 'Ab Gästehaus Rader', selected: 'Dein Ziel', map: 'Umgebungskarte',
+		load: 'Karte laden', loading: 'Karte wird geladen …', preview: 'Dein Urlaub beginnt hier.',
+		privacy: 'Beim Laden wird deine IP-Adresse an OpenStreetMap übermittelt. Dein Standort wird nicht abgefragt.',
+		privacyLink: 'Datenschutz', loadError: 'Die Karte konnte nicht geladen werden. Ziele und Routenlinks bleiben verfügbar.',
+		tileError: 'Einige Kartenausschnitte sind gerade nicht verfügbar.', retry: 'Erneut laden',
+		route: 'Route in Google Maps öffnen', approx: 'ca.',
+		note: 'Geschätzte Zeiten ohne Verkehr, Pausen oder Parkplatzsuche. Öffnungszeiten und saisonalen Betrieb bitte vorab prüfen.',
+		access: 'Die Route endet am nächsten erreichbaren Weg. Ein kurzer Fußweg zum Ziel kann dazukommen.',
+		sources: 'Über diese Karte', sourceText: 'Orte anhand lokaler Anbieter und OpenStreetMap geprüft. Routen von FOSSGIS / OSRM, Stand',
+		sourceLink: 'Infos zum Ziel', mapError: 'Kartenfehler melden', reset: 'Route vollständig zeigen',
+		attribution: 'Kartendaten', withdraw: 'Karte schließen', zoomIn: 'Vergrößern', zoomOut: 'Verkleinern'
+	},
+	en: {
+		kicker: 'From our doorstep', title: 'Close by. Plenty to discover.',
+		intro: 'Fresh bread, a dip in the pool or a day in the mountains. Explore the area and find your way from Gästehaus Rader.',
+		village: 'In the village', region: 'Around the region', scope: 'Choose an area',
+		all: 'All', food: 'Food & drink', shopping: 'Groceries', experiences: 'Experiences', categories: 'Places by category',
+		foot: 'On foot', car: 'By car', mode: 'Travel mode',
+		experiencesAtDestination: 'Our related experiences', summer: 'Summer', winter: 'Winter',
+		start: 'From Gästehaus Rader', selected: 'Your destination', map: 'Area map',
+		load: 'Load map', loading: 'Loading map …', preview: 'Your holiday starts here.',
+		privacy: 'Loading sends your IP address to OpenStreetMap. We do not request your location.',
+		privacyLink: 'Privacy', loadError: 'The map could not be loaded. Places and directions links are still available.',
+		tileError: 'Some map tiles are currently unavailable.', retry: 'Try again',
+		route: 'Open directions in Google Maps', approx: 'approx.',
+		note: 'Estimated times exclude traffic, breaks and parking. Please check opening hours and seasonal operation before setting off.',
+		access: 'The route ends at the nearest accessible road or path. A short walk to the destination may be needed.',
+		sources: 'About this map', sourceText: 'Places checked against local providers and OpenStreetMap. Routes by FOSSGIS / OSRM, updated',
+		sourceLink: 'Destination information', mapError: 'Report a map issue', reset: 'Show the full route',
+		attribution: 'Map data', withdraw: 'Close map', zoomIn: 'Zoom in', zoomOut: 'Zoom out'
+	}
+};

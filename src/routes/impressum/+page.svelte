@@ -112,9 +112,11 @@
 					<!-- Avatar -->
 					<Card tone="default" padding="none" class="h-28 w-28 overflow-hidden">
 						<img
-							src={withAsset('/images/Haus/profile/leon-hueber-224.jpg')}
-							srcset={`${withAsset('/images/Haus/profile/leon-hueber-224.jpg')} 224w, ${withAsset('/images/Haus/profile/leon-hueber-336.jpg')} 336w, ${withAsset('/images/Haus/profile/leon-hueber-448.jpg')} 448w`}
+							src={withAsset('/images/Haus/profile/leon-hueber-beach-224.jpg')}
+							srcset={`${withAsset('/images/Haus/profile/leon-hueber-beach-224.jpg')} 224w, ${withAsset('/images/Haus/profile/leon-hueber-beach-336.jpg')} 336w, ${withAsset('/images/Haus/profile/leon-hueber-beach-448.jpg')} 448w`}
 							sizes="112px"
+							width="448"
+							height="448"
 							alt={$t('imprint.webdesign.imageAlt')}
 							class="h-full w-full object-cover"
 							loading="lazy"

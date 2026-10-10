@@ -1,6 +1,9 @@
 <script lang="ts">
 	import Card from '$lib/components/ui/Card.svelte';
 	import { t } from '$lib/i18n';
+	import { page } from '$app/state';
+	import { asset } from '$app/paths';
+	import { localizePath } from '$lib/routing';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 </script>
 
@@ -71,13 +74,17 @@
 					{$t('credits.maps.body')}
 					<a
 						class="text-brand hover:opacity-90"
-						href="https://www.google.com/maps"
+						href="https://www.google.com/help/terms_maps/"
 						target="_blank"
 						rel="noreferrer"
 					>
-						https://www.google.com/maps
+						Google Maps
 					</a>
 				</p>
+				<p class="mt-3">{$t('credits.maps.osm')} <a class="underline underline-offset-4" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap / ODbL</a></p>
+				<p class="mt-3">{$t('credits.maps.routes')} <a class="underline underline-offset-4" href="https://routing.openstreetmap.de/about.html" target="_blank" rel="noopener noreferrer">FOSSGIS</a></p>
+				<p class="mt-3">{$t('credits.maps.leaflet')} <a class="underline underline-offset-4" href={asset('/licenses/leaflet.txt')}>{$t('credits.maps.license')}</a></p>
+				<p class="mt-3"><a class="underline underline-offset-4" href={`${localizePath('/datenschutz', page.url.pathname)}#google-maps`}>{$t('credits.maps.privacy')}</a></p>
 			</div>
 
 			<div>

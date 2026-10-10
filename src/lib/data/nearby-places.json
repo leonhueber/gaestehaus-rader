@@ -1,0 +1,291 @@
+{
+	"origin": {
+		"lat": 46.688407,
+		"lon": 13.2549914
+	},
+	"checkedAt": "2026-10-10",
+	"places": [
+		{
+			"id": "loeffele",
+			"scope": "village",
+			"category": "food",
+			"name": {
+				"de": "Gasthof Löffele",
+				"en": "Gasthof Löffele"
+			},
+			"description": {
+				"de": "Zum Essen gleich um die Ecke. Weißbriach 88.",
+				"en": "A restaurant just around the corner. Weißbriach 88."
+			},
+			"lat": 46.6892622,
+			"lon": 13.2539256,
+			"osm": "node/2686231334",
+			"source": "https://gitschtal.gv.at/buergerservice/gitsch-taler",
+			"experienceIds": []
+		},
+		{
+			"id": "steinwender",
+			"scope": "village",
+			"category": "food",
+			"name": {
+				"de": "Bäckerei Café Steinwender",
+				"en": "Steinwender bakery & café"
+			},
+			"description": {
+				"de": "Gebäck und eine Kaffeepause im Ort. Weißbriach 141.",
+				"en": "Bread and a coffee break in the village. Weißbriach 141."
+			},
+			"lat": 46.6871341,
+			"lon": 13.2540192,
+			"osm": "node/5876980488",
+			"source": "https://gitschtal.gv.at/buergerservice/gitsch-taler",
+			"experienceIds": []
+		},
+		{
+			"id": "brunnwirt",
+			"scope": "village",
+			"category": "food",
+			"name": {
+				"de": "Gasthof Brunnwirt",
+				"en": "Gasthof Brunnwirt"
+			},
+			"description": {
+				"de": "Ein Gasthof mitten in Weißbriach. Weißbriach 20.",
+				"en": "A village inn in Weißbriach. Weißbriach 20."
+			},
+			"lat": 46.6847433,
+			"lon": 13.2525952,
+			"osm": "node/1704259161",
+			"source": "https://gitschtal.gv.at/buergerservice/gitsch-taler",
+			"experienceIds": []
+		},
+		{
+			"id": "spar",
+			"scope": "village",
+			"category": "shopping",
+			"name": {
+				"de": "SPAR Weißbriach",
+				"en": "SPAR Weißbriach"
+			},
+			"description": {
+				"de": "Alles für den Kühlschrank im Appartement. Weißbriach 233.",
+				"en": "Stock up for your apartment. Weißbriach 233."
+			},
+			"lat": 46.6866292,
+			"lon": 13.2549721,
+			"osm": "way/102477255",
+			"source": "https://www.spar.at/standorte/spar-weissbriach-9622-weissbriach-233",
+			"experienceIds": []
+		},
+		{
+			"id": "pool",
+			"scope": "village",
+			"category": "experiences",
+			"name": {
+				"de": "Freibad Weißbriach",
+				"en": "Weißbriach outdoor pool"
+			},
+			"description": {
+				"de": "Für warme Sommertage. Ziel beim Badstüberl am Freibad; saisonal geöffnet.",
+				"en": "For warm summer days. Destination by the pool restaurant; seasonal opening."
+			},
+			"lat": 46.6910945,
+			"lon": 13.2529603,
+			"osm": "way/258507010",
+			"source": "https://gitschtal.gv.at/buergerservice/gitsch-taler",
+			"experienceIds": [
+				"summer-sunset"
+			]
+		},
+		{
+			"id": "ski",
+			"scope": "village",
+			"category": "experiences",
+			"name": {
+				"de": "Weißbriach · Ski, Loipen & Rodeln",
+				"en": "Weißbriach · skiing, trails & sledding"
+			},
+			"description": {
+				"de": "Anreise zur Talstation Hammerbodenlift: Ausgangspunkt fürs Skigebiet und die Berggeist-Rodelbahn, mit Anschluss zur Nadaln-Loipe. Liftfahrt, Aufstieg und Wintersport kommen zur Anreisezeit hinzu. Betrieb und Loipenverlauf hängen von der Schneelage ab.",
+				"en": "Access via the Hammerboden lift base: the ski area and Berggeist sledding run, with a link to the Nadaln cross-country trail. Lift rides, walking uphill and winter activities are additional to the journey shown. Operation and trail layout depend on snow conditions."
+			},
+			"lat": 46.6817795,
+			"lon": 13.2428069,
+			"osm": "way/279408816",
+			"source": "https://www.nassfeld.at/de/Winter-World/Sun-Ski-World/weitere-Skigebiete/Familienskigebiet-Weissbriach/Tickets-Preise",
+			"experienceIds": [
+				"winter-hike",
+				"winter-crosscountry",
+				"winter-sledding"
+			],
+			"additionalSources": [
+				"https://www.nassfeld.at/de/Tour/XC_N16-Nadaln-Loipe-Classic-u.Skating_t_27891",
+				"https://st-stefan-gailtal.gv.at/fileadmin/sankt_stefan_im_gailtal/Neuigkeiten/ONLINE_NLW_Winter_Skibus_Freizeitkarte_720x440mm_2024_2025.pdf"
+			]
+		},
+		{
+			"id": "nassfeld",
+			"scope": "region",
+			"category": "experiences",
+			"name": {
+				"de": "Nassfeld · Millennium Express",
+				"en": "Nassfeld · Millennium Express"
+			},
+			"description": {
+				"de": "Dein Einstieg ins Nassfeld in Tröpolach. Die Route führt zur Talstation, nicht auf den Berg.",
+				"en": "Your gateway to Nassfeld in Tröpolach. The route ends at the valley station, not the mountain."
+			},
+			"lat": 46.6115536,
+			"lon": 13.2795209,
+			"osm": "way/83896213",
+			"source": "https://hermagor.at/aktuelles/details/skidepot-direkt-an-der-piste/",
+			"experienceIds": [
+				"summer-lift",
+				"winter-ski"
+			]
+		},
+		{
+			"id": "weissensee",
+			"scope": "region",
+			"category": "experiences",
+			"name": {
+				"de": "Weissensee · Techendorf",
+				"en": "Lake Weissensee · Techendorf"
+			},
+			"description": {
+				"de": "Im Sommer an den See, im Winter zur Natureiswelt. Ziel ist die Schiffsanlegestelle bei der Brücke in Techendorf. Der tatsächliche Eiszugang hängt von den freigegebenen Flächen ab; Eis nur nach örtlicher Freigabe betreten.",
+				"en": "A lakeside trip in summer and natural ice in winter. The route ends at the boat landing beside Techendorf bridge. Actual ice access depends on the areas opened locally; only enter officially approved ice surfaces."
+			},
+			"lat": 46.7155528,
+			"lon": 13.294533,
+			"osm": "way/226739394",
+			"source": "https://www.weissenseeschifffahrt.at/show_content.php?language=en&sid=37",
+			"experienceIds": [
+				"winter-ice"
+			]
+		},
+		{
+			"id": "presseggersee",
+			"scope": "region",
+			"category": "experiences",
+			"name": {
+				"de": "Pressegger See · Seehexe",
+				"en": "Lake Pressegger See · Seehexe"
+			},
+			"description": {
+				"de": "Strandbad Oswald am Südufer. Ein Sommerziel mit Restaurant; saisonal geöffnet.",
+				"en": "Oswald beach on the southern shore. A summer destination with a restaurant; seasonal opening."
+			},
+			"lat": 46.6226018,
+			"lon": 13.4351623,
+			"osm": "way/68989612",
+			"source": "https://www.nassfeld.at/de/Service/Nassfeld-A-Z/Strandbad-Restaurant-Seehexe_az_30379",
+			"experienceIds": [
+				"summer-lake"
+			]
+		},
+		{
+			"id": "garnitzenklamm",
+			"scope": "region",
+			"category": "experiences",
+			"name": {
+				"de": "Garnitzenklamm · Einstieg",
+				"en": "Garnitzenklamm · gorge entrance"
+			},
+			"description": {
+				"de": "Zum Klammeingang beim Klammwirt südlich von Möderndorf. Die Zeit zeigt die Anreise; die Wanderung durch die Schlucht kommt dazu. Öffnung und Wegzustand vorab prüfen.",
+				"en": "To the gorge entrance by Klammwirt, south of Möderndorf. The time shown is for the journey; the gorge hike is additional. Check opening and trail conditions before visiting."
+			},
+			"lat": 46.6009933,
+			"lon": 13.3636274,
+			"osm": "way/89231837",
+			"source": "https://www.nassfeld.at/de/Tour/Garnitzenklamm_t_35130",
+			"experienceIds": [
+				"summer-gorge"
+			]
+		},
+		{
+			"id": "golz",
+			"scope": "region",
+			"category": "experiences",
+			"name": {
+				"de": "Golz · Start in Radnig",
+				"en": "Golz · trailhead in Radnig"
+			},
+			"description": {
+				"de": "Zum Naturschwimmbad Radnig, dem Ausgangspunkt für die Bergtour über die Radniger Alm auf den Golz. Die angezeigte Zeit endet am Ausgangspunkt; die mehrstündige Bergtour ist nicht enthalten.",
+				"en": "To Radnig natural pool, the starting point for the mountain hike via Radniger Alm to Golz. The time shown ends at the trailhead and does not include the several-hour mountain hike."
+			},
+			"lat": 46.6445664,
+			"lon": 13.3640233,
+			"osm": "node/881038463",
+			"source": "https://www.nassfeld.at/de/Tour/Golz-2004-m-uber-die-Radniger-Alm_t_35104",
+			"experienceIds": [
+				"summer-golz"
+			]
+		},
+		{
+			"id": "reisskofel",
+			"scope": "region",
+			"category": "experiences",
+			"name": {
+				"de": "Reißkofel · Start Reißkofelbad",
+				"en": "Reißkofel · Reißkofelbad trailhead"
+			},
+			"description": {
+				"de": "Anreise zum Reißkofelbad als Ausgangspunkt für Touren Richtung Jochalm und Reißkofel. Die Route führt nicht zum Gipfel. Für die anspruchsvolle Bergtour sind alpine Erfahrung, Trittsicherheit und zusätzliche Tourenplanung nötig.",
+				"en": "Travel to Reißkofelbad as a starting point for hikes towards Jochalm and Reißkofel. This route does not reach the summit. The demanding mountain tour requires alpine experience, sure-footedness and separate planning."
+			},
+			"lat": 46.6665655,
+			"lon": 13.1397657,
+			"osm": "node/240068541",
+			"source": "https://www.nassfeld.at/de/Tour/GS_N10-Reisskofel-2.371-m_t_59917",
+			"experienceIds": [
+				"summer-hike"
+			]
+		},
+		{
+			"id": "gailtalradweg",
+			"scope": "region",
+			"category": "experiences",
+			"name": {
+				"de": "Gailtalradweg R3 · Hermagor",
+				"en": "Gailtal cycle path R3 · Hermagor"
+			},
+			"description": {
+				"de": "Zum Bahnhof Hermagor, einem Ausgangspunkt für den Abschnitt Richtung Pressegger See und Villach. Angezeigt wird die Anreise zum Einstieg – keine Fahrradroute und keine Dauer der Radtour.",
+				"en": "To Hermagor railway station, a starting point for the section towards Lake Pressegger See and Villach. The map shows the journey to the starting point, not a cycling route or the duration of the bike ride."
+			},
+			"lat": 46.6264037,
+			"lon": 13.3754019,
+			"osm": "way/29947448",
+			"source": "https://www.nassfeld.at/de/Tour/R3-Gailtalradweg_t_35036",
+			"experienceIds": [
+				"summer-bike"
+			]
+		},
+		{
+			"id": "nassfeldpass",
+			"scope": "region",
+			"category": "experiences",
+			"name": {
+				"de": "Nassfeldpass · Schneeschuhwandern",
+				"en": "Nassfeld Pass · snowshoeing"
+			},
+			"description": {
+				"de": "Anreise zum Nassfeldpass an der Staatsgrenze als Ausgangspunkt für Schneeschuhtouren auf der Sonnenalpe. Die Wintertour selbst ist nicht Teil der Route. Schneelage, Lawinenlage und Zufahrt vorab prüfen.",
+				"en": "Travel to Nassfeld Pass on the border as a starting point for snowshoe tours on Sonnenalpe. The winter tour itself is not included in the route. Check snow, avalanche conditions and road access beforehand."
+			},
+			"lat": 46.5599576,
+			"lon": 13.2755644,
+			"osm": "node/1626728615",
+			"source": "https://www.nassfeld.at/de/Winter-World/Outdoor-Relax-World/Schneeschuhwandern",
+			"additionalSources": [
+				"https://vermieter.nassfeld.at/PDFs/Print-Werbemittel/NLW_Freizeit_Winterkarte.pdf"
+			],
+			"experienceIds": [
+				"winter-snowshoe"
+			]
+		}
+	]
+}
