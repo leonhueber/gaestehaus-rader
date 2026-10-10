@@ -1,4 +1,6 @@
 <script lang="ts">
+	import ButtonLink from '$lib/components/ui/ButtonLink.svelte';
+	import Card from '$lib/components/ui/Card.svelte';
 	import { reveal } from '$lib/actions/reveal';
 	import { asset, resolve } from '$app/paths';
 import { page } from '$app/state';
@@ -125,24 +127,22 @@ import { page } from '$app/state';
 				{$t('workation.hero.subtitle')}
 			</p>
 			<div class="mt-7 flex flex-wrap items-center gap-3">
-				<a
+				<ButtonLink variant="primary" size="md"
 					href={CONTACT_URL}
-					class="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-dark"
 				>
 					{$t('workation.hero.ctaPrimary')}
 					<ArrowRight class="h-4 w-4" />
-				</a>
-				<a
+				</ButtonLink>
+				<ButtonLink variant="overlay" size="md"
 					href={BOOKING_URL}
-					class="inline-flex items-center gap-2 rounded-full border border-white/50 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
 				>
 					{$t('workation.hero.ctaSecondary')}
-				</a>
+				</ButtonLink>
 			</div>
 		</div>
 	</section>
 
-	<section use:reveal class="opacity-0 translate-y-8 transition-all duration-700 ease-out mt-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+	<Card as="section" tone="default" padding="md"  class="mt-8">
 		<ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
 			{#each trustItems as item}
 				<li class="flex items-center gap-2 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
@@ -151,7 +151,7 @@ import { page } from '$app/state';
 				</li>
 			{/each}
 		</ul>
-	</section>
+	</Card>
 
 	<section use:reveal class="opacity-0 translate-y-8 transition-all duration-700 ease-out mt-12">
 		<p class="text-xs font-semibold uppercase tracking-[0.35em] text-brand">
@@ -166,7 +166,7 @@ import { page } from '$app/state';
 		</p>
 		<div class="mt-8 grid gap-4 md:grid-cols-3">
 			{#each fitItems as item}
-				<article class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+				<Card as="article" tone="default" padding="md" >
 					<item.icon class="h-5 w-5 text-brand" />
 					<h3 class="mt-4 text-lg font-semibold text-slate-900">
 						{$t(item.titleKey)}
@@ -174,13 +174,13 @@ import { page } from '$app/state';
 					<p class="mt-2 text-sm leading-relaxed text-slate-600">
 						{$t(item.bodyKey)}
 					</p>
-				</article>
+				</Card>
 			{/each}
 		</div>
 	</section>
 
 	<section use:reveal class="opacity-0 translate-y-8 transition-all duration-700 ease-out mt-12 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-		<div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+		<Card tone="default" padding="md" >
 			<p class="text-xs font-semibold uppercase tracking-[0.35em] text-brand">
 				{$t('workation.setup.kicker')}
 			</p>
@@ -201,7 +201,7 @@ import { page } from '$app/state';
 					</div>
 				{/each}
 			</div>
-		</div>
+		</Card>
 
 		<div class="rounded-3xl border border-slate-200 bg-slate-900 p-6 text-white shadow-sm sm:p-8">
 			<p class="text-xs font-semibold uppercase tracking-[0.35em] text-brand-100">
@@ -241,7 +241,7 @@ import { page } from '$app/state';
 	</section>
 
 	<section use:reveal class="opacity-0 translate-y-8 transition-all duration-700 ease-out mt-12 grid gap-6 md:grid-cols-2">
-		<article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+		<Card as="article" tone="default" padding="md" >
 			<p class="text-xs font-semibold uppercase tracking-[0.35em] text-brand">
 				{$t('workation.balance.kicker')}
 			</p>
@@ -266,9 +266,9 @@ import { page } from '$app/state';
 					<span>{$t('workation.balance.bullet3')}</span>
 				</li>
 			</ul>
-		</article>
+		</Card>
 
-		<article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+		<Card as="article" tone="default" padding="md" >
 			<p class="text-xs font-semibold uppercase tracking-[0.35em] text-brand">
 				{$t('workation.longstay.kicker')}
 			</p>
@@ -290,10 +290,10 @@ import { page } from '$app/state';
 			<p class="mt-4 text-sm font-medium text-slate-900">
 				{$t('workation.longstay.teaser')}
 			</p>
-		</article>
+		</Card>
 	</section>
 
-	<section use:reveal class="opacity-0 translate-y-8 transition-all duration-700 ease-out mt-12 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8" id="faq">
+	<Card as="section" tone="default" padding="md"  class="mt-12" id="faq">
 		<p class="text-xs font-semibold uppercase tracking-[0.35em] text-brand">
 			{$t('workation.faq.kicker')}
 		</p>
@@ -319,7 +319,7 @@ import { page } from '$app/state';
 				</details>
 			{/each}
 		</div>
-	</section>
+	</Card>
 
 	<section
 		use:reveal class="opacity-0 translate-y-8 transition-all duration-700 ease-out mt-12 rounded-3xl border border-slate-200 bg-gradient-to-r from-brand/10 via-white to-slate-50 p-6 shadow-sm sm:p-10"
@@ -338,26 +338,23 @@ import { page } from '$app/state';
 			{$t('workation.cta.formTeaser')}
 		</p>
 		<div class="mt-7 flex flex-wrap gap-3">
-			<a
+			<ButtonLink variant="primary" size="md"
 				href={BOOKING_URL}
-				class="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-dark"
 			>
 				{$t('workation.cta.primary')}
 				<ArrowRight class="h-4 w-4" />
-			</a>
-			<a
+			</ButtonLink>
+			<ButtonLink variant="secondary" size="md"
 				href={CONTACT_URL}
-				class="inline-flex items-center gap-2 rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-800 transition hover:bg-slate-100"
 			>
 				<Mail class="h-4 w-4" />
 				{$t('workation.cta.secondary')}
-			</a>
-			<a
+			</ButtonLink>
+			<ButtonLink variant="secondary" size="md"
 				href={APARTMENTS_URL}
-				class="inline-flex items-center gap-2 rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-800 transition hover:bg-slate-100"
 			>
 				{$t('workation.cta.apartments')}
-			</a>
+			</ButtonLink>
 		</div>
 	</section>
 </div>
@@ -371,13 +368,12 @@ import { page } from '$app/state';
 				</p>
 				<p class="text-sm font-semibold text-slate-900">>= {WORKATION_WIFI_MBPS} Mbit/s WLAN</p>
 			</div>
-			<a
+			<ButtonLink variant="primary" size="sm"
 				href={CONTACT_URL}
-				class="inline-flex items-center gap-1 rounded-full bg-brand px-4 py-2 text-xs font-semibold text-white"
 			>
 				<PhoneCall class="h-3.5 w-3.5" />
 				{$t('workation.mobileCta.button')}
-			</a>
+			</ButtonLink>
 		</div>
 	</div>
 </div>

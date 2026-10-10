@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Button from '$lib/components/ui/Button.svelte';
+	import Card from '$lib/components/ui/Card.svelte';
 	import { onMount } from 'svelte';
 	import { lang, t } from '$lib/i18n';
 	import { mountDeskline, type DesklineStatus } from '$lib/deskline';
@@ -17,7 +19,7 @@
 <SeoHead titleKey="booking.seo.title" descriptionKey="booking.seo.description" />
 
 <div class="mx-auto w-full max-w-4xl px-4 pt-8 sm:px-6">
-	<div class="rounded-2xl border border-brand/20 bg-brand/5 p-4 sm:p-5">
+	<Card tone="accent" padding="sm" >
 		<div class="flex items-start gap-3">
 			<div class="grid h-10 w-10 place-items-center rounded-xl bg-brand/10 text-brand">
 				<Ticket class="h-5 w-5" aria-hidden="true" />
@@ -31,7 +33,7 @@
 				</p>
 			</div>
 		</div>
-	</div>
+	</Card>
 </div>
 
 {#if widgetStatus !== 'ready'}
@@ -47,9 +49,9 @@
 					: 'The booking platform could not finish loading. Please reload the page or contact us directly.'}
 			</p>
 			<div class="mt-4 flex flex-wrap justify-center gap-4">
-				<button type="button" onclick={() => window.location.reload()} class="rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2">
+				<Button variant="primary" size="md" type="button" onclick={() => window.location.reload()} >
 					{$lang === 'de' ? 'Erneut laden' : 'Reload page'}
-				</button>
+				</Button>
 				<a href="mailto:info@rader-gitschtal.at" class="self-center text-sm font-semibold text-brand underline underline-offset-4">info@rader-gitschtal.at</a>
 			</div>
 		{/if}

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Card from '$lib/components/ui/Card.svelte';
 	import { t } from '$lib/i18n';
 	import { imageAttrs } from '$lib/images';
 	import SeoHead from '$lib/components/SeoHead.svelte';
@@ -42,8 +43,7 @@
 				<div
 					class="absolute -bottom-8 left-1/2 z-10 w-[220px] -translate-x-1/2 sm:left-[62%] sm:translate-x-0"
 				>
-					<div
-						class="rounded-2xl bg-white px-6 py-5 shadow-[0_18px_40px_rgba(16,24,40,0.18)] ring-1 ring-black/5"
+					<Card tone="default" padding="md"
 					>
 						<div class="flex items-start gap-3">
 							<div
@@ -61,7 +61,7 @@
 								<p class="mt-1 text-2xl font-semibold text-slate-900">1964</p>
 							</div>
 						</div>
-					</div>
+					</Card>
 				</div>
 			</div>
 

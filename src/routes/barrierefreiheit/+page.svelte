@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Card from '$lib/components/ui/Card.svelte';
 	import { t } from '$lib/i18n';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
@@ -11,7 +12,7 @@
 <SeoHead titleKey="accessibility.seo.title" descriptionKey="accessibility.seo.description" />
 
 <div class="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-	<section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-10 lg:p-12">
+	<Card as="section" tone="default" padding="lg" >
 		<p class="text-xs font-semibold uppercase tracking-[0.35em] text-brand">
 			{$t('brand.name')}
 		</p>
@@ -59,5 +60,5 @@
 
 			<p class="pt-2 text-sm text-slate-500">{$t('accessibility.created.body')}</p>
 		</div>
-	</section>
+	</Card>
 </div>

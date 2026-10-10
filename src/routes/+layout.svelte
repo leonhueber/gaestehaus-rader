@@ -1,4 +1,5 @@
 <script lang="ts">
+	import ButtonLink from '$lib/components/ui/ButtonLink.svelte';
 	import favicon from '$lib/assets/favicon.ico';
 	import { env } from '$env/dynamic/public';
 	import { resolve } from '$app/paths';
@@ -302,14 +303,13 @@
 					</a>
 				</div>
 
-				<a
+				<ButtonLink variant="primary" size="sm"
 					href={bookingHref}
-					class="inline-flex items-center justify-center rounded-full bg-brand px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-all hover:bg-brand/90 active:scale-95 focus:outline-none focus:ring-2 focus:ring-brand/40 sm:px-5 sm:text-sm"
 					aria-label={$t('nav.booking')}
 					onclick={() => trackEvent('Booking: Jetzt buchen', { source: 'header' })}
 				>
 					{$t('nav.booking')}
-				</a>
+				</ButtonLink>
 			</div>
 		</div>
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Button from '$lib/components/ui/Button.svelte';
 	import { imageAttrs } from '$lib/images';
 	import { ChevronLeft, ChevronRight, X } from 'lucide-svelte';
 
@@ -103,33 +104,33 @@
 		></button>
 
 		<div class="relative z-10 flex max-h-[calc(100dvh-1.5rem)] w-full max-w-7xl flex-col sm:max-h-[calc(100dvh-2.5rem)]">
-			<button
+			<Button variant="overlay" size="icon"
 				type="button"
-				class="absolute right-2 top-2 z-30 grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-slate-950/55 text-white shadow-lg backdrop-blur transition hover:bg-white hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 sm:-top-1 sm:right-0"
+				class="absolute right-2 top-2 z-30 sm:-top-1 sm:right-0"
 				onclick={onClose}
 				aria-label={closeLabel}
 			>
 				<X class="h-5 w-5" strokeWidth={1.75} />
-			</button>
+			</Button>
 
 			{#if hasManyItems}
-				<button
+				<Button variant="overlay" size="icon"
 					type="button"
-					class="absolute left-2 top-[42%] z-30 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-slate-950/55 text-white shadow-lg backdrop-blur transition hover:bg-white hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 sm:left-4"
+					class="absolute left-2 top-[42%] z-30 -translate-y-1/2 sm:left-4"
 					onclick={() => setIndex(activeIndex - 1)}
 					aria-label={prevLabel}
 				>
 					<ChevronLeft class="h-5 w-5" strokeWidth={1.5} />
-				</button>
+				</Button>
 
-				<button
+				<Button variant="overlay" size="icon"
 					type="button"
-					class="absolute right-2 top-[42%] z-30 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-slate-950/55 text-white shadow-lg backdrop-blur transition hover:bg-white hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 sm:right-4"
+					class="absolute right-2 top-[42%] z-30 -translate-y-1/2 sm:right-4"
 					onclick={() => setIndex(activeIndex + 1)}
 					aria-label={nextLabel}
 				>
 					<ChevronRight class="h-5 w-5" strokeWidth={1.5} />
-				</button>
+				</Button>
 			{/if}
 
 			<div class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[1.75rem] border border-white/15 bg-white/8 shadow-2xl ring-1 ring-black/20">

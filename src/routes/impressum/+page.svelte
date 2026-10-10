@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Card from '$lib/components/ui/Card.svelte';
 	import { asset } from '$app/paths';
 	import { t } from '$lib/i18n';
 	import SeoHead from '$lib/components/SeoHead.svelte';
@@ -9,7 +10,7 @@
 <SeoHead titleKey="imprint.seo.title" descriptionKey="imprint.seo.description" />
 
 <div class="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-	<section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-10 lg:p-12">
+	<Card as="section" tone="default" padding="lg" >
 		<p class="text-xs font-semibold uppercase tracking-[0.35em] text-brand">{$t('brand.name')}</p>
 		<h1 class="mt-4 font-serif text-4xl leading-[0.95] text-slate-900 sm:text-5xl">
 			{$t('imprint.title')}
@@ -109,7 +110,7 @@
 			>
 				<div class="grid gap-6 sm:grid-cols-[auto,1fr,auto] sm:items-center">
 					<!-- Avatar -->
-					<div class="h-28 w-28 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+					<Card tone="default" padding="none" class="h-28 w-28 overflow-hidden">
 						<img
 							src={withAsset('/images/Haus/profile/leon-hueber-224.jpg')}
 							srcset={`${withAsset('/images/Haus/profile/leon-hueber-224.jpg')} 224w, ${withAsset('/images/Haus/profile/leon-hueber-336.jpg')} 336w, ${withAsset('/images/Haus/profile/leon-hueber-448.jpg')} 448w`}
@@ -119,7 +120,7 @@
 							loading="lazy"
 							decoding="async"
 						/>
-					</div>
+					</Card>
 
 					<!-- Text -->
 					<div>
@@ -146,7 +147,7 @@
 				</div>
 			</div>
 		</div>
-	</section>
+	</Card>
 </div>
 
 

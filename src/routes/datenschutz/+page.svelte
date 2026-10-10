@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Card from '$lib/components/ui/Card.svelte';
 	import { t } from '$lib/i18n';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 </script>
@@ -6,7 +7,7 @@
 <SeoHead titleKey="privacy.seo.title" descriptionKey="privacy.seo.description" />
 
 <div class="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-	<section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-10 lg:p-12">
+	<Card as="section" tone="default" padding="lg" >
 		<p class="text-xs font-semibold uppercase tracking-[0.35em] text-brand">Gästehaus Rader</p>
 		<h1 class="mt-4 break-words font-serif text-4xl leading-[0.95] text-slate-900 sm:text-5xl">
 			Datenschutz&shy;erkl&auml;rung
@@ -209,7 +210,7 @@
 					hergestellt.
 				</p>
 
-				<div class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
+				<Card tone="muted" padding="sm" class="mt-4">
 					<p class="text-sm font-semibold text-slate-900">
 						Anbieter der Buchungsplattform (Verantwortlicher)
 					</p>
@@ -223,7 +224,7 @@
 						<p class="font-semibold text-slate-800">feratel media technologies AG</p>
 						<p>Maria-Theresien-Straße 8, 6020 Innsbruck, Österreich</p>
 					</div>
-				</div>
+				</Card>
 
 				<p class="mt-3">
 					Beim Aufruf der Buchungsmaske wird eine direkte Verbindung zwischen Ihrem Browser und den
@@ -337,5 +338,5 @@
 				<p class="mt-3">Stand: 20.02.2026</p>
 			</section>
 		</div>
-	</section>
+	</Card>
 </div>

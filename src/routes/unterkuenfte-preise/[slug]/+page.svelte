@@ -1,4 +1,7 @@
 <script lang="ts">
+	import Button from '$lib/components/ui/Button.svelte';
+	import ButtonLink from '$lib/components/ui/ButtonLink.svelte';
+	import Card from '$lib/components/ui/Card.svelte';
 	import { browser } from '$app/environment';
 import { page } from '$app/state';
 	import { asset, resolve } from '$app/paths';
@@ -178,7 +181,7 @@ import { localizePath } from '$lib/routing';
 	let shareStatus = $state<'idle' | 'copied' | 'error'>('idle');
 	let priceSectionEl: HTMLElement | null = null;
 	let priceSectionTracked = false;
-	let mainBookingCtaEl: HTMLAnchorElement | null = null;
+	let mainBookingCtaEl = $state<HTMLAnchorElement | null>(null);
 	let stickyBookingBarVisible = $state(false);
 
 	const openGallery = (index: number) => {
@@ -377,9 +380,9 @@ import { localizePath } from '$lib/routing';
 					</p>
 				</div>
 
-				<button
+				<Button variant="secondary" size="sm"
 					type="button"
-					class="hidden items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 sm:inline-flex"
+					class="hidden sm:inline-flex"
 					onclick={shareRoom}
 					aria-live="polite"
 				>
@@ -389,7 +392,7 @@ import { localizePath } from '$lib/routing';
 					{:else}
 						{$t('room.detail.share')}
 					{/if}
-				</button>
+				</Button>
 			</div>
 
 			<!-- META ROW -->
@@ -439,8 +442,8 @@ import { localizePath } from '$lib/routing';
 					<section bind:this={priceSectionEl}>
 						<h2 class="text-2xl font-serif text-slate-900">{$t('room.detail.sections.prices')}</h2>
 
-						<div
-							class="mt-5 w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+						<Card tone="default" padding="none"
+							class="mt-5 w-full overflow-hidden"
 						>
 							<table class="hidden w-full text-left text-sm sm:table">
 								<thead class="bg-[#fbf3e8] text-sm font-semibold text-slate-600">
@@ -496,7 +499,7 @@ import { localizePath } from '$lib/routing';
 									</div>
 								{/each}
 							</div>
-						</div>
+						</Card>
 
 						<p class="mt-3 text-xs text-slate-500">{$t('room.detail.prices.note')}</p>
 					</section>
@@ -571,8 +574,7 @@ import { localizePath } from '$lib/routing';
 
 				<!-- RIGHT BOOKING CARD (sticky) -->
 				<aside class="lg:sticky booking-card">
-					<div
-						class="rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)]"
+					<Card tone="default" padding="md"
 					>
 						<!-- Header -->
 						<div>
@@ -663,22 +665,22 @@ import { localizePath } from '$lib/routing';
 						</div>
 
 						<!-- CTA -->
-						<a
+						<ButtonLink variant="primary" size="md"
 							href={localizedHref('/buchen')}
-							bind:this={mainBookingCtaEl}
-							class="mt-5 inline-flex w-full items-center justify-center rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:brightness-110 focus:outline-none focus:ring-4 focus:ring-brand/25"
+							bind:element={mainBookingCtaEl}
+							class="mt-5 w-full"
 							onclick={() =>
 								trackEvent('Booking: Jetzt buchen', { source: 'room-detail', room: accommodation.slug })
 							}
 						>
 							{$t('room.detail.card.cta')}
-						</a>
+						</ButtonLink>
 
 						<!-- Secondary line -->
 						<p class="mt-3 text-center text-[11px] text-slate-500">
 							{$t('room.detail.card.note')}
 						</p>
-					</div>
+					</Card>
 				</aside>
 			</div>
 		</section>
@@ -701,14 +703,14 @@ import { localizePath } from '$lib/routing';
 					{accommodation.attributes.guests[$lang]} · {accommodation.attributes.size}
 				</p>
 			</div>
-			<a
+			<ButtonLink variant="primary" size="md"
 				href={localizedHref('/buchen')}
-				class="inline-flex h-11 shrink-0 items-center justify-center rounded-xl bg-brand px-4 text-sm font-semibold text-white transition hover:bg-brand/90"
+				class="shrink-0"
 				onclick={() =>
 					trackEvent('Booking: Jetzt buchen', { source: 'room-detail-sticky', room: accommodation.slug })}
 			>
 				{$lang === 'de' ? 'Jetzt buchen' : 'Book now'}
-			</a>
+			</ButtonLink>
 		</div>
 	</div>
 </div>

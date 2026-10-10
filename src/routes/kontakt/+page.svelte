@@ -1,4 +1,7 @@
 <script lang="ts">
+	import Button from '$lib/components/ui/Button.svelte';
+	import ButtonLink from '$lib/components/ui/ButtonLink.svelte';
+	import Card from '$lib/components/ui/Card.svelte';
 	import { asset } from '$app/paths';
 	import { reveal } from '$lib/actions/reveal';
 	import { trackEvent } from '$lib/analytics/plausible';
@@ -141,20 +144,18 @@
 			<div class="mt-8">
 				<p class="text-sm font-semibold text-slate-900">{$t('contact.quick.title')}</p>
 				<div class="mt-4 flex flex-wrap items-center gap-3">
-					<a
+					<ButtonLink variant="primary" size="md"
 						href="https://wa.me/436766246826"
 						target="_blank"
 						rel="noopener noreferrer"
-						class="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-6 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(245,146,0,0.25)] transition hover:bg-brand-dark"
 						onclick={() =>
 							trackEvent('Contact: WhatsApp Click', { source: 'contact', placement: 'quick' })}
 					>
 						<MessageCircle class="h-4 w-4" aria-hidden="true" />
 						{$t('contact.cta.whatsapp')}
-					</a>
-					<a
+					</ButtonLink>
+					<ButtonLink variant="secondary" size="md"
 						href="tel:+436766246826"
-						class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
 						onclick={() =>
 							trackEvent('Contact: Phone Click', {
 								source: 'contact',
@@ -164,16 +165,15 @@
 					>
 						<Phone class="h-4 w-4" aria-hidden="true" />
 						{$t('contact.cta.callNow')}
-					</a>
+					</ButtonLink>
 				</div>
 			</div>
 		</div>
 	</section>
 
 	<div class="mt-6 grid gap-6 lg:grid-cols-[1fr,1.03fr]">
-		<section
-			use:reveal
-			class="rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)] opacity-0 translate-y-8 transition-all duration-700 ease-out sm:p-8"
+		<Card as="section" tone="default" padding="md"
+
 		>
 			<div>
 				<h2 class="font-serif text-2xl font-semibold text-slate-950">{$t('contact.card.title')}</h2>
@@ -242,19 +242,17 @@
 					{/each}
 				</div>
 			</div>
-		</section>
+		</Card>
 
-		<section
-			use:reveal
-			class="flex flex-col rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)] opacity-0 translate-y-8 transition-all duration-700 ease-out delay-100 sm:p-8"
+		<Card as="section" tone="default" padding="md"
+			class="flex flex-col"
 		>
 			<div class="flex flex-wrap items-start justify-between gap-4">
 				<div>
 					<h2 class="font-serif text-2xl font-semibold text-slate-950">{$t('contact.map.title')}</h2>
 					<div class="mt-3 h-[2px] w-10 rounded-full bg-brand"></div>
 				</div>
-				<a
-					class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
+				<ButtonLink variant="secondary" size="sm"
 					href={mapLink}
 					target="_blank"
 					rel="noopener noreferrer"
@@ -262,7 +260,7 @@
 				>
 					<Navigation class="h-4 w-4" aria-hidden="true" />
 					{$t('contact.route.cta')}
-				</a>
+				</ButtonLink>
 			</div>
 
 			<div class="mt-6 flex-1 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
@@ -324,20 +322,19 @@
 					{/if}
 				</div>
 			</div>
-		</section>
+		</Card>
 	</div>
 
-	<section
-		use:reveal
-		class="mt-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)] opacity-0 translate-y-8 transition-all duration-700 ease-out sm:p-8"
+	<Card as="section" tone="default" padding="md"
+		class="mt-6"
 	>
 		<div class="grid gap-8 lg:grid-cols-[1.08fr,0.92fr] lg:divide-x lg:divide-slate-200">
 			<div class="lg:pr-10">
 				<h2 class="text-lg font-semibold text-slate-950">{$t('contact.payment.title')}</h2>
 				<p class="mt-2 text-sm text-slate-500">{$t('contact.payment.subtitle')}</p>
 				<div class="mt-6 grid gap-4 md:grid-cols-2">
-					<div
-						class="group/payment rounded-2xl border border-slate-200 bg-slate-50/70 p-4 transition hover:border-brand/25 hover:bg-white hover:shadow-sm"
+					<Card tone="muted" padding="sm"
+						class="group/payment"
 					>
 						<p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">IBAN</p>
 						<button
@@ -348,9 +345,9 @@
 						>
 							{iban}
 						</button>
-						<button
+						<Button variant="secondary" size="sm"
 							type="button"
-							class="mt-4 inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 shadow-sm transition group-hover/payment:border-brand/30 group-hover/payment:bg-brand/5 group-hover/payment:text-brand hover:border-brand/30 hover:bg-brand/5 hover:text-brand"
+							class="mt-4"
 							onclick={() => copyToClipboard(iban, 'iban')}
 							aria-label={$t('contact.payment.copyIban')}
 						>
@@ -361,10 +358,10 @@
 								<Copy class="h-4 w-4 text-slate-500" />
 								<span>{$t('contact.payment.copy')}</span>
 							{/if}
-						</button>
-					</div>
-					<div
-						class="group/payment rounded-2xl border border-slate-200 bg-slate-50/70 p-4 transition hover:border-brand/25 hover:bg-white hover:shadow-sm"
+						</Button>
+					</Card>
+					<Card tone="muted" padding="sm"
+						class="group/payment"
 					>
 						<p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">BIC</p>
 						<button
@@ -375,9 +372,9 @@
 						>
 							{bic}
 						</button>
-						<button
+						<Button variant="secondary" size="sm"
 							type="button"
-							class="mt-4 inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 shadow-sm transition group-hover/payment:border-brand/30 group-hover/payment:bg-brand/5 group-hover/payment:text-brand hover:border-brand/30 hover:bg-brand/5 hover:text-brand"
+							class="mt-4"
 							onclick={() => copyToClipboard(bic, 'bic')}
 							aria-label={$t('contact.payment.copyBic')}
 						>
@@ -388,8 +385,8 @@
 								<Copy class="h-4 w-4 text-slate-500" />
 								<span>{$t('contact.payment.copy')}</span>
 							{/if}
-						</button>
-					</div>
+						</Button>
+					</Card>
 				</div>
 			</div>
 
@@ -397,17 +394,17 @@
 				<h2 class="text-lg font-semibold text-slate-950">{$t('contact.trust.title')}</h2>
 				<div class="mt-6 grid gap-3 sm:grid-cols-3">
 					{#each trustItems as item}
-						<div class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-center">
+						<Card tone="muted" padding="sm" class="text-center">
 							<div
 								class="mx-auto grid h-11 w-11 place-items-center rounded-full bg-white text-slate-600 shadow-sm ring-1 ring-slate-200"
 							>
 								<item.icon class="h-5 w-5" aria-hidden="true" />
 							</div>
 							<p class="mt-3 text-sm font-semibold leading-snug text-slate-700">{$t(item.textKey)}</p>
-						</div>
+						</Card>
 					{/each}
 				</div>
 			</div>
 		</div>
-	</section>
+	</Card>
 </div>

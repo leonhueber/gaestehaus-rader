@@ -1,4 +1,6 @@
 <script lang="ts">
+	import ButtonLink from '$lib/components/ui/ButtonLink.svelte';
+	import Card from '$lib/components/ui/Card.svelte';
 	import { resolve } from '$app/paths';
 import { page } from '$app/state';
 	import { reveal } from '$lib/actions/reveal';
@@ -139,7 +141,7 @@ const locale = $derived.by(() => ($lang === 'en' ? 'en' : 'de'));
 </svelte:head>
 
 <div class="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-	<section use:reveal class="opacity-0 translate-y-8 transition-all duration-700 ease-out rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-10">
+	<Card as="section" tone="default" padding="lg"  >
 		<p class="text-xs font-semibold uppercase tracking-[0.35em] text-brand">{pageCopy.kicker[locale]}</p>
 		<h1 class="mt-4 max-w-3xl font-serif text-4xl leading-[0.95] text-slate-900 sm:text-5xl">
 			{pageCopy.title[locale]}
@@ -152,16 +154,16 @@ const locale = $derived.by(() => ($lang === 'en' ? 'en' : 'de'));
 			<Sparkles class="h-4 w-4 text-brand" />
 			{pageCopy.machineReadable[locale]}
 		</p>
-	</section>
+	</Card>
 
 	<section use:reveal class="opacity-0 translate-y-8 transition-all duration-700 ease-out mt-8 grid gap-8 lg:grid-cols-[1.2fr,0.8fr]">
-		<div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+		<Card tone="default" padding="md" >
 			<p class="text-xs font-semibold uppercase tracking-[0.35em] text-brand">{pageCopy.factsTitle[locale]}</p>
 			<h2 class="mt-4 text-2xl font-semibold text-slate-900">{pageCopy.factsIntro[locale]}</h2>
 			<dl class="mt-8 grid gap-4 sm:grid-cols-2">
 				{#each facts as item}
 					{@const Icon = factIcons[item.id] ?? Home}
-					<div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+					<Card tone="muted" padding="sm" >
 						<div class="flex items-start gap-3">
 							<div class="mt-0.5 rounded-xl bg-white p-2 text-brand shadow-sm">
 								<Icon class="h-4 w-4" />
@@ -171,13 +173,13 @@ const locale = $derived.by(() => ($lang === 'en' ? 'en' : 'de'));
 								<dd class="mt-2 text-sm leading-relaxed text-slate-800">{item.value[locale]}</dd>
 							</div>
 						</div>
-					</div>
+					</Card>
 				{/each}
 			</dl>
-		</div>
+		</Card>
 
 		<div class="space-y-8">
-			<div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+			<Card tone="default" padding="md" >
 				<p class="text-xs font-semibold uppercase tracking-[0.35em] text-brand">{pageCopy.locationTitle[locale]}</p>
 				<p class="mt-4 text-sm leading-relaxed text-slate-600">{pageCopy.locationIntro[locale]}</p>
 				<ul class="mt-6 space-y-4">
@@ -200,25 +202,25 @@ const locale = $derived.by(() => ($lang === 'en' ? 'en' : 'de'));
 					</a>
 					<p class="mt-2 font-mono text-xs text-slate-500">{guesthouseFacts.geo.formatted}</p>
 				</div>
-			</div>
+			</Card>
 
-			<div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+			<Card tone="default" padding="md" >
 				<p class="text-xs font-semibold uppercase tracking-[0.35em] text-brand">{pageCopy.ctaTitle[locale]}</p>
 				<p class="mt-4 text-sm leading-relaxed text-slate-600">{pageCopy.ctaBody[locale]}</p>
 				<div class="mt-6 flex flex-wrap gap-3">
-					<a href={bookingUrl} class="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand/90">
+					<ButtonLink variant="primary" size="md" href={bookingUrl} >
 						{pageCopy.ctaPrimary[locale]}
 						<ArrowRight class="h-4 w-4" />
-					</a>
-					<a href={contactUrl} class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-800 transition hover:bg-slate-50">
+					</ButtonLink>
+					<ButtonLink variant="secondary" size="md" href={contactUrl} >
 						{pageCopy.ctaSecondary[locale]}
-					</a>
+					</ButtonLink>
 				</div>
-			</div>
+			</Card>
 		</div>
 	</section>
 
-	<section use:reveal class="opacity-0 translate-y-8 transition-all duration-700 ease-out mt-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+	<Card as="section" tone="default" padding="md"  class="mt-8">
 		<p class="text-xs font-semibold uppercase tracking-[0.35em] text-brand">{pageCopy.highlightsTitle[locale]}</p>
 		<p class="mt-4 max-w-3xl text-sm leading-relaxed text-slate-600">{pageCopy.highlightsIntro[locale]}</p>
 		<ul class="mt-6 grid gap-4 md:grid-cols-2">
@@ -229,9 +231,9 @@ const locale = $derived.by(() => ($lang === 'en' ? 'en' : 'de'));
 				</li>
 			{/each}
 		</ul>
-	</section>
+	</Card>
 
-	<section id="faq" use:reveal class="opacity-0 translate-y-8 transition-all duration-700 ease-out mt-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+	<Card as="section" tone="default" padding="md" id="faq"  class="mt-8">
 		<div class="flex items-start gap-3">
 			<div class="rounded-xl bg-brand/10 p-2 text-brand">
 				<MessageCircleQuestion class="h-5 w-5" />
@@ -243,11 +245,11 @@ const locale = $derived.by(() => ($lang === 'en' ? 'en' : 'de'));
 		</div>
 		<div class="mt-6 grid gap-4 md:grid-cols-2">
 			{#each faqItems as item}
-				<div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+				<Card tone="muted" padding="sm" >
 					<h2 class="text-base font-semibold text-slate-900">{item.question[locale]}</h2>
 					<p class="mt-2 text-sm leading-relaxed text-slate-600">{item.answer[locale]}</p>
-				</div>
+				</Card>
 			{/each}
 		</div>
-	</section>
+	</Card>
 </div>

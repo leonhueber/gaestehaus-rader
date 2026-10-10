@@ -1,4 +1,9 @@
 <script lang="ts">
+	import Button from '$lib/components/ui/Button.svelte';
+	import ButtonLink from '$lib/components/ui/ButtonLink.svelte';
+	import Card from '$lib/components/ui/Card.svelte';
+	import CardButton from '$lib/components/ui/CardButton.svelte';
+	import CardLink from '$lib/components/ui/CardLink.svelte';
 	/* eslint-disable */
 	import { lang, t } from '$lib/i18n';
 	import { asset, resolve } from '$app/paths';
@@ -600,18 +605,16 @@ import { localizePath } from '$lib/routing';
 			</p>
 
 			<div use:reveal class="opacity-0 translate-y-4 transition-all duration-700 ease-out delay-700 mt-10 flex flex-wrap justify-center gap-4 sm:gap-5">
-				<a
+				<ButtonLink variant="primary" size="lg"
 					href={localizedHref('/unterkuenfte-preise')}
-					class="inline-flex items-center justify-center rounded-full bg-brand px-8 py-3.5 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(206,126,90,0.25)] transition hover:-translate-y-0.5 hover:bg-[#c97451] hover:shadow-[0_12px_24px_rgba(206,126,90,0.3)] focus:outline-none focus:ring-2 focus:ring-brand/60"
 				>
 					{$t('hero.cta.primary')}
-				</a>
-				<a
+				</ButtonLink>
+				<ButtonLink variant="overlay" size="lg"
 					href={localizedHref('/erlebnisse')}
-					class="inline-flex items-center justify-center rounded-full bg-white/15 px-8 py-3.5 text-sm font-semibold text-white ring-1 ring-white/20 backdrop-blur-md transition hover:-translate-y-0.5 hover:bg-white/25 hover:ring-white/40 focus:outline-none focus:ring-2 focus:ring-white/40"
 				>
 					{$t('hero.cta.secondary')}
-				</a>
+				</ButtonLink>
 			</div>
 		</div>
 
@@ -929,9 +932,9 @@ import { localizePath } from '$lib/routing';
 						class="-mx-4 mt-2 flex snap-x snap-mandatory gap-8 overflow-x-auto px-4 pb-7 pt-4 scroll-pl-4 scroll-pr-4 [scrollbar-width:thin] [scrollbar-color:theme(colors.slate.300)_transparent] [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-200 hover:[&::-webkit-scrollbar-thumb]:bg-slate-300 sm:mx-0 sm:px-0 sm:pb-5 sm:pt-3 sm:scroll-pl-0 sm:scroll-pr-0"
 					>
 						{#each rooms as r}
-							<a
+							<CardLink tone="default" padding="none"
 								href={`${accommodationsBase}${r.slug}/`}
-								class="group relative w-[280px] shrink-0 snap-start overflow-hidden rounded-3xl border border-slate-200/70 bg-white shadow-sm transition-all duration-300 hover:shadow-lg sm:w-[340px] sm:hover:-translate-y-1 motion-reduce:transform-none motion-reduce:transition-none"
+								class="group relative w-[280px] shrink-0 snap-start overflow-hidden sm:w-[340px]"
 								onclick={() => trackEvent('Content: Room Card Click', { source: 'home', room: r.slug })}
 							>
 								<!-- Image -->
@@ -989,7 +992,7 @@ import { localizePath } from '$lib/routing';
 								<div
 									class="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-transparent transition"
 								></div>
-							</a>
+							</CardLink>
 						{/each}
 					</div>
 				</div>
@@ -1017,22 +1020,20 @@ import { localizePath } from '$lib/routing';
 				</p>
 
 				<div class="mt-6 flex items-center justify-end gap-2">
-					<button
+					<Button variant="secondary" size="icon"
 						type="button"
-						class="grid h-10 w-10 place-items-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:bg-slate-50"
 						onclick={() => scrollGallery('prev')}
 						aria-label={$t('room.detail.gallery.prev')}
 					>
 						<ChevronLeft class="h-5 w-5" strokeWidth={1.25} />
-					</button>
-					<button
+					</Button>
+					<Button variant="secondary" size="icon"
 						type="button"
-						class="grid h-10 w-10 place-items-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:bg-slate-50"
 						onclick={() => scrollGallery('next')}
 						aria-label={$t('room.detail.gallery.next')}
 					>
 						<ChevronRight class="h-5 w-5" strokeWidth={1.25} />
-					</button>
+					</Button>
 				</div>
 
 				<div
@@ -1040,9 +1041,9 @@ import { localizePath } from '$lib/routing';
 					bind:this={galleryTrack}
 				>
 					{#each galleryImages as image, index}
-						<button
+						<CardButton tone="default" padding="none"
 							type="button"
-							class="group relative aspect-[4/3] w-[300px] shrink-0 snap-start overflow-hidden rounded-3xl border border-slate-200 bg-white text-left shadow-sm transition hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 sm:aspect-[16/10] sm:w-[380px] lg:w-auto"
+							class="group relative aspect-[4/3] w-[300px] shrink-0 snap-start overflow-hidden text-left sm:aspect-[16/10] sm:w-[380px] lg:w-auto"
 							onclick={() => openGallery(index)}
 							aria-label={`${$t('home.gallery.kicker')}: ${$t(image.altKey)}`}
 						>
@@ -1066,7 +1067,7 @@ import { localizePath } from '$lib/routing';
 							<div
 								class="pointer-events-none absolute inset-0 ring-1 ring-transparent transition group-hover:ring-brand/20"
 							></div>
-						</button>
+						</CardButton>
 					{/each}
 				</div>
 			</section>
@@ -1202,9 +1203,9 @@ import { localizePath } from '$lib/routing';
 						</ul>
 
 						<div class="relative z-20 mt-3 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center lg:mt-6">
-							<a
+							<ButtonLink variant="primary" size="lg"
 								href="https://www.nassfeld.at/de/Unterkunft-finden/Reise-planen/PREMIUM-Cards/GaesteCard-basic"
-								class="inline-flex w-full items-center justify-center gap-2 rounded-[1rem] bg-[#f59200] px-5 py-3.5 text-[13px] font-bold text-white shadow-[0_14px_26px_-18px_rgba(245,146,0,0.8)] transition duration-300 hover:bg-brand/90 group-hover/guestcard:shadow-md sm:w-auto sm:text-sm lg:rounded-xl lg:bg-brand lg:px-6 lg:py-3"
+								class="w-full sm:w-auto"
 								target="_blank"
 								rel="noreferrer"
 							>
@@ -1212,7 +1213,7 @@ import { localizePath } from '$lib/routing';
 								<span class="lg:hidden">{$t('guestcard.cta.moreInfoBasic')}</span>
 								<span class="hidden lg:inline">{$t('guestcard.cta.moreInfo')}</span>
 								<ArrowRight class="ml-auto h-4 w-4 transition-transform duration-300 group-hover/guestcard:translate-x-1 sm:ml-0" aria-hidden="true" strokeWidth={1.25} />
-							</a>
+							</ButtonLink>
 						</div>
 					</div>
 				</div>
@@ -1371,11 +1372,11 @@ import { localizePath } from '$lib/routing';
 					}`}
 				>
 					<!-- Rating card (Google) -->
-					<a
+					<CardLink tone="default" padding="md"
 						href={googleProfileUrl}
 						target="_blank"
 						rel="noreferrer"
-						class="group relative flex h-full w-[280px] min-h-[330px] shrink-0 snap-start flex-col rounded-3xl border border-slate-200/70 bg-white p-6 shadow-sm transition-all duration-300 hover:border-brand/30 hover:shadow-lg sm:hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 motion-reduce:transform-none motion-reduce:transition-none lg:min-h-0 lg:w-auto lg:shrink"
+						class="group relative flex h-full w-[280px] min-h-[330px] shrink-0 snap-start flex-col lg:min-h-0 lg:w-auto lg:shrink"
 					>
 						<span
 							class="pointer-events-none absolute right-5 top-5 grid h-9 w-9 place-items-center rounded-full bg-slate-100 text-slate-500 opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100 group-hover:bg-brand/10 group-hover:text-brand"
@@ -1407,7 +1408,7 @@ import { localizePath } from '$lib/routing';
 						</p>
 
 						<!-- Small “platform score” tile (bottom) -->
-						<div class="mt-6 rounded-2xl border border-slate-200/70 bg-white px-4 py-3">
+						<Card tone="default" padding="sm" class="mt-6">
 							<div class="flex items-center gap-3">
 								<span
 									class="grid h-10 w-10 place-items-center rounded-full bg-slate-900 text-sm font-semibold text-white"
@@ -1423,19 +1424,19 @@ import { localizePath } from '$lib/routing';
 									</p>
 								</div>
 							</div>
-						</div>
+						</Card>
 						<div
 							class="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-transparent transition group-hover:ring-brand/20"
 						></div>
-					</a>
+					</CardLink>
 
 					<!-- Review cards -->
 					{#each displayedTrustReviews as review}
-						<a
+						<CardLink tone="default" padding="md"
 							href={review.url}
 							target="_blank"
 							rel="noreferrer"
-							class="group relative flex h-full w-[280px] min-h-[330px] shrink-0 snap-start flex-col rounded-3xl border border-slate-200/70 bg-white p-6 text-left shadow-sm transition-all duration-300 hover:border-brand/30 hover:shadow-lg sm:hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 motion-reduce:transform-none motion-reduce:transition-none lg:min-h-0 lg:w-auto lg:shrink"
+							class="group relative flex h-full w-[280px] min-h-[330px] shrink-0 snap-start flex-col text-left lg:min-h-0 lg:w-auto lg:shrink"
 							onclick={() => trackEvent('Trust: Review Click', { source: 'home', index: review.id })}
 						>
 							<span
@@ -1480,7 +1481,7 @@ import { localizePath } from '$lib/routing';
 							<div
 								class="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-transparent transition group-hover:ring-brand/20"
 							></div>
-						</a>
+						</CardLink>
 					{/each}
 				</div>
 
@@ -1488,11 +1489,10 @@ import { localizePath } from '$lib/routing';
 				<div
 					class="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm text-slate-400 sm:mt-10 sm:gap-8"
 				>
-					<a
+					<ButtonLink variant="ghost" size="md"
 						href="https://www.airbnb.at/users/profile/1470215552721931790"
 						target="_blank"
 						rel="noreferrer"
-						class="group inline-flex items-center gap-2 rounded-full border border-transparent px-2.5 py-1.5 transition-all duration-200 hover:-translate-y-[1px] hover:border-slate-200 hover:bg-white hover:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2"
 					>
 						<Home
 							class="h-4 w-4 text-slate-500 transition-colors group-hover:text-slate-800"
@@ -1513,13 +1513,12 @@ import { localizePath } from '$lib/routing';
 						>
 							↗
 						</span>
-					</a>
+					</ButtonLink>
 					<span class="h-4 w-px bg-slate-200"></span>
-					<a
+					<ButtonLink variant="ghost" size="md"
 						href="https://www.booking.com/Share-deqca7p"
 						target="_blank"
 						rel="noreferrer"
-						class="group inline-flex items-center gap-2 rounded-full border border-transparent px-2.5 py-1.5 transition-all duration-200 hover:-translate-y-[1px] hover:border-slate-200 hover:bg-white hover:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2"
 					>
 						<Building2
 							class="h-4 w-4 text-slate-500 transition-colors group-hover:text-slate-800"
@@ -1540,7 +1539,7 @@ import { localizePath } from '$lib/routing';
 						>
 							↗
 						</span>
-					</a>
+					</ButtonLink>
 				</div>
 			</section>
 
@@ -1844,19 +1843,17 @@ import { localizePath } from '$lib/routing';
 			</p>
 
 			<div class="mt-6 flex flex-wrap gap-3">
-				<a
+				<ButtonLink variant="secondary" size="md"
 					href={localizedHref('/buchen')}
-					class="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-900 shadow-sm transition hover:bg-white/90"
 					onclick={() => trackEvent('Booking: Jetzt buchen', { source: 'home-cta' })}
 				>
 					{$t('cta.primary')}
-				</a>
-				<a
+				</ButtonLink>
+				<ButtonLink variant="overlay" size="md"
 					href={localizedHref('/unterkuenfte-preise')}
-					class="inline-flex items-center justify-center rounded-full border border-white/40 px-6 py-3 text-sm font-semibold text-white/95 transition hover:bg-white/10"
 				>
 					{$t('cta.secondary')}
-				</a>
+				</ButtonLink>
 			</div>
 
 			<div class="mt-6 flex flex-wrap items-center gap-3 text-sm text-white/80">

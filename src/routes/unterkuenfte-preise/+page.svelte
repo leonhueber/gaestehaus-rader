@@ -1,4 +1,6 @@
 <script lang="ts">
+	import ButtonLink from '$lib/components/ui/ButtonLink.svelte';
+	import Card from '$lib/components/ui/Card.svelte';
 	import { reveal } from '$lib/actions/reveal';
 	import { lang, t } from '$lib/i18n';
 	import { resolve } from '$app/paths';
@@ -120,8 +122,8 @@ import { localizePath } from '$lib/routing';
 			<!-- Room list -->
 			<div class="space-y-14 sm:space-y-16">
 				{#each rooms as room}
-					<article
-						use:reveal class="opacity-0 translate-y-8 transition-all duration-700 ease-out group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm hover:-translate-y-1 hover:shadow-lg"
+					<Card as="article" tone="default" padding="none"
+						class="group overflow-hidden"
 					>
 						<!-- Image -->
 						<div class="relative">
@@ -196,14 +198,14 @@ import { localizePath } from '$lib/routing';
 								</div>
 
 								<div class="flex w-full flex-col gap-4 md:w-auto md:items-end">
-									<a
+									<ButtonLink variant="primary" size="md"
 										href={localizedHref('/buchen')}
-										class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-6 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-brand/90 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-brand/30 md:w-auto md:min-w-[180px]"
+										class="w-full md:w-auto md:min-w-[180px]"
 										onclick={() => trackEvent('Booking: Jetzt buchen', { source: 'rooms-list' })}
 									>
 										{$t('rooms.page.cta')}
 										<ArrowRight class="h-4 w-4" />
-									</a>
+									</ButtonLink>
 									<div class="grid gap-1 text-[11px] text-slate-500 md:text-right">
 										<p>✓ {$lang === 'de' ? 'Bestpreis bei Direktbuchung' : 'Best price with direct booking'}</p>
 										<p>✓ {$lang === 'de' ? 'Keine Buchungsgebühren' : 'No booking fees'}</p>
@@ -212,7 +214,7 @@ import { localizePath } from '$lib/routing';
 							</div>
 
 						</div>
-					</article>
+					</Card>
 				{/each}
 			</div>
 		</section>
@@ -233,7 +235,7 @@ import { localizePath } from '$lib/routing';
 
 			<!-- Inclusive services tiles -->
 			<div class="grid gap-3 sm:gap-6 sm:grid-cols-2 lg:grid-cols-5">
-				<div class="rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand/20 hover:shadow-md sm:p-6 sm:text-center">
+				<Card tone="default" padding="sm" class="text-left sm:text-center">
 					<div class="flex items-center gap-3 sm:block">
 					<div class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand sm:mx-auto sm:h-12 sm:w-12 sm:rounded-full">
 						<Lightbulb class="h-6 w-6" />
@@ -252,9 +254,9 @@ import { localizePath } from '$lib/routing';
 					</p>
 					</div>
 					</div>
-				</div>
+				</Card>
 
-				<div class="rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand/20 hover:shadow-md sm:p-6 sm:text-center">
+				<Card tone="default" padding="sm" class="text-left sm:text-center">
 					<div class="flex items-center gap-3 sm:block">
 					<div class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand sm:mx-auto sm:h-12 sm:w-12 sm:rounded-full">
 						<Wifi class="h-6 w-6" />
@@ -268,9 +270,9 @@ import { localizePath } from '$lib/routing';
 					</p>
 					</div>
 					</div>
-				</div>
+				</Card>
 
-				<div class="rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand/20 hover:shadow-md sm:p-6 sm:text-center">
+				<Card tone="default" padding="sm" class="text-left sm:text-center">
 					<div class="flex items-center gap-3 sm:block">
 					<div class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand sm:mx-auto sm:h-12 sm:w-12 sm:rounded-full">
 						<Baby class="h-6 w-6" />
@@ -284,9 +286,9 @@ import { localizePath } from '$lib/routing';
 					</p>
 					</div>
 					</div>
-				</div>
+				</Card>
 
-				<div class="rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand/20 hover:shadow-md sm:p-6 sm:text-center">
+				<Card tone="default" padding="sm" class="text-left sm:text-center">
 					<div class="flex items-center gap-3 sm:block">
 					<div class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand sm:mx-auto sm:h-12 sm:w-12 sm:rounded-full">
 						<SquareParking class="h-6 w-6" />
@@ -300,9 +302,9 @@ import { localizePath } from '$lib/routing';
 					</p>
 					</div>
 					</div>
-				</div>
+				</Card>
 
-				<div class="rounded-2xl border border-slate-200 bg-[#fff4e6] p-4 text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand/30 hover:shadow-md sm:p-6 sm:text-center">
+				<Card tone="accent" padding="sm" class="text-left sm:text-center">
 					<div class="flex items-center gap-3 sm:block">
 					<div class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand sm:mx-auto sm:h-12 sm:w-12 sm:rounded-full">
 						<Ticket class="h-6 w-6" />
@@ -316,11 +318,11 @@ import { localizePath } from '$lib/routing';
 					</p>
 					</div>
 					</div>
-				</div>
+				</Card>
 			</div>
 
 			<!-- Price info card -->
-			<div class="rounded-3xl border border-slate-200 bg-white px-6 py-7 shadow-sm sm:px-8 sm:py-8">
+			<Card tone="default" padding="md" >
 				<div class="flex flex-wrap items-start justify-between gap-4">
 					<div class="min-w-0">
 						<h2 class="text-2xl font-medium tracking-tight text-slate-900 sm:text-2xl">
@@ -374,7 +376,7 @@ import { localizePath } from '$lib/routing';
 					<span aria-hidden="true">🐾</span>
 					{$t('rooms.page.pricing.petsNote')}
 				</p>
-			</div>
+			</Card>
 
 			<!-- Info blocks (with icons like design) -->
 			<div class="grid gap-10 pt-2 md:grid-cols-2">
@@ -467,7 +469,7 @@ import { localizePath } from '$lib/routing';
 			</div>
 
 			<!-- Cancellation card (like design) -->
-			<div class="rounded-2xl border border-brand/15 bg-brand/5 p-6 sm:p-7">
+			<Card tone="accent" padding="md" >
 				<div class="flex items-start gap-4">
 					<div
 						class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand text-white shadow-sm"
@@ -496,7 +498,7 @@ import { localizePath } from '$lib/routing';
 						</p>
 					</div>
 				</div>
-			</div>
+			</Card>
 		</section>
 	</div>
 </div>

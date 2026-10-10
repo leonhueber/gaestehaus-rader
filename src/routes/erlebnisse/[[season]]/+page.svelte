@@ -1,4 +1,9 @@
 <script lang="ts">
+	import { cardClasses } from '$lib/components/ui/styles';
+	import Button from '$lib/components/ui/Button.svelte';
+	import ButtonLink from '$lib/components/ui/ButtonLink.svelte';
+	import Card from '$lib/components/ui/Card.svelte';
+	import CardButton from '$lib/components/ui/CardButton.svelte';
 	import type { ComponentType } from 'svelte';
 	import { lang, t } from '$lib/i18n';
 	import { asset, resolve } from '$app/paths';
@@ -904,11 +909,11 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 							</p>
 							{#if summerFeaturedEvent}
 								<div class="mx-auto w-full max-w-6xl px-0 sm:px-0 lg:px-0">
-									<button
+									<CardButton tone="default" padding="none"
 										type="button"
 									onclick={(clickEvent) => openExperienceModal(summerFeaturedEvent, clickEvent.currentTarget)}
 										data-season={summerFeaturedEvent.season}
-										class="group block w-full cursor-pointer overflow-hidden rounded-3xl border border-slate-200 bg-white text-left shadow-sm"
+										class="group block w-full cursor-pointer overflow-hidden text-left"
 									>
 									<div
 										class="relative aspect-[16/10] overflow-hidden rounded-3xl sm:min-h-[420px] lg:h-[min(65dvh,650px)]"
@@ -1000,7 +1005,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 											</div>
 										{/if}
 										</div>
-									</button>
+									</CardButton>
 								</div>
 							{/if}
 							<div class="mt-6">
@@ -1100,11 +1105,11 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 							</p>
 							{#if winterFeaturedEvent}
 								<div class="mx-auto w-full max-w-6xl px-0 sm:px-0 lg:px-0">
-									<button
+									<CardButton tone="default" padding="none"
 										type="button"
 									onclick={(clickEvent) => openExperienceModal(winterFeaturedEvent, clickEvent.currentTarget)}
 										data-season={winterFeaturedEvent.season}
-										class="group block w-full cursor-pointer overflow-hidden rounded-3xl border border-slate-200 bg-white text-left shadow-sm"
+										class="group block w-full cursor-pointer overflow-hidden text-left"
 									>
 									<div
 										class="relative aspect-[16/10] overflow-hidden rounded-3xl sm:min-h-[420px] lg:h-[min(72dvh,720px)]"
@@ -1192,7 +1197,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 											</div>
 										{/if}
 										</div>
-									</button>
+									</CardButton>
 								</div>
 							{/if}
 							<div class="mt-6">
@@ -1435,15 +1440,15 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 
 						<div class="mt-6 flex flex-col items-start justify-between gap-4 text-sm font-medium leading-relaxed text-slate-600 sm:flex-row sm:items-center">
 							<p class="max-w-3xl">{localize(festivalSection.note)}</p>
-							<a
+							<ButtonLink variant="secondary" size="md"
 								href={festivalSection.eventInfoUrl}
 								target="_blank"
 								rel="noreferrer"
-								class="inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-brand px-5 py-2.5 text-sm font-semibold text-brand transition hover:bg-brand hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 motion-reduce:transition-none"
+								class="shrink-0"
 							>
 								{$lang === 'de' ? 'Aktuelle Termine ansehen' : 'View current dates'}
 								<ExternalLink class="h-4 w-4" aria-hidden="true" />
-							</a>
+							</ButtonLink>
 						</div>
 					</div>
 				</section>
@@ -1462,18 +1467,16 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 							</p>
 						</div>
 						<div class="flex flex-wrap gap-3 md:flex-col md:justify-center">
-							<a
+							<ButtonLink variant="secondary" size="md"
 								href={localizedHref('/unterkuenfte-preise')}
-								class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 transition hover:bg-slate-50"
 							>
 								{$t('experiences.base.cta.rooms')}
-							</a>
-							<a
+							</ButtonLink>
+							<ButtonLink variant="primary" size="md"
 								href={localizedHref('/buchen')}
-								class="inline-flex items-center justify-center rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand/90"
 							>
 								{$t('experiences.base.cta.booking')}
-							</a>
+							</ButtonLink>
 						</div>
 					</div>
 				</div>
@@ -1499,7 +1502,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 				</div>
 
 				<div class="mx-auto mt-10 max-w-6xl space-y-14">
-					<div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+					<Card tone="default" padding="none" class="overflow-hidden">
 						<div class="grid lg:grid-cols-[0.45fr_0.55fr]">
 							<div class="h-full">
 								<img
@@ -1553,15 +1556,14 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 								</ul>
 
 								<div class="mt-6 flex flex-wrap items-center gap-3">
-									<a
+									<ButtonLink variant="primary" size="md"
 										href={guestCardLinks.benefitsOverview}
 										target="_blank"
 										rel="noreferrer"
-										class="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 motion-reduce:transition-none"
 									>
 										Alle Vorteile ansehen
 										<ArrowRight class="h-4 w-4" aria-hidden="true" />
-									</a>
+									</ButtonLink>
 									<a
 										href={guestCardLinks.brochure}
 										target="_blank"
@@ -1573,12 +1575,11 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 								</div>
 							</div>
 						</div>
-					</div>
+					</Card>
 
 					<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-						<article
-							use:reveal
-							class="reveal group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-brand/30 hover:shadow-md motion-reduce:transform-none motion-reduce:transition-none"
+						<Card as="article" tone="default" padding="none"
+							class="reveal group flex h-full flex-col overflow-hidden"
 							style="--reveal-delay: 0ms;"
 						>
 							<img
@@ -1618,11 +1619,10 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 									/>
 								</a>
 							</div>
-						</article>
+						</Card>
 
-						<article
-							use:reveal
-							class="reveal group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-brand/30 hover:shadow-md motion-reduce:transform-none motion-reduce:transition-none"
+						<Card as="article" tone="default" padding="none"
+							class="reveal group flex h-full flex-col overflow-hidden"
 							style="--reveal-delay: 90ms;"
 						>
 							<img
@@ -1662,11 +1662,10 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 									/>
 								</a>
 							</div>
-						</article>
+						</Card>
 
-						<article
-							use:reveal
-							class="reveal group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-brand/30 hover:shadow-md motion-reduce:transform-none motion-reduce:transition-none"
+						<Card as="article" tone="default" padding="none"
+							class="reveal group flex h-full flex-col overflow-hidden"
 							style="--reveal-delay: 180ms;"
 						>
 							<img
@@ -1706,7 +1705,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 									/>
 								</a>
 							</div>
-						</article>
+						</Card>
 					</div>
 
 					<details class="group rounded-2xl border border-slate-200 bg-white/70 p-5 shadow-sm">
@@ -1772,19 +1771,19 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 					role="dialog"
 					aria-modal="true"
 					aria-label={localize(activeExperience.title)}
-					class="pointer-events-auto relative w-full overflow-hidden rounded-3xl border border-white/60 bg-white shadow-[0_30px_90px_rgba(15,23,42,0.28)]"
+					class={cardClasses('default', 'none', false, 'pointer-events-auto relative w-full overflow-hidden')}
 					in:fly={{ y: 24, duration: supportsViewTransitions || reduceMotion ? 0 : 320, easing: cubicOut }}
 					out:fly={{ y: 16, duration: reduceMotion ? 0 : 220, easing: cubicOut }}
 				>
-					<button
+					<Button variant="secondary" size="icon"
 						type="button"
-						bind:this={modalCloseButton}
-						class="absolute right-3 top-3 z-20 grid h-10 w-10 place-items-center rounded-full border border-slate-200 bg-white/92 text-slate-600 shadow-sm backdrop-blur transition duration-200 hover:scale-105 hover:border-slate-300 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+						bind:element={modalCloseButton}
+						class="absolute right-3 top-3 z-20"
 						onclick={closeExperienceModal}
 						aria-label="Details schließen"
 					>
 						<X class="h-5 w-5" aria-hidden="true" />
-					</button>
+					</Button>
 					<div class="grid max-h-[92vh] overflow-y-auto lg:grid-cols-[0.58fr,0.42fr]">
 						<div
 							class="relative min-h-[280px] sm:min-h-[360px] lg:min-h-[600px]"
@@ -1888,17 +1887,15 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 			class="rounded-2xl border border-white/40 bg-white/75 shadow-[0_18px_50px_rgba(15,23,42,0.22)] backdrop-blur-xl ring-1 ring-slate-200/60"
 		>
 			<div class="flex items-center justify-between px-3 py-2">
-				<button
+				<Button variant="secondary" size="md"
 					type="button"
-					class="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-white/70"
 					onclick={openMobileNav}
 				>
 					<List class="h-4 w-4 text-brand" aria-hidden="true" />
 					<span class="max-w-[55vw] truncate">{$t(activeSectionLabelKey)}</span>
-				</button>
-				<button
+				</Button>
+				<Button variant="primary" size="md"
 					type="button"
-					class="inline-flex items-center gap-2 rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white"
 					onclick={() => (isMobileFilterOpen = true)}
 				>
 					<SlidersHorizontal class="h-4 w-4" aria-hidden="true" />
@@ -1906,7 +1903,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 					{#if selectedActivity}
 						<span class="ml-1 rounded-full bg-white/20 px-2 py-0.5 text-xs">1</span>
 					{/if}
-				</button>
+				</Button>
 			</div>
 		</div>
 	</div>
@@ -1923,14 +1920,13 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 		>
 			<div class="flex items-center justify-between">
 				<p class="text-sm font-semibold text-slate-900">{$t('experiences.nav.title')}</p>
-				<button
+				<Button variant="secondary" size="icon"
 					type="button"
-					class="grid h-10 w-10 place-items-center rounded-full border border-slate-200 text-slate-600"
 					onclick={closeMobileNav}
 					aria-label="Navigation schließen"
 				>
 					<X class="h-5 w-5" aria-hidden="true" />
-				</button>
+				</Button>
 			</div>
 
 			<div class="mt-3 space-y-2">
@@ -1999,14 +1995,13 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 		>
 			<div class="flex items-center justify-between">
 				<p class="text-sm font-semibold text-slate-900">{$t('experiences.nav.filters')}</p>
-				<button
+				<Button variant="secondary" size="icon"
 					type="button"
-					class="grid h-10 w-10 place-items-center rounded-full border border-slate-200 text-slate-600"
 					onclick={() => (isMobileFilterOpen = false)}
 					aria-label="Filter schließen"
 				>
 					<X class="h-5 w-5" aria-hidden="true" />
-				</button>
+				</Button>
 			</div>
 
 			<div class="mt-3 flex flex-wrap gap-2">
@@ -2028,20 +2023,20 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 			</div>
 
 			<div class="mt-4 flex gap-2">
-				<button
+				<Button variant="secondary" size="md"
 					type="button"
-					class="flex-1 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-800"
+					class="flex-1"
 					onclick={() => (selectedActivity = null)}
 				>
 					{$t('experiences.nav.reset')}
-				</button>
-				<button
+				</Button>
+				<Button variant="primary" size="md"
 					type="button"
-					class="flex-1 rounded-2xl bg-brand px-4 py-3 text-sm font-semibold text-white"
+					class="flex-1"
 					onclick={() => (isMobileFilterOpen = false)}
 				>
 					{$t('experiences.nav.apply')}
-				</button>
+				</Button>
 			</div>
 		</div>
 	{/if}

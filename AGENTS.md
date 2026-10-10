@@ -5,6 +5,7 @@ SvelteKit 5, TypeScript, Tailwind and `lucide-svelte`; statically built for GitH
 ## Implementation
 
 - Follow [DESIGN_GUIDELINES.md](DESIGN_GUIDELINES.md): clean, modern and welcoming. Improve existing components before adding variants; simplify dated patterns instead of copying them.
+- Reuse buttons and cards from `src/lib/components/ui/`; keep shared appearance in `ui/styles.ts`. See the design guidelines for component options and semantic usage.
 - Use Svelte 5 runes, event attributes such as `onclick`, and `page` from `$app/state`. Use tabs for indentation.
 - Keep routes prerender friendly. Access browser globals only in browser lifecycle code and clean up listeners, timers and external widgets on unmount.
 - Use `$lib/routing` helpers for localized links and language switches; they handle translated routes and the deployment base. Use `resolve()` from `$app/paths` for fixed routes and `asset()` for static files. Do not add page-local `withBase()` helpers or manually concatenate locale prefixes.

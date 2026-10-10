@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Card from '$lib/components/ui/Card.svelte';
 	import { page } from '$app/state';
 	import { lang, t } from '$lib/i18n';
 	import SeoHead from '$lib/components/SeoHead.svelte';
@@ -48,7 +49,7 @@
 </svelte:head>
 
 <div class="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-	<section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-10 lg:p-12">
+	<Card as="section" tone="default" padding="lg" >
 		<p class="text-xs font-semibold uppercase tracking-[0.35em] text-brand">
 			{$t('brand.name')}
 		</p>
@@ -62,14 +63,14 @@
 
 		<div class="mt-8 grid gap-6 sm:grid-cols-2">
 			{#each faqItems as item}
-				<div class="rounded-2xl border border-slate-200 bg-slate-50 p-5 shadow-sm" id={item.id}>
+				<Card tone="muted" padding="sm"  id={item.id}>
 					<h2 class="text-base font-semibold text-slate-900">
 						{$t(item.question)}
 					</h2>
 					<p class="mt-2 text-sm leading-relaxed text-slate-600">
 						{$t(item.answer)}
 					</p>
-				</div>
+				</Card>
 			{/each}
 		</div>
 
@@ -88,47 +89,47 @@
 			</div>
 
 			<div class="mt-8 grid gap-6 sm:grid-cols-2">
-				<div class="rounded-2xl border border-slate-200 bg-slate-50 p-5 shadow-sm">
+				<Card tone="muted" padding="sm" >
 					<h3 class="text-base font-semibold text-slate-900">
 						{$t('faq.guestcard.q1')}
 					</h3>
 					<p class="mt-2 text-sm leading-relaxed text-slate-600">
 						{$t('faq.guestcard.a1')}
 					</p>
-				</div>
-				<div class="rounded-2xl border border-slate-200 bg-slate-50 p-5 shadow-sm">
+				</Card>
+				<Card tone="muted" padding="sm" >
 					<h3 class="text-base font-semibold text-slate-900">
 						{$t('faq.guestcard.q2')}
 					</h3>
 					<p class="mt-2 text-sm leading-relaxed text-slate-600">
 						{$t('faq.guestcard.a2')}
 					</p>
-				</div>
-				<div class="rounded-2xl border border-slate-200 bg-slate-50 p-5 shadow-sm">
+				</Card>
+				<Card tone="muted" padding="sm" >
 					<h3 class="text-base font-semibold text-slate-900">
 						{$t('faq.guestcard.q3')}
 					</h3>
 					<p class="mt-2 text-sm leading-relaxed text-slate-600">
 						{$t('faq.guestcard.a3')}
 					</p>
-				</div>
-				<div class="rounded-2xl border border-slate-200 bg-slate-50 p-5 shadow-sm">
+				</Card>
+				<Card tone="muted" padding="sm" >
 					<h3 class="text-base font-semibold text-slate-900">
 						{$t('faq.guestcard.q4')}
 					</h3>
 					<p class="mt-2 text-sm leading-relaxed text-slate-600">
 						{$t('faq.guestcard.a4')}
 					</p>
-				</div>
-				<div class="rounded-2xl border border-slate-200 bg-slate-50 p-5 shadow-sm">
+				</Card>
+				<Card tone="muted" padding="sm" >
 					<h3 class="text-base font-semibold text-slate-900">
 						{$t('faq.guestcard.q5')}
 					</h3>
 					<p class="mt-2 text-sm leading-relaxed text-slate-600">
 						{$t('faq.guestcard.a5')}
 					</p>
-				</div>
+				</Card>
 			</div>
 		</section>
-	</section>
+	</Card>
 </div>

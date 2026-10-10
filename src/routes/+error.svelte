@@ -1,4 +1,6 @@
 <script lang="ts">
+	import ButtonLink from '$lib/components/ui/ButtonLink.svelte';
+	import Card from '$lib/components/ui/Card.svelte';
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
 	import { t } from '$lib/i18n';
@@ -18,7 +20,7 @@
 
 <main class="px-6 py-20">
 	<div class="mx-auto max-w-xl text-center">
-		<div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm sm:p-12">
+		<Card tone="default" padding="lg" >
 			<div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-brand/10 text-brand">
 				{#if is404}
 					<MapPinOff class="h-8 w-8" />
@@ -46,13 +48,13 @@
 					{$t('error.404.body')}
 				</p>
 
-				<a
+				<ButtonLink variant="secondary" size="md"
 					href={homeHref}
-					class="mt-6 inline-flex items-center gap-2 rounded-full border border-slate-300 px-5 py-2 text-sm font-semibold text-slate-700 transition hover:border-brand hover:text-brand"
+					class="mt-6"
 				>
 					<House class="h-4 w-4" />
 					{$t('error.404.cta')}
-				</a>
+				</ButtonLink>
 			{:else}
 				<p class="mt-6 text-sm text-slate-600">
 					{$t('error.generic.body')}
@@ -63,7 +65,7 @@
 					{$t('error.statusLabel')}: {statusCode}
 				</p>
 			{/if}
-		</div>
+		</Card>
 	</div>
 </main>
 
