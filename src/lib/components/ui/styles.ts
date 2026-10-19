@@ -1,6 +1,9 @@
 export type ButtonVariant = 'primary' | 'secondary' | 'overlay' | 'ghost';
 export type ButtonSize = 'sm' | 'md' | 'lg' | 'icon';
 
+export const tooltipClasses =
+	'rounded-lg border border-slate-200/80 bg-[#fbfaf7] px-3 py-2 text-sm font-medium leading-snug text-slate-800 shadow-sm';
+
 const buttonVariants: Record<ButtonVariant, string> = {
 	primary: 'border-transparent bg-brand text-slate-950 hover:bg-brand/90',
 	secondary: 'border-slate-300 bg-white text-slate-800 hover:border-slate-400 hover:bg-slate-50',
@@ -37,4 +40,4 @@ const cardPaddings: Record<CardPadding, string> = {
 };
 
 export const cardClasses = (tone: CardTone, padding: CardPadding, interactive = false, className = '') =>
-	`${tone === 'quiet' ? 'rounded-xl' : 'rounded-2xl'} border ${cardTones[tone]} ${cardPaddings[padding]} ${interactive ? 'text-left transition-colors duration-150 hover:border-slate-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate-900 motion-reduce:transition-none' : ''} ${className}`;
+	`${tone === 'quiet' ? 'rounded-xl' : 'rounded-2xl'} border ${cardTones[tone]} ${cardPaddings[padding]} ${interactive ? 'text-left transition-shadow duration-200 hover:shadow-[0_6px_20px_rgba(15,23,42,0.06)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate-900 motion-reduce:transition-none' : ''} ${className}`;

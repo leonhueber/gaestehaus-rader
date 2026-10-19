@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Button from '$lib/components/ui/Button.svelte';
+	import { cardClasses } from '$lib/components/ui/styles';
 	import { imageAttrs } from '$lib/images';
 	import { ChevronLeft, ChevronRight, X } from 'lucide-svelte';
 
@@ -90,7 +91,7 @@
 {#if open && activeItem}
 	<div
 		use:portal
-		class="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/90 p-3 backdrop-blur-md sm:p-5"
+		class="fixed inset-0 z-[9999] flex items-center justify-center bg-[#fbfaf7]/95 p-3 text-slate-900 backdrop-blur-sm sm:p-5"
 		role="dialog"
 		aria-modal="true"
 		aria-label={title}
@@ -103,88 +104,89 @@
 			aria-label={closeLabel}
 		></button>
 
-		<div class="relative z-10 flex max-h-[calc(100dvh-1.5rem)] w-full max-w-7xl flex-col sm:max-h-[calc(100dvh-2.5rem)]">
-			<Button variant="overlay" size="icon"
-				type="button"
-				class="absolute right-2 top-2 z-30 sm:-top-1 sm:right-0"
-				onclick={onClose}
-				aria-label={closeLabel}
-			>
-				<X class="h-5 w-5" strokeWidth={1.75} />
-			</Button>
-
-			{#if hasManyItems}
-				<Button variant="overlay" size="icon"
+		<div class={cardClasses('default', 'none', false, 'relative z-10 flex h-full max-h-[960px] w-full max-w-7xl flex-col overflow-hidden shadow-[0_12px_48px_rgba(15,23,42,0.08)]')}>
+			<div class="flex shrink-0 items-center justify-between gap-4 border-b border-slate-200/70 px-3 py-2 sm:px-5 sm:py-3">
+				<p class="min-w-0 text-sm font-medium leading-snug sm:text-base">{title}</p>
+				<Button variant="ghost" size="icon"
 					type="button"
-					class="absolute left-2 top-[42%] z-30 -translate-y-1/2 sm:left-4"
-					onclick={() => setIndex(activeIndex - 1)}
-					aria-label={prevLabel}
+					onclick={onClose}
+					aria-label={closeLabel}
 				>
-					<ChevronLeft class="h-5 w-5" strokeWidth={1.5} />
+					<X class="h-5 w-5" strokeWidth={1.75} />
 				</Button>
+			</div>
 
-				<Button variant="overlay" size="icon"
-					type="button"
-					class="absolute right-2 top-[42%] z-30 -translate-y-1/2 sm:right-4"
-					onclick={() => setIndex(activeIndex + 1)}
-					aria-label={nextLabel}
-				>
-					<ChevronRight class="h-5 w-5" strokeWidth={1.5} />
-				</Button>
-			{/if}
+			<div class="relative min-h-0 flex-1 bg-[#fbfaf7]">
+				{#if hasManyItems}
+					<Button variant="secondary" size="icon"
+						type="button"
+						class="absolute left-2 top-1/2 z-30 -translate-y-1/2 sm:left-4"
+						onclick={() => setIndex(activeIndex - 1)}
+						aria-label={prevLabel}
+					>
+						<ChevronLeft class="h-5 w-5" strokeWidth={1.5} />
+					</Button>
 
-			<div class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[1.75rem] border border-white/15 bg-white/8 shadow-2xl ring-1 ring-black/20">
-				<div class="relative min-h-0 flex-1 bg-slate-950/35">
-					<img
-						{...imageAttrs(activeItem.src, imageSizes)}
-						alt={activeItem.alt}
-						class={`h-full max-h-[calc(100dvh-10.5rem)] w-full object-contain sm:max-h-[calc(100dvh-12rem)] ${activeItem.contain ? 'p-4 sm:p-6' : ''}`}
-						loading="eager"
-						decoding="async"
-					/>
-					{#if activeItem.badge}
-						<span class="absolute left-4 top-4 rounded-full border border-white/20 bg-slate-950/55 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-white shadow-sm backdrop-blur">
-							{activeItem.badge}
-						</span>
-					{/if}
+					<Button variant="secondary" size="icon"
+						type="button"
+						class="absolute right-2 top-1/2 z-30 -translate-y-1/2 sm:right-4"
+						onclick={() => setIndex(activeIndex + 1)}
+						aria-label={nextLabel}
+					>
+						<ChevronRight class="h-5 w-5" strokeWidth={1.5} />
+					</Button>
+				{/if}
+
+				<img
+					{...imageAttrs(activeItem.src, imageSizes)}
+					alt={activeItem.alt}
+					class={`absolute inset-0 h-full w-full object-contain ${activeItem.contain ? 'p-4 sm:p-6' : ''}`}
+					loading="eager"
+					decoding="async"
+				/>
+				{#if activeItem.badge}
+					<span class="absolute left-3 top-3 rounded-lg border border-slate-200 bg-white/95 px-3 py-1.5 text-xs font-medium text-slate-700 sm:left-5 sm:top-5">
+						{activeItem.badge}
+					</span>
+				{/if}
+			</div>
+
+			<div class="max-h-[40%] shrink-0 overflow-y-auto border-t border-slate-200/70 bg-white px-3 py-3 sm:px-5 sm:py-4">
+				<div class="flex items-center justify-between gap-4 text-sm">
+					<p class="min-w-0 text-sm font-medium leading-snug">
+						{activeItem.title ?? activeItem.alt}
+					</p>
+					<p class="shrink-0 text-xs tabular-nums text-slate-500">
+						{activeIndex + 1} / {items.length}
+					</p>
 				</div>
 
-				<div class="border-t border-white/10 bg-slate-950/62 px-3 py-3 text-white backdrop-blur sm:px-4">
-					<div class="flex items-center justify-between gap-4 text-sm">
-						<p class="min-w-0 truncate font-semibold">
-							{activeItem.title ?? activeItem.alt}
-						</p>
-						<p class="shrink-0 text-xs font-semibold uppercase tracking-[0.18em] text-white/55">
-							{activeIndex + 1} / {items.length}
-						</p>
+				{#if hasManyItems}
+					<div class="mt-3 flex gap-2 overflow-x-auto p-1 [scrollbar-width:thin] [scrollbar-color:#cbd5e1_transparent]">
+						{#each items as item, itemIndex}
+							<button
+								type="button"
+								class={`relative h-14 w-20 shrink-0 overflow-hidden rounded-lg border transition-shadow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 motion-reduce:transition-none sm:h-16 sm:w-24 ${itemIndex === activeIndex ? 'border-brand ring-2 ring-brand/40' : 'border-slate-200 hover:ring-2 hover:ring-brand/20'}`}
+								onclick={() => setIndex(itemIndex)}
+								aria-label={item.title ?? item.alt}
+								aria-pressed={itemIndex === activeIndex}
+							>
+								<img
+									{...imageAttrs(item.src, '112px')}
+									alt=""
+									class={`h-full w-full bg-slate-100 ${item.contain ? 'object-contain p-1.5' : 'object-cover'}`}
+									loading="lazy"
+									decoding="async"
+								/>
+								{#if item.badge}
+									<span class="absolute inset-x-1 bottom-1 rounded bg-white/95 px-1 py-0.5 text-[8px] font-semibold uppercase tracking-[0.08em] text-slate-900">
+										{item.badge}
+									</span>
+								{/if}
+							</button>
+						{/each}
 					</div>
-
-					{#if hasManyItems}
-						<div class="mt-3 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,.35)_transparent]">
-							{#each items as item, itemIndex}
-								<button
-									type="button"
-									class={`relative h-14 w-24 shrink-0 overflow-hidden rounded-xl border transition sm:h-16 sm:w-28 ${itemIndex === activeIndex ? 'border-white ring-2 ring-white/45' : 'border-white/20 opacity-65 hover:border-white/70 hover:opacity-100'}`}
-									onclick={() => setIndex(itemIndex)}
-									aria-label={item.title ?? item.alt}
-								>
-									<img
-										{...imageAttrs(item.src, '112px')}
-										alt=""
-										class={`h-full w-full bg-slate-100 ${item.contain ? 'object-contain p-1.5' : 'object-cover'}`}
-										loading="lazy"
-										decoding="async"
-									/>
-									{#if item.badge}
-										<span class="absolute inset-x-1 bottom-1 rounded bg-white/95 px-1 py-0.5 text-[8px] font-semibold uppercase tracking-[0.08em] text-slate-900">
-											{item.badge}
-										</span>
-									{/if}
-								</button>
-							{/each}
-						</div>
-					{/if}
-				</div>
+				{/if}
 			</div>
 		</div>
 	</div>

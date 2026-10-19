@@ -21,7 +21,7 @@ function load(file) {
 	return exports;
 }
 
-const { getHeroExperienceIds } = load('src/lib/hero-season.ts');
+const { getGuestCardVisual, getHeroExperienceIds, getViennaMonth } = load('src/lib/hero-season.ts');
 const { experienceEvents } = load('src/lib/data/experience.ts');
 
 test('every month offers two distinct existing experiences with local photos and bilingual copy', () => {
@@ -52,4 +52,20 @@ test('winter promotion starts in October while nature ice stays in midwinter', (
 
 test('no seasonal slides before client month is available', () => {
 	assert.equal(getHeroExperienceIds(0).length, 0);
+});
+
+test('guest card uses winter from October through April and summer from May through September', () => {
+	for (let month = 1; month <= 12; month++) {
+		const summer = month >= 5 && month <= 9;
+		const visual = getGuestCardVisual(month);
+		assert.equal(visual.altKey.endsWith('.summer'), summer);
+		assert.equal(visual.src, summer ? '/images/Umgebung/nassfeld-lift.jpg' : '/images/Umgebung/skigebiet-weissbriach-2.jpg');
+	}
+	assert.equal(getGuestCardVisual(null).src, getGuestCardVisual(10).src);
+});
+
+test('season month follows Vienna at UTC month boundaries', () => {
+	assert.equal(getViennaMonth(new Date('2026-09-30T22:30:00Z')), 10);
+	assert.equal(getViennaMonth(new Date('2026-04-30T22:30:00Z')), 5);
+	assert.equal(getViennaMonth(new Date('2026-09-30T21:30:00Z')), 9);
 });

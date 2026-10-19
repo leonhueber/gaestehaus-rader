@@ -26,7 +26,6 @@ import { localizePath } from '$lib/routing';
 		type SectionLink,
 	} from '$lib/data/experience';
 	import { onDestroy, onMount, tick } from 'svelte';
-	import { tweened } from 'svelte/motion';
 	import {
 		ArrowRight,
 		BusFront,
@@ -181,26 +180,24 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 	let isNavPointerInside = $state(false);
 	let isNavFocusWithin = $state(false);
 	let isNavDismissed = $state(false);
-	let navListEl = $state<HTMLDivElement | null>(null);
-	const btnEls = new Map<string, HTMLButtonElement>();
-	const indicatorTop = tweened(0, { duration: 420, easing: cubicOut });
-	const indicatorHeight = tweened(40, { duration: 420, easing: cubicOut });
-	let indicatorVisible = $state(false);
 	let highlightObserver: IntersectionObserver | null = null;
 	let seasonScrollTimers: number[] = [];
 	let lastMobileNavPointerAt = 0;
 	let manualTabUntil = 0;
-	const ICON_SLOT = 'h-11 w-11 rounded-2xl grid place-items-center shrink-0';
-	const ICON_SIZE = 'h-5 w-5';
 	const ROW_BASE =
-		'w-full rounded-2xl transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60 focus-visible:ring-offset-1 active:scale-[0.98]';
-	const ROW_PEEK = 'min-h-[48px] px-3 py-2 flex items-center gap-3';
-	const ROW_COMPACT = 'mt-3 h-12 w-12 grid place-items-center';
+		'min-h-11 rounded-lg border-l-2 text-sm transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 motion-reduce:transition-none';
+	const ROW_PEEK = 'flex w-full items-center gap-3 px-3 py-2.5 text-left';
+	const ROW_COMPACT = 'mx-auto grid h-11 w-11 place-items-center';
+	const ROW_ACTIVE = 'border-brand bg-brand/10 font-semibold text-slate-900';
+	const ROW_IDLE = 'border-transparent font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900';
+	const seasonNavLinks = [
+		{ id: 'highlights-summer', season: 'summer', labelKey: 'experiences.nav.summer', icon: Sun },
+		{ id: 'highlights-winter', season: 'winter', labelKey: 'experiences.nav.winter', icon: Snowflake },
+	];
 
 	const isPeek = $derived(
 		isNavPinned || (!isNavDismissed && (isNavPointerInside || isNavFocusWithin))
 	);
-	const isCompact = $derived(!isPeek);
 
 	$effect(() => {
 		if (activeTab !== seasonFromUrl) {
@@ -353,7 +350,6 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 		} else {
 			activeSectionId = id;
 		}
-		queueMicrotask(updateIndicator);
 	}
 
 	function onDesktopNavSelect(id: string) {
@@ -492,22 +488,6 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 		}
 	}
 
-	function sectionBtn(node: HTMLButtonElement, id: string) {
-		btnEls.set(id, node);
-		queueMicrotask(updateIndicator);
-		return {
-			update(nextId: string) {
-				if (nextId === id) return;
-				btnEls.delete(id);
-				id = nextId;
-				btnEls.set(id, node);
-			},
-			destroy() {
-				btnEls.delete(id);
-			},
-		};
-	}
-
 	function reveal(node: HTMLElement, opts?: { once?: boolean; rootMargin?: string }) {
 		const once = opts?.once ?? true;
 		const io = new IntersectionObserver(
@@ -525,20 +505,6 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 				io.disconnect();
 			},
 		};
-	}
-
-	function updateIndicator() {
-		if (!navListEl) return;
-		const el = btnEls.get(navActiveSectionId);
-		if (!el) {
-			indicatorVisible = false;
-			return;
-		}
-		const parentRect = navListEl.getBoundingClientRect();
-		const rect = el.getBoundingClientRect();
-		indicatorTop.set(rect.top - parentRect.top);
-		indicatorHeight.set(rect.height);
-		indicatorVisible = true;
 	}
 
 	function enableHighlightSeasonAuto() {
@@ -569,15 +535,6 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 		);
 		cards.forEach((card) => highlightObserver?.observe(card));
 	}
-
-	$effect(() => {
-		if (isCompact) {
-			indicatorVisible = false;
-			return;
-		}
-		navActiveSectionId;
-		queueMicrotask(updateIndicator);
-	});
 
 	$effect(() => {
 		filteredSummerEvents.length;
@@ -636,9 +593,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 <aside class="hidden lg:block">
 	<div class="pointer-events-none fixed left-6 top-36 z-40">
 		<div
-			class={`pointer-events-auto origin-top-left transition-all duration-300 ease-out ${
-				isPeek ? 'w-[272px]' : 'w-[60px]'
-			}`}
+			class={`pointer-events-auto origin-top-left transition-[width] duration-200 ease-out motion-reduce:transition-none ${isPeek ? 'w-72' : 'w-16'}`}
 			role="group"
 			aria-label={$t('experiences.nav.title')}
 			onpointerenter={onNavEnter}
@@ -646,208 +601,95 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 			onfocusin={onNavFocusIn}
 			onfocusout={onNavFocusOut}
 		>
-			<div
-				class="experience-nav-scroll relative max-h-[calc(100vh-10rem)] overflow-x-hidden overflow-y-auto overscroll-contain rounded-2xl bg-white/70 backdrop-blur-md ring-1 ring-slate-200/70 shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-shadow duration-300 hover:shadow-[0_16px_38px_rgba(15,23,42,0.14)]"
-			>
-				<div class={`flex items-center ${isPeek ? 'gap-2 px-3 py-3' : 'justify-center px-3 py-3'}`}>
+			<div class={cardClasses('default', 'none', false, 'experience-nav-scroll max-h-[calc(100dvh-10rem)] overflow-x-hidden overflow-y-auto overscroll-contain shadow-sm')}>
+				<div class={`flex min-h-16 items-center px-2 py-2 ${isPeek ? 'gap-3' : 'justify-center'}`}>
 					<button
 						type="button"
-						class={`group relative grid ${isPeek ? 'h-12 w-12' : ROW_COMPACT} place-items-center leading-none rounded-2xl transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${
-							isPeek
-								? 'bg-white text-slate-900 ring-1 ring-brand/20 shadow-sm hover:shadow-md'
-								: 'bg-white/80 text-slate-800 ring-1 ring-slate-200/80 hover:bg-white hover:shadow-sm'
-						}`}
+						class={`grid h-11 w-11 shrink-0 place-items-center rounded-lg transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 motion-reduce:transition-none ${isNavPinned ? 'bg-brand/10 text-slate-900' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
 						aria-label={isNavPinned
-							? $lang === 'de'
-								? 'Navigation schließen'
-								: 'Close navigation'
+							? $lang === 'de' ? 'Navigation schließen' : 'Close navigation'
 							: isPeek
-								? $lang === 'de'
-									? 'Navigation offen halten'
-									: 'Keep navigation open'
-								: $lang === 'de'
-									? 'Navigation öffnen'
-									: 'Open navigation'}
+								? $lang === 'de' ? 'Navigation offen halten' : 'Keep navigation open'
+								: $lang === 'de' ? 'Navigation öffnen' : 'Open navigation'}
 						aria-expanded={isPeek}
 						aria-pressed={isNavPinned}
 						onclick={toggleDesktopNav}
 					>
-						{#if isPeek}
-							<span class="pointer-events-none absolute inset-0 rounded-2xl bg-brand/10"></span>
-						{/if}
 						{#if isNavPinned}
-							<X class="relative h-5 w-5" aria-hidden="true" />
+							<X class="h-5 w-5" aria-hidden="true" strokeWidth={1.5} />
 						{:else if isPeek}
-							<Pin class="relative h-5 w-5" aria-hidden="true" />
+							<Pin class="h-5 w-5" aria-hidden="true" strokeWidth={1.5} />
 						{:else}
-							<Menu class="relative h-5 w-5" aria-hidden="true" />
+							<Menu class="h-5 w-5" aria-hidden="true" strokeWidth={1.5} />
 						{/if}
 					</button>
-					<div
-						class={`min-w-0 transition-all duration-300 ease-out ${
-							isPeek
-								? 'translate-x-0 opacity-100'
-								: 'pointer-events-none w-0 -translate-x-1 overflow-hidden opacity-0'
-						}`}
-					>
-						<p class="truncate text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-500">
-							{$t('experiences.nav.kicker')}
-						</p>
-						<p class="truncate text-[13px] font-semibold text-slate-900">
-							{$t('experiences.nav.title')}
-						</p>
-					</div>
+					{#if isPeek}
+						<p class="min-w-0 pr-2 text-sm font-semibold leading-snug text-slate-900">{$t('experiences.nav.title')}</p>
+					{/if}
 				</div>
 
-				<nav class="relative mt-3 px-2 pb-2">
-					<div bind:this={navListEl} class={`relative ${isPeek ? 'pl-3' : ''}`}>
-						{#if indicatorVisible && isPeek}
-							<div
-								class="nav-indicator"
-								style={`transform: translateY(${$indicatorTop}px); height: ${$indicatorHeight}px;`}
-								aria-hidden="true"
-							></div>
-						{/if}
-						{#each sectionLinks as section}
-							{@const SectionIcon = sectionIconById[section.id] ?? List}
-							<div class="relative z-10">
-								<button
-									use:sectionBtn={section.id}
-									type="button"
-									class={`group ${ROW_BASE} ${isPeek ? ROW_PEEK : ROW_COMPACT} ${
-										isPeek
-											? navActiveSectionId === section.id
-												? 'bg-white text-slate-900 ring-1 ring-brand/20 shadow-sm'
-												: 'text-slate-700 hover:bg-white/70'
-											: navActiveSectionId === section.id
-												? 'bg-white text-slate-900 ring-1 ring-brand/20 shadow-sm'
-												: 'bg-transparent text-slate-700 hover:bg-white/60'
-									}`}
-									onclick={() => onDesktopNavSelect(section.id)}
-									aria-label={$t(section.labelKey)}
-									aria-current={navActiveSectionId === section.id ? 'page' : undefined}
-									title={$t(section.labelKey)}
-								>
-									<span
-										class={`${ICON_SLOT} ${
-											navActiveSectionId === section.id
-												? 'bg-brand/12 text-brand ring-1 ring-brand/25 shadow-[0_6px_16px_rgba(15,23,42,0.10)]'
-												: 'bg-white/70 text-slate-700 ring-1 ring-slate-200/70 group-hover:bg-white'
-										}`}
-									>
-										<SectionIcon class={ICON_SIZE} aria-hidden="true" />
-									</span>
-
-									{#if isPeek}
-										<span class="truncate text-[13px] font-semibold">
-											{$t(section.labelKey)}
-										</span>
-									{/if}
-								</button>
-
-								{#if section.id === 'aktivitaeten'}
-									<div class={`${isPeek ? 'pl-6 mt-1 space-y-2' : 'mt-1'}`}>
+				<nav aria-label={$t('experiences.nav.title')} class="space-y-1 px-2 pb-3">
+					{#each sectionLinks as section}
+						{@const SectionIcon = sectionIconById[section.id] ?? List}
+						{@const isActive = navActiveSectionId === section.id}
+						<div>
+							<button
+								type="button"
+								class={`${ROW_BASE} ${isPeek ? ROW_PEEK : ROW_COMPACT} ${isActive ? ROW_ACTIVE : ROW_IDLE}`}
+								onclick={() => onDesktopNavSelect(section.id)}
+								aria-label={$t(section.labelKey)}
+								aria-current={isActive ? 'location' : undefined}
+								title={isPeek ? undefined : $t(section.labelKey)}
+							>
+								<SectionIcon class={`h-5 w-5 shrink-0 ${isActive ? 'text-brand' : 'text-slate-500'}`} aria-hidden="true" strokeWidth={1.5} />
+								{#if isPeek}<span class="min-w-0 leading-snug">{$t(section.labelKey)}</span>{/if}
+							</button>
+							{#if section.id === 'aktivitaeten'}
+								<div class={`mt-1 space-y-1 ${isPeek ? 'pl-5' : ''}`}>
+									{#each seasonNavLinks as season}
+										{@const isSeasonActive = activeSectionId === 'highlights' && activeHighlightsSeason === season.season}
 										<button
 											type="button"
-											class={`group ${ROW_BASE} ${isPeek ? ROW_PEEK : ROW_COMPACT} ${
-												isPeek
-													? activeSectionId === 'highlights' && activeHighlightsSeason === 'summer'
-														? 'bg-white text-slate-900 ring-1 ring-brand/20 shadow-sm'
-														: 'text-slate-700 hover:bg-white/70'
-													: activeSectionId === 'highlights' && activeHighlightsSeason === 'summer'
-														? 'bg-white text-slate-900 ring-1 ring-brand/20 shadow-sm'
-														: 'bg-transparent text-slate-700 hover:bg-white/60'
-											}`}
-											onclick={() => onDesktopNavSelect('highlights-summer')}
-											aria-label={$t('experiences.nav.summer')}
-											aria-current={activeSectionId === 'highlights' &&
-											activeHighlightsSeason === 'summer'
-												? 'location'
-												: undefined}
-											title={$t('experiences.nav.summer')}
+											class={`${ROW_BASE} ${isPeek ? ROW_PEEK : ROW_COMPACT} ${isSeasonActive ? ROW_ACTIVE : ROW_IDLE}`}
+											onclick={() => onDesktopNavSelect(season.id)}
+											aria-label={$t(season.labelKey)}
+											aria-current={isSeasonActive ? 'location' : undefined}
+											title={isPeek ? undefined : $t(season.labelKey)}
 										>
-											<span
-												class={`${ICON_SLOT} ${
-													activeSectionId === 'highlights' && activeHighlightsSeason === 'summer'
-														? 'bg-brand/12 text-brand ring-1 ring-brand/25 shadow-[0_6px_16px_rgba(15,23,42,0.10)]'
-														: 'bg-white/70 text-slate-700 ring-1 ring-slate-200/70 group-hover:bg-white'
-												}`}
-											>
-												<Sun class={`${ICON_SIZE} shrink-0`} aria-hidden="true" />
-											</span>
-											{#if isPeek}
-												<span class="truncate text-[13px] font-semibold">{$t('experiences.nav.summer')}</span>
-											{/if}
+											<season.icon class={`h-5 w-5 shrink-0 ${isSeasonActive ? 'text-brand' : 'text-slate-500'}`} aria-hidden="true" strokeWidth={1.5} />
+											{#if isPeek}<span class="min-w-0 leading-snug">{$t(season.labelKey)}</span>{/if}
 										</button>
-										<button
-											type="button"
-											class={`group ${ROW_BASE} ${isPeek ? ROW_PEEK : ROW_COMPACT} ${
-												isPeek
-													? activeSectionId === 'highlights' && activeHighlightsSeason === 'winter'
-														? 'bg-white text-slate-900 ring-1 ring-brand/20 shadow-sm'
-														: 'text-slate-700 hover:bg-white/70'
-													: activeSectionId === 'highlights' && activeHighlightsSeason === 'winter'
-														? 'bg-white text-slate-900 ring-1 ring-brand/20 shadow-sm'
-														: 'bg-transparent text-slate-700 hover:bg-white/60'
-											}`}
-											onclick={() => onDesktopNavSelect('highlights-winter')}
-											aria-label={$t('experiences.nav.winter')}
-											aria-current={activeSectionId === 'highlights' &&
-											activeHighlightsSeason === 'winter'
-												? 'location'
-												: undefined}
-											title={$t('experiences.nav.winter')}
-										>
-											<span
-												class={`${ICON_SLOT} ${
-													activeSectionId === 'highlights' && activeHighlightsSeason === 'winter'
-														? 'bg-brand/12 text-brand ring-1 ring-brand/25 shadow-[0_6px_16px_rgba(15,23,42,0.10)]'
-														: 'bg-white/70 text-slate-700 ring-1 ring-slate-200/70 group-hover:bg-white'
-												}`}
-											>
-												<Snowflake class={`${ICON_SIZE} shrink-0`} aria-hidden="true" />
-											</span>
-											{#if isPeek}
-												<span class="truncate text-[13px] font-semibold">{$t('experiences.nav.winter')}</span>
-											{/if}
-										</button>
-									</div>
-								{/if}
-							</div>
-						{/each}
-					</div>
+									{/each}
+								</div>
+							{/if}
+						</div>
+					{/each}
 				</nav>
 
 				{#if isPeek}
-					<div class="border-t border-black/5 px-4 py-4">
-						<div class="flex items-center justify-between">
-							<p class="text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-500">
-								{$t('experiences.nav.filters')}
-							</p>
+					<div class="border-t border-slate-100 px-4 py-4">
+						<div class="flex flex-wrap items-center justify-between gap-2">
+							<p class="text-xs font-semibold text-slate-700">{$t('experiences.nav.filters')}</p>
 							{#if selectedActivity}
 								<button
 									type="button"
-									class="text-[11px] font-semibold text-slate-600 underline decoration-slate-300 underline-offset-4 hover:text-slate-900"
+									class="rounded py-1 text-xs font-medium text-slate-600 underline underline-offset-4 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900"
 									onclick={() => (selectedActivity = null)}
 								>
 									{$t('experiences.nav.reset')}
 								</button>
 							{/if}
 						</div>
-						<div class="mt-2 grid grid-cols-1 justify-items-start gap-1.5">
+						<div class="mt-3 flex flex-wrap gap-2">
 							{#each activityFilters as filter}
 								<button
 									type="button"
-									class={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-[11px] font-semibold transition duration-200 hover:-translate-y-0.5 ${
-										selectedActivity === filter.id
-											? 'border-brand bg-brand text-white shadow-sm'
-											: 'border-slate-200 bg-white/80 text-slate-700 hover:bg-slate-50 hover:border-brand/30 hover:shadow-sm'
-									}`}
+									class={`inline-flex min-h-10 max-w-full items-center gap-1.5 rounded-lg border px-2.5 py-2 text-left text-xs font-medium leading-snug transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 motion-reduce:transition-none ${selectedActivity === filter.id ? 'border-brand/40 bg-brand/10 text-slate-900' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}
 									onclick={() => (selectedActivity = selectedActivity === filter.id ? null : filter.id)}
 									aria-pressed={selectedActivity === filter.id}
 								>
-									<filter.icon class="h-3.5 w-3.5" aria-hidden="true" />
-									{$t(filter.labelKey)}
+									<filter.icon class="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+									<span class="min-w-0">{$t(filter.labelKey)}</span>
 								</button>
 							{/each}
 						</div>
@@ -2065,14 +1907,6 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 
 	.experience-nav-scroll::-webkit-scrollbar-track {
 		background: transparent;
-	}
-
-	.nav-indicator {
-		position: absolute;
-		left: 10px;
-		width: 3px;
-		border-radius: 999px;
-		background: rgba(247, 171, 0, 0.9);
 	}
 
 	.anchor-target {

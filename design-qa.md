@@ -167,3 +167,32 @@ Latest design revision: moved after “Bereit für Ihre Auszeit?” and before t
 - Restored the centered 76rem (1216px) maximum width with the existing responsive page gutters. Position after the booking invitation is unchanged.
 - Passed Svelte/type check with 0 errors/warnings. At a 1440px desktop viewport the section measures 1216px; destination selection and the loaded route remain functional. Browser viewport override reset after inspection.
 - Reference: `C:/Users/hueberl/.codex/visualizations/2026/10/10/01a126b2-09ed-7f50-9f06-beba60c69376/nearby-map-maxwidth-reference.png`. Three design mockups are alternatives for a later selected implementation.
+
+## Guest Card season correction — 2026-10-14
+
+- Removed the homepage's non-reactive build-time month calculation. Guest Card photography now follows the hero's client-side Vienna month: summer May–September, winter October–April. SSR and initial hydration share a stable winter fallback; the mounted client then selects the current season reactively.
+- Passed Svelte check (0 errors/warnings), five seasonal tests covering all months and Vienna/UTC boundaries, and the static build. Preview verified loaded winter Guest Card image in DE/EN and the visible, loaded winter balcony hero.
+- Live `rader-gitschtal.at` served the older summer-house hero without the current carousel or area map. The owner clarified that production uses DomainFactory/cPanel Git deployment: committed `build/`, Update from Remote, then Deploy HEAD Commit. README and AGENTS now document this requirement. A ZIP was also prepared, but is not the normal deployment path. Production remains unchanged until cPanel deployment.
+- Evidence: `C:/Users/hueberl/.codex/visualizations/2026/10/10/01a126b2-09ed-7f50-9f06-beba60c69376/guestcard-winter-static.png`. Full responsive review remains deferred.
+
+## Compact apartment cards — 2026-10-19
+
+- Source visual: `C:/Users/hueberl/AppData/Local/Temp/codex-clipboard-09ab2300-3300-4218-bae2-ff2a4b6cf455.png`, 1475 × 1066 image pixels; screenshot CSS size and device density are unknown.
+- Implemented in the existing DE/EN homepage: original apartment photos, compact two-row footer with apartment number and key facts on the left, localized base price and night label on the right. Removed promotional descriptions, image overlays and the help paragraph. Mobile horizontal scrolling and whole-card detail links are retained.
+- Implementation screenshot and viewport: unavailable. Earlier in this chat, Browser Use denied observation of `http://localhost:5173/` through its URL policy. No alternate browser access was attempted to bypass that denial.
+- Full-view and focused-region comparison: blocked because a rendered implementation capture is unavailable. No visual fidelity findings or pass claim can be made from source code alone.
+- Verification: Svelte/type check passed with 0 errors and 0 warnings; static build passed. Generated DE/EN HTML confirms all three compact cards, localized prices and existing detail destinations. Homepage sitemap freshness is 2026-10-19 in both languages.
+- Comparison history: source inspected and implementation edited; no browser comparison iteration completed.
+- Remaining checks: desktop and mobile in both languages, card navigation, keyboard focus, image loading/error behavior, and console errors.
+- final result: blocked
+
+## Combined review platform card — 2026-10-19
+
+- Source visual: `C:/Users/hueberl/AppData/Local/Temp/codex-clipboard-3f156633-fe30-4179-9314-6cef5df12591.png`, 1690 × 931 image pixels; CSS viewport and device density are unknown. Scope is the left card and the duplicate platform links below the row.
+- Implemented: one shared non-interactive Card containing three independent links, local platform logos, localized scores with their original scales, existing Google/Booking counts, and a localized heading. Retained original review quotations and mobile horizontal scrolling. Removed the duplicate platform strip. The first desktop column is proportionally wider to accommodate the platform list.
+- Asset provenance: `static/images/platforms/SOURCES.md`. Google PNG and Simple Icons SVG assets are served locally; no custom logo drawings or runtime third-party image requests.
+- Source image opened and inspected. Implementation capture is unavailable because Browser Use previously denied this local URL through its URL policy; no alternate access was used to bypass that denial.
+- Fonts/typography, spacing/layout rhythm, colors/tokens, asset rendering and copy/content have not been visually compared with a rendered implementation. No full-view or focused comparison, interaction pass or visual iteration is claimed.
+- Technical checks: Svelte/type check passed with 0 errors and 0 warnings; static build passed. Generated DE/EN HTML contains exactly three platform rows with the expected independent links, localized scores/scales and local logo files. The duplicate platform strip is absent, there are no nested anchors, and homepage sitemap dates/alternates remain correct. Logo formats were validated. These checks do not establish rendered visual fidelity.
+- Remaining browser checks: desktop/mobile in DE/EN, wrapping at narrow widths, all three external links, keyboard focus, hover, logo loading/error behavior, and console errors.
+- final result: blocked

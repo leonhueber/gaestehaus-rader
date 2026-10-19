@@ -1,10 +1,10 @@
 <script lang="ts">
-	import NearbyMap from '$lib/components/NearbyMap.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import ButtonLink from '$lib/components/ui/ButtonLink.svelte';
 	import Card from '$lib/components/ui/Card.svelte';
 	import CardButton from '$lib/components/ui/CardButton.svelte';
 	import CardLink from '$lib/components/ui/CardLink.svelte';
+	import { tooltipClasses } from '$lib/components/ui/styles';
 	/* eslint-disable */
 	import { lang, t } from '$lib/i18n';
 	import { asset, resolve } from '$app/paths';
@@ -12,7 +12,7 @@
 import { page } from '$app/state';
 	import { accommodations, getAccommodationGallerySources, type Accommodation } from '$lib/data/accommodations';
 	import { experienceEvents, type ExperienceEvent } from '$lib/data/experience';
-	import { getHeroExperienceIds } from '$lib/hero-season';
+	import { getGuestCardVisual, getHeroExperienceIds, getViennaMonth } from '$lib/hero-season';
 	import { imageAttrs, largestImageUrl } from '$lib/images';
 	import { homeTrustReviews } from '$lib/data/reviews';
 	import { trackEvent } from '$lib/analytics/plausible';
@@ -35,8 +35,8 @@ import { localizePath } from '$lib/routing';
 		Snowflake,
 		Check,
 		ArrowRight,
+		ArrowUpRight,
 		Images,
-		Expand,
 		ChevronLeft,
 		ChevronRight,
 		Play,
@@ -65,8 +65,6 @@ import { localizePath } from '$lib/routing';
 		Bath,
 		Star,
 		BadgeCheck,
-		Home,
-		Building2,
 		Waves,
 		Bike,
 		MountainSnow,
@@ -82,8 +80,6 @@ import { localizePath } from '$lib/routing';
 
 	const withAsset = (path: string) => asset(path);
 	const localizedHref = (path: string) => localizePath(path, page.url.pathname);
-	const currentMonth = new Date().getMonth();
-	const isSummerSeason = currentMonth >= 4 && currentMonth <= 8;
 	type HeroSlide = { id: string; src: string; position: string; captionKey?: string; apartment?: Accommodation; experience?: ExperienceEvent };
 	let heroMonth = $state<number | null>(null);
 	const heroSlides = $derived.by((): HeroSlide[] => {
@@ -146,7 +142,7 @@ import { localizePath } from '$lib/routing';
 		heroProgress = 0;
 	};
 	onMount(() => {
-		heroMonth = Number(new Intl.DateTimeFormat('en', { month: 'numeric', timeZone: 'Europe/Vienna' }).format(new Date()));
+		heroMonth = getViennaMonth();
 		const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 		heroAutoplayPaused = reducedMotion.matches;
 		const updateVisibility = () => { heroDocumentVisible = !document.hidden; };
@@ -180,20 +176,15 @@ import { localizePath } from '$lib/routing';
 		frame = window.requestAnimationFrame(advance);
 		return () => window.cancelAnimationFrame(frame);
 	});
-	const guestCardVisual = isSummerSeason
-		? {
-				src: '/images/Umgebung/nassfeld-lift.jpg',
-				altKey: 'experiences.guestcard.imageAlt.summer',
-			}
-		: {
-				src: '/images/Umgebung/skigebiet-weissbriach-2.jpg',
-				altKey: 'experiences.guestcard.imageAlt.winter',
-			};
+	const guestCardVisual = $derived(getGuestCardVisual(heroMonth));
 	const guestCardCardVisual = {
 		src: '/images/Umgebung/nassfeld_gaestecard_basic_summer.png',
 	};
 
 	const rooms = accommodations;
+	const roomPriceFormatter = $derived(new Intl.NumberFormat($lang === 'de' ? 'de-DE' : 'en-GB', {
+		style: 'currency', currency: 'EUR', maximumFractionDigits: 0,
+	}));
 	const accommodationsBase = $derived.by(() => localizedHref('/unterkuenfte-preise'));
 	const siteUrl = SITE_ORIGIN;
 	const lodgingImages = [
@@ -622,6 +613,11 @@ import { localizePath } from '$lib/routing';
 
 	const trustStars = Array.from({ length: 5 });
 	const googleProfileUrl = 'https://maps.app.goo.gl/cXgd5iJbYPmSx2ad9';
+	const trustPlatforms = [
+		{ name: 'Google', href: googleProfileUrl, logo: '/images/platforms/google.png', scoreKey: 'trust.ratingValue', scale: 5, metaKey: 'trust.ratingMeta' },
+		{ name: 'Booking.com', href: 'https://www.booking.com/Share-deqca7p', logo: '/images/platforms/booking.svg', scoreKey: 'trust.booking.scoreCompact', scale: 10, metaKey: 'trust.booking.meta' },
+		{ name: 'Airbnb', href: 'https://www.airbnb.at/users/profile/1470215552721931790', logo: '/images/platforms/airbnb.svg', scoreKey: 'trust.airbnb.scoreCompact', scale: 5, metaKey: null },
+	];
 	const displayedTrustReviews = homeTrustReviews.filter((review) => [1, 2, 5].includes(review.id));
 	const formatReviewAge = (value: string | undefined, currentLang: 'de' | 'en') => {
 		if (!value) return '';
@@ -741,7 +737,7 @@ import { localizePath } from '$lib/routing';
 					{@const canResume = activeHeroSlide === index && heroAutoplayPaused}
 					<button
 						type="button"
-						class="hero-dot group/hero-dot flex h-11 w-9 items-center justify-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+						class="hero-dot group/hero-dot relative flex h-11 w-9 items-center justify-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
 						aria-label={canResume ? $t('hero.carousel.play') : heroCaption(slide)}
 						aria-pressed={activeHeroSlide === index}
 						onclick={(event) => {
@@ -750,7 +746,7 @@ import { localizePath } from '$lib/routing';
 							else selectHeroSlide(index);
 						}}
 					>
-						<span class="pointer-events-none absolute bottom-full left-1/2 mb-1 -translate-x-1/2 w-max max-w-[80vw] whitespace-normal text-center rounded-lg bg-slate-900/90 px-3 py-2 text-sm font-medium text-white opacity-0 transition-opacity duration-150 group-hover/hero-dot:opacity-100 group-focus-visible/hero-dot:opacity-100 motion-reduce:transition-none" aria-hidden="true">
+						<span class={`${tooltipClasses} pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 w-max max-w-[80vw] -translate-x-1/2 whitespace-normal text-center opacity-0 transition-opacity duration-150 group-hover/hero-dot:opacity-100 group-focus-visible/hero-dot:opacity-100 motion-reduce:transition-none`} aria-hidden="true">
 							{canResume ? $t('hero.carousel.play') : heroCaption(slide)}
 						</span>
 						{#if canResume}
@@ -1031,12 +1027,14 @@ import { localizePath } from '$lib/routing';
 
 	<div class="mx-auto w-full max-w-[76rem] px-4 pt-8 sm:px-6 sm:pt-14 lg:px-8">
 		<div class="space-y-20">
+			<!-- svelte-ignore a11y_no_noninteractive_tabindex (Keyboard focus enables native arrow-key scrolling in this region.) -->
 			<section
 				aria-label={$t('usp.title')}
-				class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4"
+				tabindex="0"
+				class="-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto px-4 pb-3 [scrollbar-width:thin] [scrollbar-color:theme(colors.slate.300)_transparent] focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-6 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-4"
 			>
 				{#each usps as item}
-					<Card as="article" tone="quiet" padding="compact" class="min-w-0">
+					<Card as="article" tone="quiet" padding="compact" class="w-[82%] min-w-0 max-w-[20rem] shrink-0 snap-start sm:w-auto sm:max-w-none">
 						<item.icon class="h-5 w-5 text-brand" aria-hidden="true" strokeWidth={1.5} />
 						<h3 class="mt-4 text-base font-semibold leading-snug text-slate-900">
 							{$t(`usp.${item.key}.title`)}
@@ -1059,14 +1057,11 @@ import { localizePath } from '$lib/routing';
 							{$t('rooms.section.title')}
 						</h2>
 						<div class="mt-4 h-[3px] w-16 rounded-full bg-brand"></div>
-						<p class="mt-5 max-w-xl text-base leading-relaxed text-slate-600">
-							{$t('home.rooms.intro')}
-						</p>
 					</div>
 
 					<a
 						href={localizedHref('/unterkuenfte-preise')}
-						class="inline-flex items-center gap-2 py-2 text-sm font-semibold text-slate-700 underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
+						class="inline-flex items-center gap-2 py-2 text-sm font-semibold text-brand underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
 					>
 						{$t('rooms.section.cta')}
 						<ArrowRight class="h-4 w-4" aria-hidden="true" strokeWidth={1.25} />
@@ -1088,70 +1083,28 @@ import { localizePath } from '$lib/routing';
 									<img
 										{...imageAttrs(r.images.main, '(min-width: 1280px) 363px, (min-width: 1024px) calc((100vw - 128px) / 3), (min-width: 640px) 340px, 280px')}
 										alt={`${$t('home.rooms.card.imageAltPrefix')} ${r.title}`}
-										class="h-full w-full object-cover transition duration-1000 ease-out group-hover:scale-105"
+										class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.025] motion-reduce:transform-none motion-reduce:transition-none"
 										loading="lazy"
 										decoding="async"
 									/>
-									<div
-										class="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/10 to-transparent"
-									></div>
-									<div
-										class="pointer-events-none absolute inset-0 hidden bg-gradient-to-t from-slate-950/22 via-slate-900/5 to-transparent opacity-0 transition-all duration-300 group-hover:opacity-100 group-focus-visible:opacity-100 sm:block"
-									></div>
-									<div
-										class="pointer-events-none absolute bottom-4 right-4 hidden items-center gap-2 rounded-full border border-white/35 bg-white/14 px-4 py-2 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(15,23,42,0.25)] ring-1 ring-white/20 backdrop-blur-md opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 group-focus-visible:opacity-100 group-focus-visible:translate-y-0 sm:inline-flex"
-									>
-										<!-- <span>{$t('rooms.page.detailsCta')}</span> -->
-										<ArrowRight class="h-4 w-4" aria-hidden="true" strokeWidth={1.25} />
-									</div>
-
-									<!-- Price pill -->
-									<!-- <span
-                    class="absolute left-4 top-4 rounded-full bg-brand px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white shadow-sm"
-                  >
-                    {$t("price.from")} €{$t(`rooms.card.${r.key}.price`)} / {$t(
-                      "price.night"
-                    )}
-                  </span> -->
 								</div>
 
 								<!-- Content -->
-								<div class="flex flex-1 flex-col p-6">
-									<p class="text-sm font-medium text-slate-500">{r.typeLabel[$lang]} {r.title}</p>
-									<h3 class="mt-2 text-lg font-semibold leading-snug tracking-tight text-slate-900">
-										{$t(`home.rooms.${r.slug}.title`)}
+								<div class="grid flex-1 grid-cols-[minmax(0,1fr)_auto] content-start items-baseline gap-x-3 gap-y-1.5 px-4 py-5 sm:px-5">
+									<h3 class="text-base font-semibold leading-snug tracking-tight text-slate-900">
+										{r.typeLabel[$lang]} {r.title}
 									</h3>
-									<p class="mt-3 text-base leading-relaxed text-slate-600">
-										{$t(`home.rooms.${r.slug}.body`)}
+									<p class="whitespace-nowrap text-right text-sm font-semibold leading-snug tabular-nums text-slate-900 sm:text-base">
+										{$t('home.rooms.priceFrom')} {roomPriceFormatter.format(r.pricePerNightBase)}
 									</p>
-									<p class="mb-5 mt-4 text-sm text-slate-500">
+									<p class="text-sm leading-relaxed text-slate-500">
 										{r.attributes.size} · {r.attributes.guests[$lang]}
 									</p>
-									<div class="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">
-										<p class="text-sm text-slate-600">
-											<span class="font-semibold text-slate-900">{$t('price.from')} {r.pricePerNightBase}</span> / {$t('price.night')}
-										</p>
-										<span class="inline-flex items-center gap-2 text-sm font-semibold text-slate-900">
-											{$t('rooms.card.cta')}
-											<ArrowRight class="h-4 w-4 text-brand" aria-hidden="true" strokeWidth={1.5} />
-										</span>
-									</div>
+									<p class="text-right text-sm leading-relaxed text-slate-500">/ {$t('price.night')}</p>
 								</div>
-
-								<!-- Hover ring -->
-								<div
-									class="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-transparent transition"
-								></div>
 							</CardLink>
 						{/each}
 					</div>
-				</div>
-				<div class="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-2 text-base leading-relaxed text-slate-600">
-					<p>{$t('home.rooms.help')}</p>
-					<a href={localizedHref('/kontakt')} class="inline-flex items-center gap-2 py-2 font-semibold text-slate-900 underline decoration-slate-300 underline-offset-4 hover:decoration-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand">
-						{$t('home.rooms.contact')}
-						<ArrowRight class="h-4 w-4 text-brand" aria-hidden="true" strokeWidth={1.5} />
-					</a>
 				</div>
 			</section>
 
@@ -1192,9 +1145,8 @@ import { localizePath } from '$lib/routing';
 									loading="lazy" decoding="async"
 								/>
 							</div>
-							<div class="flex w-full items-center justify-between gap-3 px-4 py-4 sm:px-5">
+							<div class="w-full px-4 py-4 sm:px-5">
 								<span class="text-sm font-medium leading-snug text-slate-700">{$t(image.altKey)}</span>
-								<Expand class="h-4 w-4 shrink-0 text-slate-400 transition-colors group-hover:text-slate-900" aria-hidden="true" strokeWidth={1.5} />
 							</div>
 						</CardButton>
 					{/each}
@@ -1497,67 +1449,39 @@ import { localizePath } from '$lib/routing';
 				<!-- Cards row (4 columns like screenshot) -->
 				<div
 					class={`mt-6 -mx-4 flex snap-x snap-mandatory items-stretch gap-6 overflow-x-auto px-4 pb-2 scroll-pl-4 scroll-pr-4 [scrollbar-width:thin] [scrollbar-color:theme(colors.slate.300)_transparent] [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-200 hover:[&::-webkit-scrollbar-thumb]:bg-slate-300 sm:mt-10 lg:mx-0 lg:grid lg:overflow-visible lg:px-0 lg:pb-0 ${
-						displayedTrustReviews.length > 3 ? 'lg:grid-cols-5' : 'lg:grid-cols-4'
+						displayedTrustReviews.length > 3 ? 'lg:grid-cols-[1.3fr_repeat(4,minmax(0,1fr))]' : 'lg:grid-cols-[1.3fr_repeat(3,minmax(0,1fr))]'
 					}`}
 				>
-					<!-- Rating card (Google) -->
-					<CardLink tone="default" padding="md"
-						href={googleProfileUrl}
-						target="_blank"
-						rel="noreferrer"
-						class="group relative flex h-full w-[280px] min-h-[330px] shrink-0 snap-start flex-col lg:min-h-0 lg:w-auto lg:shrink"
+					<Card tone="default" padding="compact"
+						class="flex h-full w-[320px] max-w-[calc(100vw-2rem)] shrink-0 snap-start flex-col lg:w-auto lg:max-w-none"
 					>
-						<span
-							class="pointer-events-none absolute right-5 top-5 grid h-9 w-9 place-items-center rounded-full bg-slate-100 text-slate-500 opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100 group-hover:bg-brand/10 group-hover:text-brand"
-							aria-hidden="true"
-						>
-							↗
-						</span>
-						<div
-							class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-400"
-						>
-							<span class="transition group-hover:text-slate-500 group-hover:underline">Google</span>
-						</div>
-
-						<div class="mt-5 inline-flex items-end gap-2">
-							<span class="text-5xl font-semibold leading-none text-slate-900 group-hover:underline">
-								{$t('trust.ratingValue')}
-							</span>
-							<span class="pb-1 text-sm font-semibold text-slate-400 group-hover:underline">/ 5</span>
-						</div>
-
-						<div class="mt-3 flex items-center gap-1 text-amber-500">
-							{#each trustStars as _}
-								<Star class="h-4 w-4 fill-current" aria-hidden="true" strokeWidth={1.25} />
+						<h3 class="text-lg font-semibold leading-snug text-slate-900">{$t('trust.platforms.title')}</h3>
+						<ul class="mt-3 flex flex-1 flex-col divide-y divide-slate-200/80">
+							{#each trustPlatforms as platform}
+								<li class="flex flex-1">
+									<a
+										href={platform.href}
+										target="_blank"
+										rel="noreferrer"
+										class="group/platform grid min-h-24 w-full grid-cols-[1.75rem_minmax(0,1fr)_auto_1rem] items-center gap-3 rounded-lg py-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate-900"
+									>
+										<img src={asset(platform.logo)} alt="" width="28" height="28" class="h-7 w-7 object-contain" loading="lazy" />
+										<span class="min-w-0">
+											<span class="block break-words text-sm font-semibold leading-snug text-slate-900 underline-offset-4 group-hover/platform:underline">{platform.name}</span>
+											{#if platform.metaKey}
+												<span class="mt-1 block text-xs leading-relaxed text-slate-500">{$t(platform.metaKey)}</span>
+											{/if}
+										</span>
+										<span class="text-right tabular-nums">
+											<span class="block text-2xl font-semibold leading-tight tracking-tight text-slate-900">{$t(platform.scoreKey)}</span>
+											<span class="mt-1 block whitespace-nowrap text-sm leading-snug text-slate-500">/ {platform.scale}</span>
+										</span>
+										<ArrowUpRight class="h-4 w-4 text-slate-400 transition-colors group-hover/platform:text-brand motion-reduce:transition-none" aria-hidden="true" strokeWidth={1.5} />
+									</a>
+								</li>
 							{/each}
-						</div>
-
-						<p class="mt-6 text-xs font-medium text-slate-400">
-							{$t('trust.ratingMeta')}
-						</p>
-
-						<!-- Small “platform score” tile (bottom) -->
-						<Card tone="default" padding="sm" class="mt-6">
-							<div class="flex items-center gap-3">
-								<span
-									class="grid h-10 w-10 place-items-center rounded-full bg-slate-900 text-sm font-semibold text-white"
-								>
-									{$t('trust.booking.scoreCompact')}
-								</span>
-								<div class="leading-tight">
-									<p class="text-xs font-semibold text-slate-900">
-										{$t('trust.booking.label')}
-									</p>
-									<p class="text-[11px] text-slate-400">
-										{$t('trust.booking.meta')}
-									</p>
-								</div>
-							</div>
-						</Card>
-						<div
-							class="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-transparent transition group-hover:ring-brand/20"
-						></div>
-					</CardLink>
+						</ul>
+					</Card>
 
 					<!-- Review cards -->
 					{#each displayedTrustReviews as review}
@@ -1614,76 +1538,20 @@ import { localizePath } from '$lib/routing';
 					{/each}
 				</div>
 
-				<!-- Bottom platform row (like screenshot) -->
-				<div
-					class="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm text-slate-400 sm:mt-10 sm:gap-8"
-				>
-					<ButtonLink variant="ghost" size="md"
-						href="https://www.airbnb.at/users/profile/1470215552721931790"
-						target="_blank"
-						rel="noreferrer"
-					>
-						<Home
-							class="h-4 w-4 text-slate-500 transition-colors group-hover:text-slate-800"
-							aria-hidden="true" strokeWidth={1.25}
-						/>
-						<span
-							class="text-slate-500 transition-colors group-hover:text-slate-800 group-hover:underline"
-							>Airbnb</span
-						>
-						<span
-							class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600 transition-all duration-200 group-hover:bg-brand/10 group-hover:text-brand group-hover:ring-1 group-hover:ring-brand/20"
-						>
-							{$t('trust.airbnb.score')}
-						</span>
-						<span
-							class="ml-0.5 text-slate-400 opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100 group-hover:text-slate-600"
-							aria-hidden="true"
-						>
-							↗
-						</span>
-					</ButtonLink>
-					<span class="h-4 w-px bg-slate-200"></span>
-					<ButtonLink variant="ghost" size="md"
-						href="https://www.booking.com/Share-deqca7p"
-						target="_blank"
-						rel="noreferrer"
-					>
-						<Building2
-							class="h-4 w-4 text-slate-500 transition-colors group-hover:text-slate-800"
-							aria-hidden="true" strokeWidth={1.25}
-						/>
-						<span
-							class="text-slate-500 transition-colors group-hover:text-slate-800 group-hover:underline"
-							>Booking.com</span
-						>
-						<span
-							class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600 transition-all duration-200 group-hover:bg-brand/10 group-hover:text-brand group-hover:ring-1 group-hover:ring-brand/20"
-						>
-							{$t('trust.booking.score')}
-						</span>
-						<span
-							class="ml-0.5 text-slate-400 opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100 group-hover:text-slate-600"
-							aria-hidden="true"
-						>
-							↗
-						</span>
-					</ButtonLink>
-				</div>
 			</section>
 
 
 			<!-- SEASONS -->
 			<section id="jahreszeiten" class="relative -mx-4 w-auto max-w-[1380px] px-2 py-10 sm:mx-0 sm:w-full sm:px-6 sm:py-12 lg:left-1/2 lg:w-screen lg:-translate-x-1/2">
 				<div class="text-center">
-					<p class="text-xs font-semibold uppercase tracking-[0.35em] text-brand">
+					<p class="text-xs font-semibold uppercase tracking-[0.2em] text-brand">
 						{$t('seasons.kicker')}
 					</p>
-					<h2 class="mt-3 text-3xl font-serif font-semibold leading-[0.95] text-slate-900 sm:text-4xl">
+					<h2 class="mt-3 text-balance font-serif text-3xl font-medium leading-tight text-slate-900 sm:text-4xl">
 						{$t('seasons.title')}
 					</h2>
 					<div class="mx-auto mt-3 h-[3px] w-14 rounded-full bg-brand"></div>
-					<p class="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
+					<p class="mx-auto mt-5 max-w-2xl text-pretty text-base leading-relaxed text-slate-600">
 						{$t('seasons.subtitle')}
 					</p>
 				</div>
@@ -1705,10 +1573,10 @@ import { localizePath } from '$lib/routing';
 									</div>
 									<div class={`season-divider mt-3 hidden h-[2px] w-7 rounded-full sm:block ${season.reverse ? 'bg-sky-700/55' : 'bg-brand/70'}`}></div>
 
-									<h3 class="mt-4 max-w-[13ch] text-3xl font-serif font-semibold leading-[0.98] text-slate-900 sm:mt-5 sm:text-4xl lg:text-5xl">
+									<h3 class="mt-4 max-w-[16ch] text-balance font-heading text-[1.75rem] font-semibold leading-[1.2] tracking-tight text-slate-900 sm:mt-5 sm:text-[2rem]">
 										{$t(season.titleKey)}
 									</h3>
-									<p class="mt-4 max-w-[25ch] text-base leading-relaxed text-slate-600 sm:mt-5">
+									<p class="mt-4 max-w-[28ch] text-pretty text-base leading-relaxed text-slate-600">
 										{$t(season.teaserKey)}
 									</p>
 
@@ -1727,7 +1595,7 @@ import { localizePath } from '$lib/routing';
 										{#each season.features as feature}
 											<li class={`season-feature ${season.reverse ? 'text-sky-700' : 'text-slate-600'}`}>
 												<feature.icon class="mx-auto h-7 w-7" aria-hidden="true" strokeWidth={1.35} />
-												<span class="mt-2 block text-[11px] font-semibold text-slate-700">
+												<span class="mt-2 block break-words px-1 text-xs font-medium leading-relaxed text-slate-700">
 													{$t(feature.labelKey)}
 												</span>
 											</li>
@@ -2013,7 +1881,6 @@ import { localizePath } from '$lib/routing';
 			</div>
 		</div>
 	</section>
-	<NearbyMap />
 </div>
 
 <style>
@@ -2452,17 +2319,12 @@ import { localizePath } from '$lib/routing';
 
 		.season-copy h3 {
 			color: #0f172a;
-			font-size: 2rem;
-			line-height: 0.98;
 			margin-top: 0;
-			max-width: 12ch;
 			text-shadow: none;
 		}
 
 		.season-copy p {
 			color: #475569;
-			font-size: 0.9rem;
-			line-height: 1.45;
 			margin-top: 0.75rem;
 			max-width: 18rem;
 			text-shadow: none;
@@ -2495,7 +2357,6 @@ import { localizePath } from '$lib/routing';
 
 		.season-feature span {
 			color: #111827;
-			font-size: 0.72rem;
 		}
 
 		.season-house-image {

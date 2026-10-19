@@ -1,1 +1,0 @@
-import{k as d,u,l as n,a3 as c,a5 as p}from"./DMgc_sg6.js";function l(s,o,r){d(()=>{var a=u(()=>o(s,r?.())||{});if(r&&a?.update){var t=!1,f={};n(()=>{var e=r();c(e),t&&p(f,e)&&(f=e,a.update(e))}),t=!0}if(a?.destroy)return()=>a.destroy()})}export{l as a};

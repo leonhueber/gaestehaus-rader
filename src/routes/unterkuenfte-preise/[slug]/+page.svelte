@@ -608,10 +608,13 @@ import { localizePath } from '$lib/routing';
 										{$t('room.detail.card.breakdown.cleaningValue')}
 									</span>
 								</div>
-								<div class="flex items-center justify-between gap-4">
+								<div class="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-4 gap-y-1">
 									<span class="text-slate-600">{$t('room.detail.card.breakdown.taxLabel')}</span>
-									<span class="font-semibold text-slate-900">
-										{$t('room.detail.card.breakdown.taxValue')}
+									<span class="whitespace-nowrap text-right font-semibold tabular-nums text-slate-900">
+										{$t('rooms.page.pricing.tax.price')}
+									</span>
+									<span class="col-span-2 text-xs leading-relaxed text-slate-500">
+										{$t('room.detail.card.breakdown.taxNote')}
 									</span>
 								</div>
 							</div>

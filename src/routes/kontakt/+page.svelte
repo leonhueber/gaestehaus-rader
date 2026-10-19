@@ -18,7 +18,7 @@
 		{ type: 'bic', label: 'BIC', value: 'RZKTAT2K364', copyKey: 'contact.payment.copyBic', icon: Landmark },
 	] as const;
 	let mapEnabled = $state(false);
-	let mapConsentOpen = $state(false);
+	let mapConsentOpen = $state(true);
 	let mapToggle: HTMLButtonElement | null = $state(null);
 	let mapConsentPanel: HTMLElement | null = $state(null);
 	let copied = $state<'iban' | 'bic' | null>(null);
@@ -87,26 +87,25 @@
 
 <SeoHead titleKey="contact.seo.title" descriptionKey="contact.seo.description" />
 
-<div class="mx-auto w-full max-w-[76rem] px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+<div class="mx-auto w-full max-w-[76rem] px-4 py-12 font-sans text-sm font-normal leading-6 sm:px-6 sm:py-16 lg:px-8">
 	<header class="max-w-2xl">
-		<p class="text-xs font-semibold uppercase tracking-[0.2em] text-brand">{$t('contact.title')}</p>
-		<h1 class="mt-3 font-serif text-4xl font-medium leading-tight text-slate-900 sm:text-5xl">{$t('contact.hero.title')}</h1>
-		<div class="mt-4 h-[3px] w-16 rounded-full bg-brand"></div>
+		<p class="text-xs font-semibold uppercase tracking-[0.35em] text-brand">{$t('contact.title')}</p>
+		<h1 class="mt-3 text-balance font-serif text-3xl font-normal leading-tight tracking-normal text-slate-900 sm:text-4xl">{$t('contact.hero.title')}</h1>
 	</header>
 
 	<div class="mt-10 grid items-start gap-10 lg:mt-12 lg:grid-cols-[0.9fr,1.1fr] lg:gap-16">
 		<section aria-labelledby="contact-methods-heading">
-			<p class="text-sm text-slate-500">{$t('contact.hosts')}</p>
-			<h2 id="contact-methods-heading" class="mt-2 text-xl font-semibold text-slate-900">{$t('contact.address.name')}</h2>
+			<p class="text-xs leading-5 text-slate-600">{$t('contact.hosts')}</p>
+			<h2 id="contact-methods-heading" class="mt-1 font-serif text-xl font-normal leading-snug tracking-normal text-slate-900">{$t('contact.address.name')}</h2>
 			<div class="mt-6 divide-y divide-slate-200 border-y border-slate-200">
 				{#each contactMethods as method}
 					<a href={method.href} target={method.external ? '_blank' : undefined} rel={method.external ? 'noopener noreferrer' : undefined}
-						class="group flex items-center gap-4 py-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate-900"
+						class="group flex items-center gap-3 py-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate-900"
 						onclick={method.event}>
 						<method.icon class="h-5 w-5 shrink-0 text-brand" aria-hidden="true" strokeWidth={1.5} />
 						<div class="min-w-0 flex-1">
-							<p class="text-sm text-slate-500">{$t(method.labelKey)}</p>
-							<p class="mt-1 break-words text-base font-medium text-slate-900 underline-offset-4 group-hover:underline sm:text-lg">{method.value}</p>
+							<p class="text-xs leading-5 text-slate-600">{$t(method.labelKey)}</p>
+							<p class="mt-0.5 break-words text-sm font-medium leading-6 tabular-nums text-slate-900 underline-offset-4 group-hover:underline">{method.value}</p>
 						</div>
 						<ArrowUpRight class="h-4 w-4 shrink-0 text-slate-400 group-hover:text-slate-900" aria-hidden="true" strokeWidth={1.5} />
 					</a>
@@ -123,8 +122,8 @@
 				{/if}
 				{#if mapConsentOpen}
 					<section bind:this={mapConsentPanel} tabindex="-1" aria-labelledby="map-consent-title" aria-describedby="map-consent-description" class="absolute inset-0 flex flex-col justify-center bg-white/95 px-5 pb-5 pt-16 outline-none sm:px-6">
-						<h3 id="map-consent-title" class="text-base font-semibold text-slate-900">{$t('contact.map.consentTitle')}</h3>
-						<p id="map-consent-description" class="mt-2 text-sm leading-relaxed text-slate-600">{$t('contact.map.description')}</p>
+						<h3 id="map-consent-title" class="font-serif text-xl font-normal leading-snug tracking-normal text-slate-900">{$t('contact.map.consentTitle')}</h3>
+						<p id="map-consent-description" class="mt-2 text-sm leading-6 text-slate-600">{$t('contact.map.description')}</p>
 						<a class="mt-2 w-fit text-sm text-slate-600 underline underline-offset-4 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate-900" href={`${localizePath('/datenschutz', page.url.pathname)}#google-maps`} target="_blank" rel="noopener noreferrer">{$t('contact.map.privacy')}</a>
 						<div class="mt-4 flex flex-wrap items-center gap-2">
 							<Button size="sm" onclick={enableMap}>{$t('contact.map.consentAccept')}</Button>
@@ -143,8 +142,8 @@
 				<div class="flex min-w-0 flex-1 items-start gap-3">
 					<MapPin class="mt-1 h-5 w-5 shrink-0 text-brand" aria-hidden="true" strokeWidth={1.5} />
 					<div>
-						<h2 id="contact-arrival-heading" class="text-lg font-semibold text-slate-900">{$t('contact.map.title')}</h2>
-						<address class="mt-2 text-base not-italic leading-relaxed text-slate-600">
+						<h2 id="contact-arrival-heading" class="font-serif text-xl font-normal leading-snug tracking-normal text-slate-900">{$t('contact.map.title')}</h2>
+						<address class="mt-2 text-sm not-italic leading-6 text-slate-600">
 							{$t('contact.address.line1')}<br />{$t('contact.address.line2')}
 						</address>
 					</div>
@@ -158,10 +157,10 @@
 
 	<div class="mt-12 grid items-start gap-10 border-t border-slate-200 pt-10 lg:mt-16 lg:grid-cols-[0.9fr,1.1fr] lg:gap-16">
 		<section aria-labelledby="contact-stay-heading">
-			<h2 id="contact-stay-heading" class="text-lg font-semibold text-slate-900">{$t('contact.trust.title')}</h2>
-			<ul class="mt-5 space-y-4">
+			<h2 id="contact-stay-heading" class="font-serif text-xl font-normal leading-snug tracking-normal text-slate-900">{$t('contact.trust.title')}</h2>
+			<ul class="mt-4 space-y-3">
 				{#each stayDetails as item}
-					<li class="flex items-start gap-3 text-base leading-relaxed text-slate-600">
+					<li class="flex items-start gap-3 text-sm leading-6 text-slate-600">
 						<item.icon class="mt-1 h-5 w-5 shrink-0 text-slate-400" aria-hidden="true" strokeWidth={1.5} />
 						<span>{$t(item.textKey)}</span>
 					</li>
@@ -169,20 +168,23 @@
 			</ul>
 		</section>
 		<section aria-labelledby="contact-payment-heading">
-			<h2 id="contact-payment-heading" class="text-lg font-semibold text-slate-900">{$t('contact.payment.title')}</h2>
-			<ul class="mt-5 space-y-4">
+			<h2 id="contact-payment-heading" class="font-serif text-xl font-normal leading-snug tracking-normal text-slate-900">{$t('contact.payment.title')}</h2>
+			<ul class="mt-4 space-y-3">
 				{#each bankDetails as detail}
-					<li class="flex items-start gap-3 text-base leading-relaxed text-slate-600">
+					<li class="flex items-start gap-3 text-sm leading-6 text-slate-600">
 						<detail.icon class="mt-1 h-5 w-5 shrink-0 text-slate-400" aria-hidden="true" strokeWidth={1.5} />
-						<div class="min-w-0 flex-1"><p class="text-sm text-slate-500">{detail.label}</p><p class="break-words tabular-nums">{detail.value}</p></div>
+						<div class="min-w-0 flex-1">
+							<p class="text-xs leading-5 text-slate-600">{detail.label}</p>
+							<p class="mt-1 break-words font-medium tabular-nums text-slate-900">{detail.value}</p>
+						</div>
 						<Button variant="ghost" size="icon" onclick={() => copyToClipboard(detail.value, detail.type)} aria-label={$t(detail.copyKey)} title={$t(detail.copyKey)}>
 							{#if copied === detail.type}<Check class="h-4 w-4" aria-hidden="true" />{:else}<Copy class="h-4 w-4" aria-hidden="true" />{/if}
 						</Button>
 					</li>
 				{/each}
 			</ul>
-			<p class="mt-5 text-sm leading-relaxed text-slate-500">{$t('contact.payment.subtitle')}</p>
-			<p role="status" class={copyError ? 'mt-2 text-sm text-slate-600' : 'sr-only'}>{copyError ? $t('contact.payment.copyError') : copied ? $t('contact.payment.copied') : ''}</p>
+			<p class="mt-5 text-sm leading-6 text-slate-600">{$t('contact.payment.subtitle')}</p>
+			<p role="status" class={copyError ? 'mt-2 text-sm leading-6 text-slate-600' : 'sr-only'}>{copyError ? $t('contact.payment.copyError') : copied ? $t('contact.payment.copied') : ''}</p>
 		</section>
 	</div>
 </div>

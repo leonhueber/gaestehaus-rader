@@ -21,14 +21,14 @@ const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 const staticFreshnessEntries: Record<string, ContentFreshnessEntry> = {
 	'/': {
-		lastModified: '2026-10-10',
+		lastModified: '2026-10-19',
 		reviewGroup: 'core',
-		notes: 'Homepage map covers all 13 summer/winter experience entries across 14 sourced destinations, with trailhead access routes and localized experience links.',
+		notes: 'Nearby map section hidden, gallery introduction made season-neutral, and apartment cards reduced to names, key facts and base prices in both languages.',
 	},
 	'/unterkuenfte-preise': {
-		lastModified: '2026-04-25',
+		lastModified: '2026-10-19',
 		reviewGroup: 'accommodations',
-		notes: 'Accommodation overview and pricing presentation updated with current room content.',
+		notes: 'Local tax aligned to EUR 4.50 per person aged 17 and over per night in both languages.',
 	},
 	'/erlebnisse': {
 		lastModified: '2026-10-10',
@@ -108,9 +108,9 @@ const buildAccommodationEntries = (
 export const getSitemapFreshnessEntries = (rooms: Accommodation[]): Record<string, ContentFreshnessEntry> => ({
 	...staticFreshnessEntries,
 	...buildAccommodationEntries(rooms, {
-		lastModified: '2026-04-16',
+		lastModified: '2026-10-19',
 		reviewGroup: 'accommodations',
-		notes: 'Accommodation detail copy, galleries, and booking-specific room content reviewed.',
+		notes: 'Local tax aligned to EUR 4.50 per person aged 17 and over per night in both languages.',
 	}),
 });
 

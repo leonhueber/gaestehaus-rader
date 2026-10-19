@@ -355,9 +355,6 @@ import { localizePath } from '$lib/routing';
 					<div class="flex items-center justify-between gap-6 py-5">
 						<div>
 							<p class="text-sm text-slate-700">{$t('rooms.page.pricing.tax')}</p>
-							<p class="mt-1 text-xs text-slate-400">
-								{$t('rooms.page.pricing.tax.note')}
-							</p>
 						</div>
 						<span class="whitespace-nowrap text-sm font-semibold text-slate-900">
 							{$t('rooms.page.pricing.tax.price')}
