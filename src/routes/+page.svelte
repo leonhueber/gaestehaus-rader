@@ -185,7 +185,6 @@ import { localizePath } from '$lib/routing';
 	const roomPriceFormatter = $derived(new Intl.NumberFormat($lang === 'de' ? 'de-DE' : 'en-GB', {
 		style: 'currency', currency: 'EUR', maximumFractionDigits: 0,
 	}));
-	const accommodationsBase = $derived.by(() => localizedHref('/unterkuenfte-preise'));
 	const siteUrl = SITE_ORIGIN;
 	const lodgingImages = [
 		new URL(largestImageUrl('/images/Haus/gaestehaus-sommer.jpg'), siteUrl).toString(),
@@ -813,36 +812,51 @@ import { localizePath } from '$lib/routing';
 						class="-mx-4 mt-2 flex snap-x snap-mandatory gap-8 overflow-x-auto px-4 pb-7 pt-4 scroll-pl-4 scroll-pr-4 [scrollbar-width:thin] [scrollbar-color:theme(colors.slate.300)_transparent] [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-200 hover:[&::-webkit-scrollbar-thumb]:bg-slate-300 sm:mx-0 sm:px-0 sm:pb-5 sm:pt-3 sm:scroll-pl-0 sm:scroll-pr-0"
 					>
 						{#each rooms as r}
-							<CardLink tone="default" padding="none"
-								href={`${accommodationsBase}${r.slug}/`}
-								class="group relative flex w-[280px] shrink-0 snap-start flex-col overflow-hidden sm:w-[340px] lg:w-0 lg:flex-1"
-								onclick={() => trackEvent('Content: Room Card Click', { source: 'home', room: r.slug })}
-							>
-								<!-- Image -->
-								<div class="relative aspect-[4/3] overflow-hidden">
-									<img
-										{...imageAttrs(r.images.main, '(min-width: 1280px) 363px, (min-width: 1024px) calc((100vw - 128px) / 3), (min-width: 640px) 340px, 280px')}
-										alt={`${$t('home.rooms.card.imageAltPrefix')} ${r.title}`}
-										class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.025] motion-reduce:transform-none motion-reduce:transition-none"
-										loading="lazy"
-										decoding="async"
-									/>
-								</div>
+							{@const roomName = r.typeLabel[$lang] + ' ' + r.title}
+							{@const bookingLabel = $t('home.rooms.bookingLabel').replace('{room}', roomName)}
+							<article class="relative w-[280px] shrink-0 snap-start sm:w-[340px] lg:w-0 lg:flex-1">
+								<CardLink tone="default" padding="none"
+									href={localizedHref('/unterkuenfte-preise/' + r.slug)}
+									class="group flex h-full flex-col overflow-hidden focus-visible:-outline-offset-2"
+									onclick={() => trackEvent('Content: Room Card Click', { source: 'home', room: r.slug })}
+								>
+									<!-- Image -->
+									<div class="relative aspect-[4/3] overflow-hidden">
+										<img
+											{...imageAttrs(r.images.main, '(min-width: 1280px) 363px, (min-width: 1024px) calc((100vw - 128px) / 3), (min-width: 640px) 340px, 280px')}
+											alt={`${$t('home.rooms.card.imageAltPrefix')} ${r.title}`}
+											class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.025] motion-reduce:transform-none motion-reduce:transition-none"
+											loading="lazy"
+											decoding="async"
+										/>
+									</div>
 
-								<!-- Content -->
-								<div class="grid flex-1 grid-cols-[minmax(0,1fr)_auto] content-start items-baseline gap-x-3 gap-y-1.5 px-4 py-5 sm:px-5">
-									<h3 class="text-base font-semibold leading-snug tracking-tight text-slate-900">
-										{r.typeLabel[$lang]} {r.title}
-									</h3>
-									<p class="whitespace-nowrap text-right text-sm font-semibold leading-snug tabular-nums text-slate-900 sm:text-base">
-										{$t('home.rooms.priceFrom')} {roomPriceFormatter.format(r.pricePerNightBase)}
-									</p>
-									<p class="text-sm leading-relaxed text-slate-500">
-										{r.attributes.size} · {r.attributes.guests[$lang]}
-									</p>
-									<p class="text-right text-sm leading-relaxed text-slate-500">/ {$t('price.night')}</p>
-								</div>
-							</CardLink>
+									<!-- Content -->
+									<div class="grid flex-1 grid-cols-[minmax(0,1fr)_auto] content-start items-baseline gap-x-3 gap-y-1.5 px-4 py-5 sm:px-5">
+										<h3 class="text-base font-semibold leading-snug tracking-tight text-slate-900">
+											{r.typeLabel[$lang]} {r.title}
+										</h3>
+										<p class="whitespace-nowrap text-right text-sm font-semibold leading-snug tabular-nums text-slate-900 sm:text-base">
+											{$t('home.rooms.priceFrom')} {roomPriceFormatter.format(r.pricePerNightBase)}
+										</p>
+										<p class="text-sm leading-relaxed text-slate-500">
+											{r.attributes.size} · {r.attributes.guests[$lang]}
+										</p>
+										<p class="text-right text-sm leading-relaxed text-slate-500">/ {$t('price.night')}</p>
+									</div>
+								</CardLink>
+								<a
+									href={localizedHref('/buchen/' + r.slug)}
+									aria-label={bookingLabel}
+									title={bookingLabel}
+									onclick={() => trackEvent('Booking: Jetzt buchen', { source: 'home-room-card', room: r.slug })}
+									class="group absolute right-2 top-2 grid size-11 place-items-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-slate-900"
+								>
+									<span class="grid size-8 place-items-center rounded-full bg-white text-slate-800 shadow-sm group-hover:bg-slate-100">
+										<CalendarDays size={17} aria-hidden="true" />
+									</span>
+								</a>
+							</article>
 						{/each}
 					</div>
 				</div>
