@@ -1,4 +1,5 @@
 import type { Accommodation } from '$lib/data/accommodations';
+import { todayInAustria } from '$lib/booking-search';
 
 export type ReviewGroup =
 	| 'core'
@@ -21,14 +22,14 @@ const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 const staticFreshnessEntries: Record<string, ContentFreshnessEntry> = {
 	'/': {
-		lastModified: '2026-10-19',
+		lastModified: '2026-11-18',
 		reviewGroup: 'core',
-		notes: 'Nearby map section hidden, gallery introduction made season-neutral, and apartment cards reduced to names, key facts and base prices in both languages.',
+		notes: 'Updated bilingual apartment introduction and coffee information.',
 	},
 	'/unterkuenfte-preise': {
-		lastModified: '2026-10-19',
+		lastModified: '2026-11-18',
 		reviewGroup: 'accommodations',
-		notes: 'Local tax aligned to EUR 4.50 per person aged 17 and over per night in both languages.',
+		notes: 'Reviewed indicative nightly rates and linked the selected apartment to booking.',
 	},
 	'/erlebnisse': {
 		lastModified: '2026-10-10',
@@ -61,9 +62,9 @@ const staticFreshnessEntries: Record<string, ContentFreshnessEntry> = {
 		notes: 'Google Maps activation now requires an explicit consent action after a localized privacy notice.',
 	},
 	'/buchen': {
-		lastModified: '2026-01-22',
+		lastModified: '2026-11-18',
 		reviewGroup: 'core',
-		notes: 'Deskline booking handoff page.',
+		notes: 'Apartment selection and tariff guarantee information.',
 	},
 	'/fakten': {
 		lastModified: '2026-04-25',
@@ -108,9 +109,9 @@ const buildAccommodationEntries = (
 export const getSitemapFreshnessEntries = (rooms: Accommodation[]): Record<string, ContentFreshnessEntry> => ({
 	...staticFreshnessEntries,
 	...buildAccommodationEntries(rooms, {
-		lastModified: '2026-10-19',
+		lastModified: '2026-11-18',
 		reviewGroup: 'accommodations',
-		notes: 'Local tax aligned to EUR 4.50 per person aged 17 and over per night in both languages.',
+		notes: 'Reviewed indicative nightly rates and linked the selected apartment to booking.',
 	}),
 });
 
@@ -119,7 +120,7 @@ export const validateSitemapFreshnessEntries = (
 	entries: Record<string, ContentFreshnessEntry>
 ) => {
 	const errors: string[] = [];
-	const today = new Date().toISOString().slice(0, 10);
+	const today = todayInAustria();
 
 	for (const path of paths) {
 		const entry = entries[path];

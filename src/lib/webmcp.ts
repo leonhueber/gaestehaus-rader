@@ -1,3 +1,4 @@
+import { isIntegerInRange, isValidDate, todayInAustria, maximumGuests, validateStay, stayQuery } from '$lib/booking-search';
 import { accommodations, accommodationBySlug } from '$lib/data/accommodations';
 import {
 	activityFilters,
@@ -54,7 +55,6 @@ const amenityContentIds: Record<AmenityKey, string> = {
 	bathroom: 'badezimmer',
 };
 const VALID_APARTMENT_SLUGS = accommodations.map((accommodation) => accommodation.slug);
-const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 const amenityLabels: Record<string, Record<Lang, string>> = {
 	balkon: { de: 'Balkon', en: 'Balcony' },
@@ -95,31 +95,6 @@ const invalidInput = (message: string) => ({
 	error: 'invalid_input',
 	message,
 });
-
-const isIntegerInRange = (value: unknown, minimum: number, maximum: number): value is number =>
-	typeof value === 'number' && Number.isInteger(value) && value >= minimum && value <= maximum;
-
-const isValidDate = (value: unknown): value is string => {
-	if (typeof value !== 'string' || !ISO_DATE_PATTERN.test(value)) return false;
-	const date = new Date(`${value}T00:00:00Z`);
-	return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
-};
-
-const todayInAustria = () => {
-	const parts = new Intl.DateTimeFormat('en', {
-		timeZone: 'Europe/Vienna',
-		year: 'numeric',
-		month: '2-digit',
-		day: '2-digit',
-	}).formatToParts(new Date());
-	const part = (type: string) => parts.find((value) => value.type === type)!.value;
-	return `${part('year')}-${part('month')}-${part('day')}`;
-};
-
-const maximumGuests = (guestsLabel: string) => {
-	const values = guestsLabel.match(/\d+/g)?.map(Number) ?? [];
-	return values.length > 0 ? Math.max(...values) : 0;
-};
 
 const getGuesthouseFacts = () => {
 	const language = currentLanguage();
@@ -199,6 +174,7 @@ const recommendApartments = (input?: unknown) => {
 			size: accommodation.attributes.size,
 			view: accommodation.attributes.view[language],
 			fromPricePerNightEur: accommodation.pricePerNightBase,
+			bookingUrl: localizedUrl(`/buchen/${accommodation.slug}`),
 			amenities: accommodation.amenities.map((amenity) => {
 				const id = Object.entries(amenityContentIds).find(
 					([, contentId]) => contentId === amenity
@@ -445,7 +421,8 @@ const prepareBookingInquiry = (input?: unknown) => {
 		body,
 		emailUrl: `mailto:${guesthouseFacts.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`,
 		whatsappUrl: `https://wa.me/436766246826?text=${encodeURIComponent(body)}`,
-		bookingUrl: localizedUrl('/buchen'),
+		bookingUrl: localizedUrl(apartment ? '/buchen/' + apartment.slug : '/buchen') +
+			(children === 0 ? stayQuery({ checkIn: values.checkIn, checkOut: values.checkOut, adults: values.adults, childAges: [] }) : ''),
 		note:
 			language === 'de'
 				? 'Die Anfrage wurde nur vorbereitet und noch nicht versendet.'
@@ -453,9 +430,20 @@ const prepareBookingInquiry = (input?: unknown) => {
 	};
 };
 
-const openBooking = () => {
+const openBooking = (input?: unknown) => {
+	const values = asInputRecord(input);
+	if (!values || Object.keys(values).some(key => !['apartmentSlug', 'checkIn', 'checkOut', 'adults', 'childAges'].includes(key))) {
+		return invalidInput('Unknown booking parameters.');
+	}
+	const apartment = typeof values.apartmentSlug === 'string' ? accommodationBySlug(values.apartmentSlug) : undefined;
+	if (values.apartmentSlug !== undefined && !apartment) return invalidInput('Unknown apartmentSlug.');
+	let url = localizedUrl(apartment ? '/buchen/' + apartment.slug : '/buchen');
+	if (Object.keys(values).some(key => key !== 'apartmentSlug')) {
+		const stay = validateStay(values, apartment ? maximumGuests(apartment.attributes.guests.de) : undefined);
+		if (typeof stay === 'string') return invalidInput(stay);
+		url += stayQuery(stay);
+	}
 	const language = currentLanguage();
-	const url = localizedUrl('/buchen');
 
 	window.setTimeout(() => window.location.assign(url), 50);
 
@@ -554,10 +542,16 @@ const siteTools: SiteTool[] = [
 	{
 		name: 'open_booking',
 		description:
-			'Navigate the current top-level page to the localized live booking page. The guest completes availability checks and booking in the visible Deskline widget.',
+			'Open the booking page for any or one specific apartment. To search dates supply checkIn, checkOut and adults together, plus the actual ages of any children. The guest completes availability checks and booking in the visible Deskline widget.',
 		inputSchema: {
 			type: 'object',
-			properties: {},
+			properties: {
+				apartmentSlug: { type: 'string', enum: VALID_APARTMENT_SLUGS },
+				checkIn: { type: 'string', format: 'date' },
+				checkOut: { type: 'string', format: 'date' },
+				adults: { type: 'integer', minimum: 1, maximum: 10 },
+				childAges: { type: 'array', maxItems: 10, items: { type: 'integer', minimum: 0, maximum: 17 } },
+			},
 			additionalProperties: false,
 		},
 		annotations: { readOnlyHint: false },

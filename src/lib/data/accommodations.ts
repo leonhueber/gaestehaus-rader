@@ -25,6 +25,7 @@ export type AccommodationGalleryImage = {
 export type Accommodation = {
 	key: number;
 	slug: string;
+	desklineProductId: string;
 	title: string;
 	subtitle: Localized<string>;
 	seoTitle: Localized<string>;
@@ -45,18 +46,9 @@ export type Accommodation = {
 	amenities: string[];
 	floorplanImage?: string;
 	pricePerNightBase: number;
-	priceMatrix: Array<{
-		season: Localized<string>;
-		period: Localized<string>;
-		pricePerNight: string;
-		minStay: Localized<string>;
-		extraPerson: Localized<string>;
-	}>;
 	reviews: Array<{ name: string; rating: number; text: string; date?: string }>;
-	cardMeta: Localized<string>;
 	badgeLabel?: string | null;
 	typeLabel: Localized<string>;
-	detailMeta: Localized<string>;
 	detailBody: Localized<string>;
 };
 
@@ -90,6 +82,7 @@ export const accommodations: Accommodation[] = [
 	{
 		key: 3,
 		slug: 'nr-1',
+		desklineProductId: '6bfe3866-0230-4f9a-9da3-f804d4137fab',
 		title: 'Nr. 1',
 		subtitle: {
 			de: 'Helle Ferienwohnung mit Balkon und Morgensonne',
@@ -183,46 +176,6 @@ export const accommodations: Accommodation[] = [
 		amenities: ['balkon', 'fernseher', 'kueche', 'ausziehcouch', 'wifi', 'badezimmer'],
 		floorplanImage: '/images/Nr1/floorplan.png',
 		pricePerNightBase: 75,
-		priceMatrix: [
-			{
-				season: {
-					de: 'Sommer',
-					en: 'Summer',
-				},
-				period: {
-					de: '01. Apr - 30. Sep',
-					en: 'Apr 01 - Sep 30',
-				},
-				pricePerNight: '€ 75,-',
-				minStay: {
-					de: '3 Nächte',
-					en: '3 nights',
-				},
-				extraPerson: {
-					de: '€ 15,- pro Nacht',
-					en: '€ 15,- per night',
-				},
-			},
-			{
-				season: {
-					de: 'Winter',
-					en: 'Winter',
-				},
-				period: {
-					de: '20. Dez - 06. Jan',
-					en: 'Dec 20 - Jan 06',
-				},
-				pricePerNight: '€ 85,-',
-				minStay: {
-					de: '3 Nächte',
-					en: '3 nights',
-				},
-				extraPerson: {
-					de: '€ 15,- pro Nacht',
-					en: '€ 15,- per night',
-				},
-			},
-		],
 		reviews: [
 			{
 				name: 'Lenka',
@@ -232,18 +185,10 @@ export const accommodations: Accommodation[] = [
 					'Sehr gute Unterkunft in einem ruhigen Dorf. Die Besitzer sind tolle Leute, nett und hilfsbereit. Jedes Zimmer hatte eine Küche, was wir sehr zu schätzen wussten. Das Gästehaus Rader ist eine sehr gute Wahl für Familien mit Kindern. Das Haus war sauber und gut ausgestattet. Das Parken war völlig problemlos direkt neben dem Gästehaus.',
 			},
 		],
-		cardMeta: {
-			de: '35 m² · 1-3 Personen · Osten',
-			en: '35 m² · 1-3 guests · East',
-		},
 		badgeLabel: null,
 		typeLabel: {
 			de: 'Appartement',
 			en: 'Apartment',
-		},
-		detailMeta: {
-			de: '35 m² · 1-3 Personen · Osten',
-			en: '35 m² · 1-3 guests · East',
 		},
 		detailBody: {
 			de: 'Ruhige Ferienwohnung in Weißbriach im Gitschtal mit Balkon und Morgensonne, Küche mit Sitzecke sowie Bad mit Dusche und WC – ideal für 1–3 Gäste nahe Weissensee und Nassfeld.',
@@ -253,6 +198,7 @@ export const accommodations: Accommodation[] = [
 	{
 		key: 2,
 		slug: 'nr-2',
+		desklineProductId: '2af91a1c-a164-4069-8cb2-2eeef68abc70',
 		title: 'Nr. 2',
 		subtitle: {
 			de: 'Charmante Dachgeschosswohnung mit Balkon',
@@ -362,46 +308,6 @@ export const accommodations: Accommodation[] = [
 		amenities: ['balkon', 'fernseher', 'kueche', 'wifi', 'badezimmer'],
 		floorplanImage: '/images/Nr2/floorplan.png',
 		pricePerNightBase: 75,
-		priceMatrix: [
-			{
-				season: {
-					de: 'Sommer',
-					en: 'Summer',
-				},
-				period: {
-					de: '01. Apr - 30. Sep',
-					en: 'Apr 01 - Sep 30',
-				},
-				pricePerNight: '€ 75,-',
-				minStay: {
-					de: '3 Nächte',
-					en: '3 nights',
-				},
-				extraPerson: {
-					de: '€ 15,- pro Nacht',
-					en: '€ 15,- per night',
-				},
-			},
-			{
-				season: {
-					de: 'Winter',
-					en: 'Winter',
-				},
-				period: {
-					de: '20. Dez - 06. Jan',
-					en: 'Dec 20 - Jan 06',
-				},
-				pricePerNight: '€ 85,-',
-				minStay: {
-					de: '3 Nächte',
-					en: '3 nights',
-				},
-				extraPerson: {
-					de: '€ 15,- pro Nacht',
-					en: '€ 15,- per night',
-				},
-			},
-		],
 		reviews: [
 			{
 				name: 'Lenka',
@@ -411,18 +317,10 @@ export const accommodations: Accommodation[] = [
 					'Sehr gute Unterkunft in einem ruhigen Dorf. Die Besitzer sind tolle Leute, nett und hilfsbereit. Das Haus war sauber und gut ausgestattet. Parken problemlos direkt neben dem Gästehaus.',
 			},
 		],
-		cardMeta: {
-			de: '35 m² · 1-3 Personen · Osten/Westen',
-			en: '35 m² · 1-3 guests · East/West',
-		},
 		badgeLabel: null,
 		typeLabel: {
 			de: 'Appartement',
 			en: 'Apartment',
-		},
-		detailMeta: {
-			de: '35 m² · 1-3 Personen · Osten/Westen',
-			en: '35 m² · 1-3 guests · East/West',
 		},
 		detailBody: {
 			de: 'Gemütliches Dachgeschoss-Appartement in Weißbriach im Gitschtal mit Balkon, Ost-West-Ausblick, Küche mit Sitzecke und Bad mit Dusche und WC – ideal für 1–3 Gäste nahe Weissensee und Nassfeld.',
@@ -432,6 +330,7 @@ export const accommodations: Accommodation[] = [
 	{
 		key: 1,
 		slug: 'nr-3',
+		desklineProductId: '0a04acb5-b89b-462c-bc2c-f4b1b10df7bb',
 		title: 'Nr. 3',
 		subtitle: {
 			de: 'Sonnige Ferienwohnung mit Südbalkon und Gartenblick',
@@ -532,47 +431,7 @@ export const accommodations: Accommodation[] = [
 		},
 		amenities: ['balkon', 'fernseher', 'kueche', 'wifi', 'badezimmer'],
 		floorplanImage: '/images/Nr3/floorplan.png',
-		pricePerNightBase: 65,
-		priceMatrix: [
-			{
-				season: {
-					de: 'Sommer',
-					en: 'Summer',
-				},
-				period: {
-					de: '01. Apr - 30. Sep',
-					en: 'Apr 01 - Sep 30',
-				},
-				pricePerNight: '€ 65,-',
-				minStay: {
-					de: '3 Nächte',
-					en: '3 nights',
-				},
-				extraPerson: {
-					de: '/',
-					en: '/',
-				},
-			},
-			{
-				season: {
-					de: 'Winter',
-					en: 'Winter',
-				},
-				period: {
-					de: '20. Dez - 06. Jan',
-					en: 'Dec 20 - Jan 06',
-				},
-				pricePerNight: '€ 75,-',
-				minStay: {
-					de: '3 Nächte',
-					en: '3 nights',
-				},
-				extraPerson: {
-					de: '/',
-					en: '/',
-				},
-			},
-		],
+		pricePerNightBase: 70,
 		reviews: [
 			{
 				name: 'Milena',
@@ -582,18 +441,10 @@ export const accommodations: Accommodation[] = [
 					'Die Gastgeber-Familie war super freundlich und sehr zuvorkommend. Sehr persönlicher Umgang. Die Lage war perfekt. Man konnte alles gut sowohl mit dem Auto als auch zu Fuß oder mit dem Fahrrad erreichen. Alles in allem war es ein toller Urlaub im schönen Österreich den wir gerne im Gästehaus Rader wiederholen möchten!',
 			},
 		],
-		cardMeta: {
-			de: '28 m² · 1-2 Personen · Süden',
-			en: '28 m² · 1-2 guests · South',
-		},
 		badgeLabel: null,
 		typeLabel: {
 			de: 'Appartement',
 			en: 'Apartment',
-		},
-		detailMeta: {
-			de: '28 m² · 1-2 Personen · Süden',
-			en: '28 m² · 1-2 guests · South',
 		},
 		detailBody: {
 			de: 'Sonnige Ferienwohnung in Weißbriach im Gitschtal mit Südbalkon, Gartenblick, Küche mit Sitzecke und Bad mit Dusche/WC – ideal für 1–2 Gäste in ruhiger Lage nahe Weissensee und Nassfeld.',

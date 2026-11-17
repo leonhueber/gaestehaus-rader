@@ -33,8 +33,8 @@ function harness({ failOn, now = '2026-10-10T22:30:00Z' } = {}) {
 			compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
 		}).outputText;
 		vm.runInNewContext(code, {
-			exports, document, URL, Date: FixedDate,
-			window: { location: { pathname: '/', origin: 'http://localhost:5173' } },
+			exports, document, URL, URLSearchParams, Date: FixedDate,
+			window: { setTimeout() {}, location: { pathname: '/', origin: 'http://localhost:5173' } },
 			console: { warn: (...args) => warnings.push(args) },
 			require(id) {
 				if (id === 'lucide-svelte') return new Proxy({}, { get: () => () => null });
@@ -113,4 +113,19 @@ test('registration can retry after browser support becomes available', async () 
 	h.document.modelContext = context;
 	assert.equal(await h.api.registerSiteTools(), true);
 	assert.equal(h.registered.size, 5);
+});
+
+test('booking links retain apartment, dates and party and reject impossible stays', async () => {
+	const h = harness();
+	await h.api.registerSiteTools();
+	const stay = { checkIn: '2026-12-19', checkOut: '2026-12-22', adults: 2, apartmentSlug: 'nr-2' };
+	const url = new URL(h.call('open_booking', { ...stay, childAges: [7] }).url);
+	assert.equal(url.pathname, '/buchen/nr-2');
+	assert.equal(url.searchParams.get('checkOut'), stay.checkOut);
+	assert.deepEqual(url.searchParams.getAll('childAge'), ['7']);
+	assert.equal(h.call('open_booking', { ...stay, childAges: [7, 5] }).ok, false);
+	assert.equal(h.call('open_booking', { ...stay, checkOut: stay.checkIn }).ok, false);
+	assert.equal(h.call('open_booking', { adults: 2 }).ok, false);
+	assert.equal(h.call('open_booking', {}).ok, true);
+	assert.equal(new URL(h.call('prepare_booking_inquiry', stay).bookingUrl).searchParams.get('adults'), '2');
 });

@@ -3,30 +3,19 @@
 	import Card from '$lib/components/ui/Card.svelte';
 	import { reveal } from '$lib/actions/reveal';
 	import { lang, t } from '$lib/i18n';
-	import { resolve } from '$app/paths';
-import { page } from '$app/state';
+	import { page } from '$app/state';
 	import { accommodations } from '$lib/data/accommodations';
 	import { imageAttrs } from '$lib/images';
 	import { trackEvent } from '$lib/analytics/plausible';
 	import SeoHead from '$lib/components/SeoHead.svelte';
-import { localizePath } from '$lib/routing';
+	import { localizePath } from '$lib/routing';
 	import { SITE_ORIGIN } from '$lib/seo';
 	import { buildBreadcrumbListSchema, buildJsonLdGraph } from '$lib/structured-data';
 	import {
 		Lightbulb,
 		Wifi,
-		Tv,
-		Mountain,
-		Coffee,
-		Sun,
-		Flame,
-		ShowerHead,
-		Bath,
 		Baby,
-		Sofa,
 		SquareParking,
-		Utensils,
-		ArrowRight,
 		Gavel,
 		CreditCard,
 		CigaretteOff,
@@ -34,23 +23,6 @@ import { localizePath } from '$lib/routing';
 		Ticket,
 	} from 'lucide-svelte';
 
-	const amenityIcons: Record<string, typeof Wifi> = {
-		wifi: Wifi,
-		balcony: Sun,
-		balkon: Sun,
-		mountain: Mountain,
-		coffee: Coffee,
-		sauna: Flame,
-		fireplace: Flame,
-		shower: ShowerHead,
-		bath: Bath,
-		kitchen: Utensils,
-		kueche: Utensils,
-		badezimmer: Bath,
-		fernseher: Tv,
-		ausziehcouch: Sofa,
-		parking: SquareParking,
-	};
 
 
 	const localizedHref = (path: string) => localizePath(path, page.url.pathname);
@@ -79,12 +51,6 @@ import { localizePath } from '$lib/routing';
 		])
 	);
 
-	function badgeClasses(badgeLabel: string) {
-		if (badgeLabel === 'Besonders ruhig' || badgeLabel === 'Especially quiet') {
-			return 'bg-brand text-white';
-		}
-		return 'bg-slate-800/90 text-white';
-	}
 </script>
 
 <SeoHead
@@ -97,7 +63,7 @@ import { localizePath } from '$lib/routing';
 	{@html /* eslint-disable-next-line */ `<script type="application/ld+json">${roomsJsonLd}</script>`}
 </svelte:head>
 
-<div class="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6">
+<div class="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
 	<div class="space-y-10">
 		<!-- Header / breadcrumb -->
 		<section use:reveal class="opacity-0 translate-y-8 transition-all duration-700 ease-out space-y-4">
@@ -114,110 +80,28 @@ import { localizePath } from '$lib/routing';
 			</p>
 		</section>
 
-		<!-- Content grid -->
-		<section>
-			<!-- Filter -->
-			<!-- removed -->
-
-			<!-- Room list -->
-			<div class="space-y-14 sm:space-y-16">
-				{#each rooms as room}
-					<Card as="article" tone="default" padding="none"
-						class="group overflow-hidden"
-					>
-						<!-- Image -->
-						<div class="relative">
-							<a href={`${accommodationsBase}${room.slug}/`}>
-								<img
-									{...imageAttrs(room.images.main, '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 720px')}
-									alt={`${room.title} – ${room.subtitle[$lang]}`}
-									class="h-[38vh] min-h-48 max-h-72 w-full object-cover object-center sm:h-80 sm:max-h-none lg:h-[26rem]"
-									loading="lazy"
-									decoding="async"
-								/>
-							</a>
-							{#if room.badgeLabel}
-								<span
-									class={`absolute right-4 top-4 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] shadow-sm ${badgeClasses(
-										room.badgeLabel
-									)}`}
-								>
-									{room.badgeLabel}
-								</span>
-							{/if}
-							<div
-								class="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/10 to-transparent"
-							></div>
-						</div>
-
-						<!-- Content (split like screenshot) -->
-						<div class="grid gap-6 p-6 sm:p-7 md:grid-cols-[1.6fr,0.9fr] md:gap-0">
-							<!-- Left: title + meta -->
-							<div class="md:pr-10">
-								<h2 class="text-lg font-semibold text-slate-900 sm:text-xl">
-									<a href={`${accommodationsBase}${room.slug}/`} class="hover:opacity-90">
-										{room.title}
-									</a>
-								</h2>
-								<p class="text-sm text-slate-700">{room.typeLabel[$lang]}</p>
-
-								<div class="mt-2 text-xs text-slate-500">{room.detailMeta[$lang]}</div>
-
-								<!-- Amenities row -->
-								<div class="mt-5 hidden flex-wrap items-center gap-x-6 gap-y-3 text-xs text-slate-600 sm:flex">
-									{#each room.amenities as amenity}
-										<span
-											class={`items-center gap-2 ${
-												['balkon', 'kueche', 'wifi', 'badezimmer'].includes(amenity)
-													? 'inline-flex'
-													: 'hidden lg:inline-flex'
-											}`}
-										>
-											{#if amenityIcons[amenity]}
-												{@const Icon = amenityIcons[amenity]}
-												<Icon class="h-4 w-4 text-slate-400" />
-											{/if}
-											{$t(`amenity.${amenity}`)}
-										</span>
-									{/each}
-								</div>
-							</div>
-
-							<!-- Right: price + CTA (early on mobile) -->
-							<div
-								class="flex w-full flex-col items-start gap-4 md:w-auto md:items-end md:border-l md:border-slate-200 md:pl-10"
-							>
-								<div class="text-left md:text-right">
-									<p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-										{$t('rooms.page.from')}
-									</p>
-									<div class="mt-2 flex items-end justify-start gap-2 md:justify-end">
-										<p class="text-2xl font-semibold text-brand">€{room.pricePerNightBase}</p>
-										<span class="pb-1 text-xs text-slate-500">/ {$t('price.night')}</span>
-									</div>
-								</div>
-
-								<div class="flex w-full flex-col gap-4 md:w-auto md:items-end">
-									<ButtonLink variant="primary" size="md"
-										href={localizedHref('/buchen')}
-										class="w-full md:w-auto md:min-w-[180px]"
-										onclick={() => trackEvent('Booking: Jetzt buchen', { source: 'rooms-list' })}
-									>
-										{$t('rooms.page.cta')}
-										<ArrowRight class="h-4 w-4" />
-									</ButtonLink>
-									<div class="grid gap-1 text-[11px] text-slate-500 md:text-right">
-										<p>✓ {$lang === 'de' ? 'Bestpreis bei Direktbuchung' : 'Best price with direct booking'}</p>
-										<p>✓ {$lang === 'de' ? 'Keine Buchungsgebühren' : 'No booking fees'}</p>
-									</div>
-								</div>
-							</div>
-
-						</div>
-					</Card>
-				{/each}
-			</div>
-		</section>
+		<div class="grid items-stretch gap-4 md:grid-cols-3">
+			{#each rooms as room}
+				{@const detailHref = localizedHref('/unterkuenfte-preise/' + room.slug)}
+				<Card as="article" padding="none" class="flex flex-col overflow-hidden">
+					<a href={detailHref} aria-label={room.title + ' – ' + room.subtitle[$lang]}>
+						<img {...imageAttrs(room.images.main, '(min-width: 768px) 32vw, 94vw')}
+							alt={room.subtitle[$lang]} class="aspect-[16/9] w-full object-cover" />
+					</a>
+					<div class="flex flex-1 flex-col gap-2 p-5">
+						<h2 class="text-xl font-semibold"><a href={detailHref}>{room.typeLabel[$lang]} {room.title}</a></h2>
+						<p class="text-sm">{room.subtitle[$lang]}</p>
+						<p class="text-sm text-slate-600">{room.attributes.size} · {room.attributes.guests[$lang]}</p>
+						<p class="mt-auto pt-3 font-semibold">{$t('home.rooms.priceFrom')} {room.pricePerNightBase} € / {$t('price.night')}</p>
+						<ButtonLink href={localizedHref('/buchen/' + room.slug)} variant="primary"
+							onclick={() => trackEvent('Booking: Jetzt buchen', { source: 'rooms-list', room: room.slug })}>
+							{$lang === 'de' ? 'Verfügbarkeit prüfen' : 'Check availability'}
+						</ButtonLink>
+						<a href={detailHref} class="py-2 text-center text-sm font-semibold underline underline-offset-4">{$t('rooms.card.cta')}</a>
+					</div>
+				</Card>
+			{/each}
+		</div>
 
 		<!-- Bottom section -->
 		<section use:reveal class="opacity-0 translate-y-8 transition-all duration-700 ease-out space-y-12 sm:space-y-14">

@@ -41,7 +41,8 @@ function harness() {
 		states, scripts, intervals, timeouts,
 		get reloads() { return reloads; },
 		get settings() { return window.dw.q[0][2]; },
-		mount(lang = 'en') { return exports.mountDeskline(container, lang, { onStatusChange: value => states.push(value) }); },
+		get queue() { return window.dw; },
+		mount(lang = 'en', options = {}) { return exports.mountDeskline(container, lang, { ...options, onStatusChange: value => states.push(value) }); },
 		frame() { for (const fn of frames) fn(); frames.clear(); },
 		ready() { ready = true; for (const fn of intervals) fn(); },
 		timeout() { for (const fn of timeouts) fn(); },
@@ -83,4 +84,29 @@ test('returning to booking starts a fresh document instead of reusing provider g
 	const h = harness(); const cleanup = h.mount(); h.frame(); cleanup(); h.mount('de');
 	assert.equal(h.reloads, 1);
 	assert.equal(h.scripts.length, 1);
+});
+
+test('dated handoff waits for the utility and preserves the exact party and room', () => {
+	const h = harness();
+	h.mount('en', { productIds: ['selected'], stay: { checkIn: '2026-12-19', checkOut: '2026-12-22', adults: 2, childAges: [8] } });
+	h.frame();
+	assert.equal(h.scripts.length, 1);
+	assert.match(h.scripts[0].src, /dwutility/);
+	for (const poll of [...h.intervals]) poll();
+	assert.equal(h.scripts.length, 1);
+	let start;
+	h.queue.accommodationDetailQuickFind = (id, command, ready) => {
+		assert.equal(id, h.settings.localStorageId);
+		assert.equal(command.dateFrom, '2026-12-19');
+		assert.equal(command.dateTo, '2026-12-22');
+		assert.equal(command.occupancy1.adults, 2);
+		assert.deepEqual(command.occupancy1.children, [8]);
+		start = ready;
+	};
+	for (const poll of [...h.intervals]) poll();
+	start();
+	assert.equal(h.scripts.length, 2);
+	assert.deepEqual(h.settings.context.productIds, ['selected']);
+	h.ready();
+	assert.deepEqual(h.states, ['loading', 'ready']);
 });

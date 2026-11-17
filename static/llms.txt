@@ -36,6 +36,9 @@ Guest card:
 Booking:
 - Online booking is available via an external booking provider
 - Booking page: https://rader-gitschtal.at/buchen/
+- Apartment-specific booking pages: /buchen/nr-1/, /buchen/nr-2/, /buchen/nr-3/ (English: /en/book/nr-1/, /en/book/nr-2/, /en/book/nr-3/).
+- In a WebMCP-enabled browser, recommend_apartments returns indicative rates and individual booking links. open_booking accepts apartmentSlug, checkIn, checkOut, adults and optional childAges. Verify the dated offer and total in the booking widget.
+- prepare_booking_inquiry creates a draft email or WhatsApp link. The guest chooses whether to send it.
 
 Key pages:
 - Home: https://rader-gitschtal.at/
@@ -67,4 +70,4 @@ Data sources:
 - Contact and address: /kontakt/
 - Policies and FAQs: /faq/
 
-Last updated: 2026-04-27
+Booking information reviewed: 2026-11-18

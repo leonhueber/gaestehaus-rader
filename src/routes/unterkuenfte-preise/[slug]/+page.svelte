@@ -280,7 +280,7 @@ import { localizePath } from '$lib/routing';
 	{@html `<script type="application/ld+json">${roomJsonLd}</script>`}
 </svelte:head>
 
-<main class="bg-[#fbfaf7]">
+<div class="bg-[#fbfaf7]">
 	<div class="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
 		<section class="rounded-3xl bg-transparent">
 			<!-- Back -->
@@ -438,69 +438,14 @@ import { localizePath } from '$lib/routing';
 						</div>
 					</section>
 
-					<!-- Prices & Details TABLE -->
+					<!-- Indicative price -->
 					<section bind:this={priceSectionEl}>
 						<h2 class="text-2xl font-serif text-slate-900">{$t('room.detail.sections.prices')}</h2>
 
-						<Card tone="default" padding="none"
-							class="mt-5 w-full overflow-hidden"
-						>
-							<table class="hidden w-full text-left text-sm sm:table">
-								<thead class="bg-[#fbf3e8] text-sm font-semibold text-slate-600">
-									<tr>
-										<th class="px-4 py-4">{$t('room.detail.prices.season')}</th>
-										<!-- <th class="px-4 py-3">Zeitraum</th> -->
-										<th class="px-4 py-4">{$t('room.detail.prices.priceNight')}</th>
-										<th class="px-4 py-4">{$t('room.detail.prices.extraPerson')}</th>
-										<th class="px-4 py-4">{$t('room.detail.prices.minStay')}</th>
-									</tr>
-								</thead>
-								<tbody class="divide-y divide-slate-100">
-									{#each accommodation.priceMatrix as row}
-										<tr class={`text-slate-700 ${/sommer|summer/i.test(row.season[$lang]) ? 'bg-amber-50/50' : ''}`}>
-											<td class="px-4 py-3 font-semibold text-slate-900">{row.season[$lang]}</td>
-											<!-- <td class="px-4 py-3 text-slate-600">{row.period}</td> -->
-											<td class="px-4 py-3 font-semibold text-brand">{row.pricePerNight}</td>
-											<td class="px-4 py-3 font-semibold text-slate-900">
-												{row.extraPerson[$lang]}
-											</td>
-											<td class="px-4 py-3 font-semibold text-slate-900">{row.minStay[$lang]}</td>
-										</tr>
-									{/each}
-								</tbody>
-							</table>
-							<div class="divide-y divide-slate-100 text-sm sm:hidden">
-								{#each accommodation.priceMatrix as row}
-									<div class="space-y-3 p-4 text-slate-700">
-										<div class="flex items-baseline justify-between gap-3">
-											<p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
-												{$t('room.detail.prices.season')}
-											</p>
-											<p class="text-right font-semibold text-slate-900">{row.season[$lang]}</p>
-										</div>
-										<div class="flex items-baseline justify-between gap-3">
-											<p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
-												{$t('room.detail.prices.priceNight')}
-											</p>
-											<p class="text-right font-semibold text-brand">{row.pricePerNight}</p>
-										</div>
-										<div class="flex items-baseline justify-between gap-3">
-											<p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
-												{$t('room.detail.prices.extraPersonShort')}
-											</p>
-											<p class="text-right font-semibold text-slate-900">{row.extraPerson[$lang]}</p>
-										</div>
-										<div class="flex items-baseline justify-between gap-3">
-											<p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
-												{$t('room.detail.card.facts.minStayLabel')}
-											</p>
-											<p class="text-right font-semibold text-slate-900">{row.minStay[$lang]}</p>
-										</div>
-									</div>
-								{/each}
-							</div>
-						</Card>
-
+						<p class="mt-4 font-semibold">{$t('home.rooms.priceFrom')} {accommodation.pricePerNightBase} € / {$t('price.night')}</p>
+						<p class="mt-2 text-sm text-slate-700">{$lang === 'de'
+							? 'Den Gesamtpreis mit allen Gebühren siehst du nach Auswahl deiner Reisedaten.'
+							: 'Choose your dates to see the total price including fees.'}</p>
 						<p class="mt-3 text-xs text-slate-500">{$t('room.detail.prices.note')}</p>
 					</section>
 
@@ -669,14 +614,14 @@ import { localizePath } from '$lib/routing';
 
 						<!-- CTA -->
 						<ButtonLink variant="primary" size="md"
-							href={localizedHref('/buchen')}
+							href={localizedHref('/buchen/' + accommodation.slug)}
 							bind:element={mainBookingCtaEl}
 							class="mt-5 w-full"
 							onclick={() =>
 								trackEvent('Booking: Jetzt buchen', { source: 'room-detail', room: accommodation.slug })
 							}
 						>
-							{$t('room.detail.card.cta')}
+							{$lang === 'de' ? 'Verfügbarkeit für ' + accommodation.title + ' prüfen' : 'Check availability for ' + accommodation.title}
 						</ButtonLink>
 
 						<!-- Secondary line -->
@@ -688,11 +633,11 @@ import { localizePath } from '$lib/routing';
 			</div>
 		</section>
 	</div>
-</main>
+</div>
 
 <div
 	class={`mobile-sticky-booking lg:hidden ${stickyBookingBarVisible ? 'is-visible' : ''}`}
-	aria-hidden={!stickyBookingBarVisible}
+	inert={!stickyBookingBarVisible}
 >
 	<div class="rounded-2xl border border-white/40 bg-white/75 shadow-[0_18px_50px_rgba(15,23,42,0.22)] backdrop-blur-xl ring-1 ring-slate-200/60">
 		<div class="flex items-center justify-between gap-3 px-3 py-2">
@@ -707,12 +652,12 @@ import { localizePath } from '$lib/routing';
 				</p>
 			</div>
 			<ButtonLink variant="primary" size="md"
-				href={localizedHref('/buchen')}
+				href={localizedHref('/buchen/' + accommodation.slug)}
 				class="shrink-0"
 				onclick={() =>
 					trackEvent('Booking: Jetzt buchen', { source: 'room-detail-sticky', room: accommodation.slug })}
 			>
-				{$lang === 'de' ? 'Jetzt buchen' : 'Book now'}
+				{$lang === 'de' ? 'Verfügbarkeit prüfen' : 'Check availability'}
 			</ButtonLink>
 		</div>
 	</div>

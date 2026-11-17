@@ -185,7 +185,6 @@ export const buildOfferSchema = ({
 	url,
 	...(typeof price === 'number' ? { price } : {}),
 	priceCurrency: 'EUR',
-	availability: 'https://schema.org/InStock',
 	...(itemOfferedId
 		? {
 			itemOffered: {

@@ -1,3 +1,4 @@
+import type { BookingStay } from '$lib/booking-search';
 import { browser } from '$app/environment';
 
 const ACCOUNT_ID = 'fa73de04-c8e1-4b05-b4a8-5697e2d52a1c';
@@ -10,7 +11,13 @@ const PROVIDER_URL_PATTERN = /(deskline\.net|feratel|tosc)/i;
 let activeMountId = 0;
 let providerLoadedInDocument = false;
 
-type DwFn = ((...args: unknown[]) => void) & { q?: unknown[][] };
+type DwFn = ((...args: unknown[]) => void) & {
+	q?: unknown[][];
+	accommodationDetailQuickFind?: (storageId: string, search: {
+		dateFrom: string; dateTo: string; id: string; dbCode: string;
+		occupancy1: { units: number; adults: number; children: number[] };
+	}, ready: () => void) => void;
+};
 
 type DesklineWindow = Window & {
 	dw?: DwFn;
@@ -54,6 +61,7 @@ export function mountDeskline(
 	options?: {
 		serviceIds?: string[];
 		productIds?: string[];
+		stay?: BookingStay;
 		onStatusChange?: (status: DesklineStatus) => void;
 	}
 ) {
@@ -70,12 +78,16 @@ export function mountDeskline(
 	const mountId = ++activeMountId;
 	options?.onStatusChange?.('loading');
 	let readinessTimer: ReturnType<typeof setInterval> | undefined;
+	let utilityTimer: ReturnType<typeof setInterval> | undefined;
+	let finished = false;
 	let timeout: ReturnType<typeof setTimeout> | undefined;
 	const stopWaiting = () => {
 		clearInterval(readinessTimer);
+		clearInterval(utilityTimer);
 		clearTimeout(timeout);
 	};
 	const setStatus = (status: DesklineStatus) => {
+		finished = true;
 		stopWaiting();
 		if (mountId === activeMountId && container.isConnected) options?.onStatusChange?.(status);
 	};
@@ -88,6 +100,9 @@ export function mountDeskline(
 		const win = window as DesklineWindow;
 		win.dw = createQueue();
 		win.dw('settings', ACCOUNT_ID, {
+			localStorageId: ACCOUNT_ID,
+			keepGetParamsOnAppStart: true,
+			profileOverrides: options?.productIds?.length ? ['accommodation.showPriceMatrix=false'] : [],
 			context: {
 				serviceIds: options?.serviceIds ?? [],
 				productIds: options?.productIds ?? [],
@@ -97,13 +112,40 @@ export function mountDeskline(
 			doNotUseSelectedLang: true,
 		});
 
-		const script = document.createElement('script');
-		script.id = SCRIPT_ID;
-		script.async = true;
-		script.src = SCRIPT_SRC;
-		script.onerror = () => setStatus('error');
-		providerLoadedInDocument = true;
-		container.appendChild(script);
+		const startWidget = () => {
+			if (finished || mountId !== activeMountId || !container.isConnected) return;
+			const script = document.createElement('script');
+			script.id = SCRIPT_ID;
+			script.async = true;
+			script.src = SCRIPT_SRC;
+			script.onerror = () => setStatus('error');
+			providerLoadedInDocument = true;
+			container.appendChild(script);
+		};
+		const stay = options?.stay;
+		if (stay) {
+			const utility = document.createElement('script');
+			utility.src = 'https://web5.deskline.net/dwutility.js';
+			utility.onerror = () => setStatus('error');
+			// The utility loader loads its implementation in a second script.
+			utilityTimer = setInterval(() => {
+				if (finished || mountId !== activeMountId || !container.isConnected) return;
+				if (!win.dw?.accommodationDetailQuickFind) return;
+				clearInterval(utilityTimer);
+				try {
+					win.dw.accommodationDetailQuickFind(ACCOUNT_ID, {
+						id: 'ee29ea3d-3203-4fc3-8e2a-2b996f9f66a1', dbCode: 'KTN',
+						dateFrom: stay.checkIn, dateTo: stay.checkOut,
+						occupancy1: { units: 1, adults: stay.adults, children: stay.childAges }
+					}, startWidget);
+				} catch {
+					setStatus('error');
+				}
+			}, 100);
+			container.appendChild(utility);
+		} else {
+			startWidget();
+		}
 
 		// The loader's load event only confirms its script, not a usable booking form.
 		readinessTimer = setInterval(() => {

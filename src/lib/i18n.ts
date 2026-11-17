@@ -41,8 +41,8 @@ const translations: Record<Lang, Record<string, string>> = {
 		'hero.experience.kicker': 'Draußen wartet dein nächstes Erlebnis',
 		'hero.experience.primary': 'Erlebnis entdecken',
 		'hero.experience.secondary': 'Alle Erlebnisse',
-		'hero.title': 'Ihr Rückzugsort für\nalpine Gelassenheit',
-		'hero.subtitle': 'Entspann dich in unseren Ferienwohnungen in Weißbriach. Echte Kärntner Gastfreundschaft trifft auf unberührte Natur im Gitschtal.',
+		'hero.title': 'Drei Ferienwohnungen in Weißbriach',
+		'hero.subtitle': 'Mit eigenem Balkon und Küche, zwischen Weissensee und Nassfeld.',
 		'hero.slide.winter': 'Winterlicher Balkon-Ausblick',
 		'hero.slide.apartment': 'Appartement Nr. 2',
 		'hero.slide.summer': 'Unser Haus im Sommer',
@@ -76,18 +76,9 @@ const translations: Record<Lang, Record<string, string>> = {
 		'usp.4.body': 'Wandern und Skifahren ganz nah.',
 		'rooms.preview.title': 'Unterkünfte & Preise',
 		'rooms.preview.subtitle': 'Vergleichen Sie unsere Appartements auf einen Blick.',
-		'rooms.card.1.title': 'Nr. 3',
-		'rooms.card.1.body': 'Großzügig, sonniger Balkon, ideal für Familien.',
-		'rooms.card.1.meta': '45 m² · 2–4 Gäste · Bergblick',
-		'rooms.card.1.price': '150',
-		'rooms.card.2.title': 'Nr. 2',
-		'rooms.card.2.body': 'Ruhig gelegen, sorgfältig ausgestattet, viel Privatsphäre.',
-		'rooms.card.2.meta': '32 m² · 2 Gäste · Talblick',
-		'rooms.card.2.price': '120',
-		'rooms.card.3.title': 'Nr. 1',
-		'rooms.card.3.body': 'Gemütlich, perfekt für Paare oder kleine Familien.',
-		'rooms.card.3.meta': '28 m² · 1–2 Gäste · Waldblick',
-		'rooms.card.3.price': '110',
+
+
+
 		'rooms.section.kicker': 'Unsere Appartements',
 		'rooms.section.title': 'Dein Platz im Gitschtal',
 		'home.rooms.priceFrom': 'ab',
@@ -106,8 +97,7 @@ const translations: Record<Lang, Record<string, string>> = {
 		'home.trustbar.reviews': 'Top Bewertungen',
 		'rooms.card.cta': 'Details ansehen',
 		'rooms.page.title': 'Unsere Appartements',
-		'rooms.page.subtitle':
-			'Freuen Sie sich auf alpine Gemütlichkeit und durchdachte Ausstattung im Herzen der österreichischen Alpen.',
+		'rooms.page.subtitle': 'Alle drei Wohnungen haben einen eigenen Balkon, Küche und WLAN.',
 		'rooms.seo.title': 'Unterkünfte & Preise – Gästehaus Rader',
 		'rooms.seo.description':
 			'Vergleichen Sie unsere Ferienwohnungen in Weißbriach: Ausstattung, Größen und Preise auf einen Blick.',
@@ -207,7 +197,7 @@ const translations: Record<Lang, Record<string, string>> = {
 		'room.detail.card.breakdown.tip':
 			'Tipp: Früh buchen lohnt sich – beliebte Wochenenden sind schnell ausgebucht.',
 		'room.detail.card.cta': 'Jetzt buchen',
-		'room.detail.card.note': 'Buchung erfolgt über unseren Partner. Es entstehen noch keine Kosten.',
+		'room.detail.card.note': 'Zahlung vor Ort. Je nach Tarif wird zur Buchung eine Karte als Garantie benötigt.',
 		'room.detail.gallery.floorplanBadge': 'Grundriss',
 		'room.detail.gallery.close': 'Galerie schließen',
 		'room.detail.gallery.prev': 'Vorheriges',
@@ -221,24 +211,9 @@ const translations: Record<Lang, Record<string, string>> = {
 		'rooms.filter.apartments': 'Apartments',
 		'rooms.filter.price': 'Preis pro Nacht (€)',
 		'rooms.filter.amenities': 'Ausstattung',
-		'rooms.page.card.1.title': 'Alpenrose Deluxe',
-		'rooms.page.card.1.type': 'Appartement',
-		'rooms.page.card.1.meta': '35 m² · 2 Personen',
-		'rooms.page.card.1.body':
-			'Genießen Sie den Duft von Zirbenholz und den Panoramablick auf die Gipfel.',
-		'rooms.page.card.1.price': '145',
-		'rooms.page.card.2.title': 'Panorama-Appartement "Gletscherblick"',
-		'rooms.page.card.2.type': 'Appartement',
-		'rooms.page.card.2.meta': '65 m² · 2-3 Personen',
-		'rooms.page.card.2.body':
-			'Großzügiges Appartement mit offenem Kamin und privater Sauna für entspannte Abende.',
-		'rooms.page.card.2.price': '280',
-		'rooms.page.card.3.title': 'Familien-Apartment',
-		'rooms.page.card.3.type': 'Apartment',
-		'rooms.page.card.3.meta': '58 m² · 2-5 Personen',
-		'rooms.page.card.3.body':
-			'Helles Apartment mit viel Platz, Wohnküche und ruhigem Ausblick ins Tal.',
-		'rooms.page.card.3.price': '210',
+
+
+
 		'amenity.wifi': 'WLAN',
 		'amenity.balcony': 'Balkon',
 		'amenity.balkon': 'Balkon',
@@ -250,7 +225,7 @@ const translations: Record<Lang, Record<string, string>> = {
 		'amenity.ausziehcouch': 'Ausziehcouch',
 		'amenity.badezimmer': 'Badezimmer',
 		'amenity.mountain': 'N 2',
-		'amenity.coffee': 'Nespresso',
+		'amenity.coffee': 'Kaffeemaschine',
 		'amenity.sauna': 'Private Sauna',
 		'amenity.fireplace': 'Offener Kamin',
 		'amenity.shower': 'Regendusche',
@@ -737,8 +712,8 @@ const translations: Record<Lang, Record<string, string>> = {
 		'home.amenities.kitchen.kitchenette.title': 'Küchenzeile',
 		'home.amenities.kitchen.kitchenette.body':
 			'Mit Herd und Mikrowelle für die schnelle Urlaubsküche.',
-		'home.amenities.kitchen.espresso.title': 'Senseo Pad Maschine',
-		'home.amenities.kitchen.espresso.body': 'Kaffee Filtermaschine',
+		'home.amenities.kitchen.espresso.title': 'Kaffeemaschine',
+		'home.amenities.kitchen.espresso.body': '',
 		'home.amenities.kitchen.kettle.title': 'Wasserkocher',
 		'home.amenities.kitchen.kettle.body': '',
 		'home.amenities.kitchen.dishes.title': 'Geschirr-Set',
@@ -832,8 +807,7 @@ const translations: Record<Lang, Record<string, string>> = {
 		'workation.setup.light.body':
 			'Helle Räume für konzentriertes Arbeiten und angenehme Meetings.',
 		'workation.setup.coffee.title': 'Kaffee inklusive',
-		'workation.setup.coffee.body':
-			'Nespresso-Maschine im Apartment für Ihren produktiven Start in den Tag.',
+		'workation.setup.coffee.body': 'Kaffeemaschine in der eigenen Küche.',
 		'workation.setup.quiet.title': 'Ruhiges Umfeld',
 		'workation.setup.quiet.body':
 			'Weniger Ablenkung, mehr Fokus - perfekt für anspruchsvolle Aufgaben.',
@@ -1204,9 +1178,8 @@ const translations: Record<Lang, Record<string, string>> = {
 		'hero.experience.kicker': 'Your next adventure awaits',
 		'hero.experience.primary': 'Explore this experience',
 		'hero.experience.secondary': 'All experiences',
-		'hero.title': 'Your retreat for\nalpine serenity',
-		'hero.subtitle':
-			'Relax in our holiday apartments in Weissbriach. Authentic Carinthian hospitality meets unspoilt nature in the Gitschtal.',
+		'hero.title': 'Three holiday apartments in Weissbriach',
+		'hero.subtitle': 'Your own balcony and kitchen, between Lake Weissensee and Nassfeld.',
 		'hero.slide.winter': 'Winter view from the balcony',
 		'hero.slide.apartment': 'Apartment Nr. 2',
 		'hero.slide.summer': 'Our house in summer',
@@ -1240,18 +1213,9 @@ const translations: Record<Lang, Record<string, string>> = {
 		'usp.4.body': 'Hiking and skiing close by.',
 		'rooms.preview.title': 'Apartments & Prices',
 		'rooms.preview.subtitle': 'Compare our apartments at a glance.',
-		'rooms.card.1.title': 'Panorama Apartment',
-		'rooms.card.1.body': 'Spacious, sunny balcony, ideal for families.',
-		'rooms.card.1.meta': '45 m² · 2–4 guests · mountain view',
-		'rooms.card.1.price': '150',
-		'rooms.card.2.title': 'Mountain View Apartment',
-		'rooms.card.2.body': 'Quiet setting, thoughtful amenities, plenty of privacy.',
-		'rooms.card.2.meta': '32 m² · 2 guests · valley view',
-		'rooms.card.2.price': '120',
-		'rooms.card.3.title': 'Valley View Apartment',
-		'rooms.card.3.body': 'Cozy, perfect for couples or small families.',
-		'rooms.card.3.meta': '28 m² · 1–2 guests · forest view',
-		'rooms.card.3.price': '110',
+
+
+
 		'rooms.section.kicker': 'Our apartments',
 		'rooms.section.title': 'Your place in the Gitschtal',
 		'home.rooms.priceFrom': 'from',
@@ -1270,8 +1234,7 @@ const translations: Record<Lang, Record<string, string>> = {
 		'home.trustbar.reviews': 'Top reviews',
 		'rooms.card.cta': 'View details',
 		'rooms.page.title': 'Our apartments',
-		'rooms.page.subtitle':
-			'Enjoy alpine comfort and thoughtful amenities in the heart of the Austrian Alps.',
+		'rooms.page.subtitle': 'Each apartment has its own balcony, kitchen and Wi-Fi.',
 		'rooms.seo.title': 'Apartments & prices – Guesthouse Rader',
 		'rooms.seo.description':
 			'Compare our holiday apartments in Weissbriach with amenities, sizes, and pricing at a glance.',
@@ -1371,7 +1334,7 @@ const translations: Record<Lang, Record<string, string>> = {
 		'room.detail.card.breakdown.tip':
 			'Tip: Booking early pays off — popular weekends fill up fast.',
 		'room.detail.card.cta': 'Book now',
-		'room.detail.card.note': 'Booking is handled by our partner. No charges yet.',
+		'room.detail.card.note': 'Pay at the property. Depending on the rate, a card may be required to guarantee your booking.',
 		'room.detail.gallery.floorplanBadge': 'Floor plan',
 		'room.detail.gallery.close': 'Close gallery',
 		'room.detail.gallery.prev': 'Previous',
@@ -1385,24 +1348,9 @@ const translations: Record<Lang, Record<string, string>> = {
 		'rooms.filter.apartments': 'Apartments',
 		'rooms.filter.price': 'Price per night (€)',
 		'rooms.filter.amenities': 'Amenities',
-		'rooms.page.card.1.title': 'Alpenrose Deluxe',
-		'rooms.page.card.1.type': 'Apartment',
-		'rooms.page.card.1.meta': '35 m² · 2 guests',
-		'rooms.page.card.1.body':
-			'Enjoy the scent of pine wood and panoramic views of the peaks.',
-		'rooms.page.card.1.price': '145',
-		'rooms.page.card.2.title': 'Panorama Apartment "Glacier View"',
-		'rooms.page.card.2.type': 'Apartment',
-		'rooms.page.card.2.meta': '65 m² · 2-3 guests',
-		'rooms.page.card.2.body':
-			'Spacious apartment with open fireplace and private sauna for relaxed evenings.',
-		'rooms.page.card.2.price': '280',
-		'rooms.page.card.3.title': 'Family Apartment',
-		'rooms.page.card.3.type': 'Apartment',
-		'rooms.page.card.3.meta': '58 m² · 2-5 guests',
-		'rooms.page.card.3.body':
-			'Bright apartment with plenty of space, kitchen, and a calm valley view.',
-		'rooms.page.card.3.price': '210',
+
+
+
 		'amenity.wifi': 'Wi-Fi',
 		'amenity.balcony': 'Balcony',
 		'amenity.balkon': 'Balcony',
@@ -1414,7 +1362,7 @@ const translations: Record<Lang, Record<string, string>> = {
 		'amenity.ausziehcouch': 'Sofa bed',
 		'amenity.badezimmer': 'Bathroom',
 		'amenity.mountain': 'Mountain view',
-		'amenity.coffee': 'Nespresso',
+		'amenity.coffee': 'Coffee maker',
 		'amenity.sauna': 'Private sauna',
 		'amenity.fireplace': 'Open fireplace',
 		'amenity.shower': 'Rain shower',
@@ -1898,8 +1846,8 @@ const translations: Record<Lang, Record<string, string>> = {
 		'home.amenities.kitchen.imageAlt': 'Kitchenette in an apartment at Guesthouse Rader',
 		'home.amenities.kitchen.kitchenette.title': 'Kitchenette',
 		'home.amenities.kitchen.kitchenette.body': 'With stove and microwave for easy holiday meals.',
-		'home.amenities.kitchen.espresso.title': 'Senseo pad machine',
-		'home.amenities.kitchen.espresso.body': 'Filter coffee machine',
+		'home.amenities.kitchen.espresso.title': 'Coffee maker',
+		'home.amenities.kitchen.espresso.body': '',
 		'home.amenities.kitchen.kettle.title': 'Kettle',
 		'home.amenities.kitchen.kettle.body': '',
 		'home.amenities.kitchen.dishes.title': 'Dish set',
@@ -1988,7 +1936,7 @@ const translations: Record<Lang, Record<string, string>> = {
 		'workation.setup.light.title': 'Good lighting',
 		'workation.setup.light.body': 'Bright rooms for focused work and pleasant meetings.',
 		'workation.setup.coffee.title': 'Coffee included',
-		'workation.setup.coffee.body': 'Nespresso machine in the apartment for a productive start.',
+		'workation.setup.coffee.body': 'Coffee maker in your own kitchen.',
 		'workation.setup.quiet.title': 'Quiet environment',
 		'workation.setup.quiet.body': 'Less distraction, more focus for demanding tasks.',
 		'workation.internet.kicker': 'Internet & setup',

@@ -30,7 +30,8 @@
 	});
 
 	const localizedHref = (path: string) => localizePath(path, page.url.pathname);
-	const localeSwitchHref = (targetLocale: Lang) => samePathOtherLocale(page.url.pathname, targetLocale);
+	let bookingQuery = $state('');
+	const localeSwitchHref = (targetLocale: Lang) => samePathOtherLocale(page.url.pathname, targetLocale) + bookingQuery;
 
 	const navItems = $derived([
 		{ href: localizedHref('/unterkuenfte-preise'), key: 'nav.roomsShort' },
@@ -39,7 +40,11 @@
 		{ href: localizedHref('/kontakt'), key: 'nav.contact' },
 	]);
 
-	const bookingHref = $derived(localizedHref('/buchen'));
+	const bookingHref = $derived(
+		page.params.slug && /^\/(unterkuenfte-preise|buchen)\/nr-/.test(toGermanPath(page.url.pathname))
+			? localizedHref('/buchen/' + page.params.slug) + bookingQuery
+			: localizedHref('/buchen')
+	);
 	const isPreviewDeployment = env.PUBLIC_IS_PREVIEW === 'true';
 	const productionSiteOrigin = env.PUBLIC_PRODUCTION_SITE_ORIGIN || 'https://rader-gitschtal.at';
 
@@ -191,6 +196,7 @@
 	});
 
 	afterNavigate(({ to }) => {
+		bookingQuery = isFullWidth ? window.location.search : '';
 		trackPageview(to?.url.href ?? page.url.href);
 
 		if (typeof window !== 'undefined') {
@@ -237,7 +243,7 @@
 			<a
 				href={localizedHref('/')}
 				class="flex items-center rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/40"
-				aria-label="Gästehaus Rader - Startseite"
+				aria-label={$lang === 'de' ? 'Gästehaus Rader – Startseite' : 'Guesthouse Rader – Home'}
 			>
 				<div
 					class="flex h-16 w-32 items-center justify-center bg-white"
@@ -315,12 +321,12 @@
 
 		<nav class="border-t border-slate-100 bg-white/70 lg:hidden" aria-label={$t('nav.primary')}>
 			<div
-				class="mx-auto flex max-w-6xl items-center gap-5 overflow-x-auto px-4 py-3 text-sm font-medium sm:px-6"
+				class="mx-auto flex max-w-6xl flex-wrap items-center justify-evenly gap-x-1 px-1 text-xs font-medium sm:text-sm"
 			>
 				{#each navItems as item}
 					<a
 						href={item.href}
-						class={`whitespace-nowrap transition-colors hover:text-brand ${
+						class={`inline-flex min-h-11 items-center px-1 transition-colors hover:text-brand ${
 							isActive(item.href) ? 'text-brand' : 'text-slate-700'
 						}`}
 						aria-current={isActive(item.href) ? 'page' : undefined}
