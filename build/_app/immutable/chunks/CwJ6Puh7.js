@@ -1,1 +1,0 @@
-import{e as t}from"./BqyYP9Cq.js";import{a as r,b as a}from"./3dXi3xst.js";const n=!0,s=()=>r.map(o=>({slug:o.slug})),c=({params:o})=>{const e=a(o.slug);if(!e)throw t(404,"Unterkunft nicht gefunden");return{slug:e.slug}},m=Object.freeze(Object.defineProperty({__proto__:null,entries:s,load:c,prerender:n},Symbol.toStringTag,{value:"Module"}));export{m as _,s as e,c as l,n as p};

@@ -4,6 +4,8 @@
 	import Card from '$lib/components/ui/Card.svelte';
 	import CardButton from '$lib/components/ui/CardButton.svelte';
 	import CardLink from '$lib/components/ui/CardLink.svelte';
+	import ApartmentBookingSearch from '$lib/components/ApartmentBookingSearch.svelte';
+	import { maximumGuests } from '$lib/booking-search';
 	import { tooltipClasses } from '$lib/components/ui/styles';
 	/* eslint-disable */
 	import { lang, t } from '$lib/i18n';
@@ -813,7 +815,6 @@ import { localizePath } from '$lib/routing';
 					>
 						{#each rooms as r}
 							{@const roomName = r.typeLabel[$lang] + ' ' + r.title}
-							{@const bookingLabel = $t('home.rooms.bookingLabel').replace('{room}', roomName)}
 							<article class="relative w-[280px] shrink-0 snap-start sm:w-[340px] lg:w-0 lg:flex-1">
 								<CardLink tone="default" padding="none"
 									href={localizedHref('/unterkuenfte-preise/' + r.slug)}
@@ -845,17 +846,12 @@ import { localizePath } from '$lib/routing';
 										<p class="text-right text-sm leading-relaxed text-slate-500">/ {$t('price.night')}</p>
 									</div>
 								</CardLink>
-								<a
+								<ApartmentBookingSearch
+									slug={r.slug}
+									{roomName}
+									capacity={maximumGuests(r.attributes.guests.de)}
 									href={localizedHref('/buchen/' + r.slug)}
-									aria-label={bookingLabel}
-									title={bookingLabel}
-									onclick={() => trackEvent('Booking: Jetzt buchen', { source: 'home-room-card', room: r.slug })}
-									class="group absolute right-2 top-2 grid size-11 place-items-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-slate-900"
-								>
-									<span class="grid size-8 place-items-center rounded-full bg-white text-slate-800 shadow-sm group-hover:bg-slate-100">
-										<CalendarDays size={17} aria-hidden="true" />
-									</span>
-								</a>
+								/>
 							</article>
 						{/each}
 					</div>
