@@ -7,7 +7,9 @@
 	import Button from '$lib/components/ui/Button.svelte';
 	import StayRangeCalendar from '$lib/components/StayRangeCalendar.svelte';
 
-	let { slug, roomName, capacity, href }: { slug: string; roomName: string; capacity: number; href: string } = $props();
+	let { slug, roomName, capacity, href, source = 'home-room-card' }: {
+		slug: string; roomName: string; capacity: number; href: string; source?: 'home-room-card' | 'rooms-list';
+	} = $props();
 	const panelId = $derived('booking-search-' + slug);
 	const bookingLabel = $derived($t('home.rooms.bookingLabel').replace('{room}', roomName));
 	let supported = $state(false);
@@ -84,7 +86,7 @@
 		};
 	});
 
-	const triggerClass = 'group absolute right-2 top-2 grid size-11 place-items-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-slate-900';
+	const triggerClass = 'group grid size-11 place-items-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-slate-900';
 </script>
 
 {#snippet stepper(label: string, count: number, minimum: number, less: () => void, more: () => void)}
@@ -122,7 +124,7 @@
 		<form action={href} method="GET" data-sveltekit-reload class="text-sm font-medium"
 			onsubmit={(event) => {
 				if (!completeRange || !completeParty) { event.preventDefault(); return; }
-				trackEvent('Booking: Jetzt buchen', { source: 'home-room-card', room: slug });
+				trackEvent('Booking: Jetzt buchen', { source, room: slug });
 			}}>
 			<input type="hidden" name="checkIn" value={arrival} />
 			<input type="hidden" name="checkOut" value={departure} />

@@ -848,12 +848,14 @@ import { localizePath } from '$lib/routing';
 										<p class="text-right text-sm leading-relaxed text-slate-500">/ {$t('price.night')}</p>
 									</div>
 								</CardLink>
-								<ApartmentBookingSearch
-									slug={r.slug}
-									{roomName}
-									capacity={maximumGuests(r.attributes.guests.de)}
-									href={localizedHref('/buchen/' + r.slug)}
-								/>
+								<div class="absolute right-2 top-2">
+									<ApartmentBookingSearch
+										slug={r.slug}
+										{roomName}
+										capacity={maximumGuests(r.attributes.guests.de)}
+										href={localizedHref('/buchen/' + r.slug)}
+									/>
+								</div>
 							</article>
 						{/each}
 					</div>
