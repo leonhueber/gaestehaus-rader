@@ -98,7 +98,7 @@
 							class="h-[38vh] min-h-48 max-h-72 w-full object-cover sm:h-80 sm:max-h-none lg:h-[26rem]"
 						/>
 					</div>
-					<div class="grid gap-5 p-6 sm:p-7 md:grid-cols-[1.6fr,0.9fr]">
+					<div class="room-card-copy grid gap-5 p-6 sm:p-7 md:grid-cols-[1.6fr,0.9fr]">
 						<div>
 							<h2 class="text-lg font-semibold text-slate-900 sm:text-xl">
 								<a href={localizedHref('/unterkuenfte-preise/' + room.slug)}

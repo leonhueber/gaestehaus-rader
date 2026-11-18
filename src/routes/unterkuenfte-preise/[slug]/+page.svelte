@@ -282,7 +282,7 @@ import { localizePath } from '$lib/routing';
 
 <div class="bg-[#fbfaf7]">
 	<div class="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
-		<section class="rounded-3xl bg-transparent">
+		<section class="room-detail rounded-3xl bg-transparent">
 			<!-- Back -->
 			<a
 				href={localizedHref('/unterkuenfte-preise')}
@@ -317,7 +317,7 @@ import { localizePath } from '$lib/routing';
 				<div class="grid gap-4 grid-cols-2 lg:grid-cols-1">
 					<button
 						type="button"
-						class="relative overflow-hidden rounded-3xl transition hover:opacity-90"
+						class="room-preview-first relative overflow-hidden rounded-3xl transition hover:opacity-90"
 						onclick={() => openGallery(1)}
 					>
 						<img
@@ -336,7 +336,7 @@ import { localizePath } from '$lib/routing';
 
 					<button
 						type="button"
-						class="relative overflow-hidden rounded-3xl transition hover:opacity-90"
+						class="room-preview-second relative overflow-hidden rounded-3xl transition hover:opacity-90"
 						onclick={() => openGallery(2)}
 					>
 						<img
@@ -367,7 +367,7 @@ import { localizePath } from '$lib/routing';
 			</div>
 
 			<!-- HEADER + SHARE -->
-			<div class="mt-8 flex items-start justify-between gap-6">
+			<div class="room-heading mt-8 flex items-start justify-between gap-6">
 				<div class="min-w-0">
 					<p class="text-xs font-semibold uppercase tracking-[0.35em] text-brand pb-3">
 						{$t('brand.name')} · {accommodation.title}
@@ -397,7 +397,7 @@ import { localizePath } from '$lib/routing';
 			</div>
 
 			<!-- META ROW -->
-			<div class="mt-7 flex flex-wrap items-center gap-4 text-sm font-semibold text-slate-700">
+			<div class="room-facts mt-7 flex flex-wrap items-center gap-4 text-sm font-semibold text-slate-700">
 				<span class="inline-flex items-center gap-2"><Ruler class="h-4 w-4 text-brand" />{accommodation.attributes.size}</span>
 				<span class="text-slate-300">•</span>
 				<span class="inline-flex items-center gap-2"><Building2 class="h-4 w-4 text-brand" />{accommodation.attributes.floor}</span>

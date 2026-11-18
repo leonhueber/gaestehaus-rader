@@ -835,7 +835,7 @@ import { localizePath } from '$lib/routing';
 									</div>
 
 									<!-- Content -->
-									<div class="grid flex-1 grid-cols-[minmax(0,1fr)_auto] content-start items-baseline gap-x-3 gap-y-1.5 px-4 py-5 sm:px-5">
+									<div class="room-card-copy grid flex-1 grid-cols-[minmax(0,1fr)_auto] content-start items-baseline gap-x-3 gap-y-1.5 px-4 py-5 sm:px-5">
 										<h3 class="text-base font-semibold leading-snug tracking-tight text-slate-900">
 											{r.typeLabel[$lang]} {r.title}
 										</h3>

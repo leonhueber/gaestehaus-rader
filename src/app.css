@@ -70,6 +70,15 @@ html.lenis body {
 }
 
 @media (prefers-reduced-motion: no-preference) {
+	/* Only the room chosen for this navigation contributes extra snapshots. */
+	article:has([data-shared-room-photo]) .room-card-copy { view-transition-name: room-card-copy; }
+	.room-detail:has([data-shared-room-photo]) {
+		.room-preview-first { view-transition-name: room-preview-first; }
+		.room-preview-second { view-transition-name: room-preview-second; }
+		.room-heading { view-transition-name: room-heading; }
+		.room-facts { view-transition-name: room-facts; }
+	}
+
 	::view-transition-group(root) {
 		animation-duration: 170ms;
 	}
@@ -88,4 +97,49 @@ html.lenis body {
 		object-fit: cover;
 		mix-blend-mode: normal;
 	}
+
+	::view-transition-new(room-preview-first),
+	::view-transition-new(room-preview-second) {
+		animation: room-preview-in 290ms cubic-bezier(.2,.75,.22,1) 75ms both;
+		--room-preview-x: 18px;
+		--room-preview-y: 0px;
+	}
+	::view-transition-new(room-preview-second) { animation-delay: 130ms; }
+
+	::view-transition-new(room-heading),
+	::view-transition-new(room-facts),
+	::view-transition-new(room-card-copy) {
+		animation: room-copy-in 240ms cubic-bezier(.2,.75,.22,1) 125ms both;
+	}
+	::view-transition-new(room-facts) { animation-delay: 175ms; }
+	::view-transition-new(room-card-copy) { animation-delay: 90ms; }
+
+	::view-transition-old(room-card-copy),
+	::view-transition-old(room-heading),
+	::view-transition-old(room-facts),
+	::view-transition-old(room-preview-first),
+	::view-transition-old(room-preview-second) {
+		animation: room-withdraw 145ms ease-in both;
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) and (max-width: 1023px) {
+	::view-transition-new(room-preview-first),
+	::view-transition-new(room-preview-second) {
+		--room-preview-x: 0px;
+		--room-preview-y: 12px;
+	}
+}
+
+@keyframes room-preview-in {
+	from { opacity: 0; transform: translate(var(--room-preview-x), var(--room-preview-y)) scale(.965); }
+	to { opacity: 1; transform: none; }
+}
+@keyframes room-copy-in {
+	from { opacity: 0; transform: translateY(12px); }
+	to { opacity: 1; transform: none; }
+}
+@keyframes room-withdraw {
+	from { opacity: 1; transform: none; }
+	to { opacity: 0; transform: translateY(-5px); }
 }
