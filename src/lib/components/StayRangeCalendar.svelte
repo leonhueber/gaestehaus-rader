@@ -3,17 +3,18 @@
 	import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-svelte';
 	import { lang, t } from '$lib/i18n';
 
-	let { today, arrival = $bindable(''), departure = $bindable('') }: {
-		today: string; arrival?: string; departure?: string;
+	let { today, arrival = $bindable(''), departure = $bindable(''), oncomplete }: {
+		today: string; arrival?: string; departure?: string; oncomplete: () => void;
 	} = $props();
 
 	const dateOf = (iso: string) => new Date(iso + 'T00:00:00Z');
 	const isoOf = (date: Date) => date.toISOString().slice(0, 10);
 	let cursor = $state('');
-	let active = $state<'arrival' | 'departure'>('arrival');
+	let editing = $state<'arrival' | 'departure'>();
+	const active = $derived(editing ?? (arrival && !departure ? 'departure' : 'arrival'));
 	let hovered = $state('');
 	let calendar: HTMLDivElement;
-	const current = $derived(cursor || today);
+	const current = $derived(cursor || arrival || today);
 	const first = $derived(dateOf(current.slice(0, 7) + '-01'));
 	const lastDay = $derived(new Date(Date.UTC(first.getUTCFullYear(), first.getUTCMonth() + 1, 0)).getUTCDate());
 	const offset = $derived((first.getUTCDay() + 6) % 7);
@@ -42,16 +43,16 @@
 		move(iso);
 		if (active === 'departure' && iso > arrival) {
 			departure = iso;
-			active = 'arrival';
+			oncomplete();
 		} else {
 			arrival = iso;
 			departure = '';
-			active = 'departure';
+			editing = 'departure';
 		}
 	}
 
 	function edit(part: 'arrival' | 'departure') {
-		active = part;
+		editing = part;
 		move((part === 'arrival' ? arrival : departure || arrival) || today);
 	}
 
@@ -72,18 +73,16 @@
 </script>
 
 <div class="dates">
-	<button type="button" class:editing={active === 'arrival' && !departure} onclick={() => edit('arrival')}>
+	<button type="button" class:editing={active === 'arrival'} onclick={() => edit('arrival')}>
 		<span>{$t('home.rooms.arrival')}</span>
 		<strong>{arrival ? shortFormat.format(dateOf(arrival)) : $t('home.rooms.chooseDate')}</strong>
 	</button>
 	<ArrowRight size={15} aria-hidden="true" />
 	<button type="button" disabled={!arrival} class:editing={active === 'departure'} onclick={() => edit('departure')}>
 		<span>{$t('home.rooms.departure')}</span>
-		<strong>{departure ? shortFormat.format(dateOf(departure)) : $t('home.rooms.chooseDate')}</strong>
+		<strong>{departure ? shortFormat.format(dateOf(departure)) : $t(arrival ? 'home.rooms.pickEnd' : 'home.rooms.chooseDate')}</strong>
 	</button>
 </div>
-<input type="hidden" name="checkIn" value={arrival} />
-<input type="hidden" name="checkOut" value={departure} />
 <div bind:this={calendar} class="calendar" style:--slide={direction > 0 ? '9px' : '-9px'}>
 	<div class="month">
 		<strong aria-live="polite">{monthFormat.format(first)}</strong>

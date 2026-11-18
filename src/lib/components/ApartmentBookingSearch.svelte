@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { CalendarDays, X } from 'lucide-svelte';
+	import { onMount, tick } from 'svelte';
+	import { CalendarDays, ChevronDown, ChevronRight, Minus, Plus, Users, X } from 'lucide-svelte';
 	import { todayInAustria } from '$lib/booking-search';
 	import { trackEvent } from '$lib/analytics/plausible';
-	import { t } from '$lib/i18n';
+	import { lang, t } from '$lib/i18n';
 	import Button from '$lib/components/ui/Button.svelte';
 	import StayRangeCalendar from '$lib/components/StayRangeCalendar.svelte';
 
@@ -18,7 +18,20 @@
 	let arrival = $state('');
 	let departure = $state('');
 	let adults = $state(2);
-	let children = $state(0);
+	let childAges = $state<(number | '')[]>([]);
+	let section = $state<'dates' | 'summary' | 'guests'>('dates');
+	let dateRow = $state<HTMLButtonElement>();
+	const completeRange = $derived(!!arrival && departure > arrival);
+	const completeParty = $derived(childAges.every(age => age !== ''));
+	const atCapacity = $derived(adults + childAges.length >= capacity);
+	const nights = $derived((Date.parse(departure) - Date.parse(arrival)) / 86400000);
+	const dateFormat = $derived(new Intl.DateTimeFormat($lang === 'de' ? 'de-DE' : 'en-GB', {
+		day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC',
+	}));
+	const rangeLabel = $derived(completeRange ? dateFormat.formatRange(new Date(arrival), new Date(departure)) :
+		arrival ? dateFormat.format(new Date(arrival)) : $t('home.rooms.selectStay'));
+	const adultLabel = $derived(adults + ' ' + $t(adults === 1 ? 'home.rooms.oneAdult' : 'home.rooms.adults'));
+	const guestLabel = $derived(childAges.length ? adultLabel + ', ' + childAges.length + ' ' + $t(childAges.length === 1 ? 'home.rooms.oneChild' : 'home.rooms.children') : adultLabel);
 
 	onMount(() => { supported = 'showPopover' in HTMLElement.prototype; });
 
@@ -28,6 +41,19 @@
 			arrival = '';
 			departure = '';
 		}
+		section = !completeRange ? 'dates' : completeParty ? 'summary' : 'guests';
+	}
+
+	async function editDates() {
+		section = 'dates';
+		await tick();
+		panel?.querySelector<HTMLButtonElement>('[data-date][tabindex="0"]')?.focus({ preventScroll: true });
+	}
+
+	async function finishDates() {
+		section = completeParty ? 'summary' : 'guests';
+		await tick();
+		dateRow?.focus({ preventScroll: true });
 	}
 
 	$effect(() => {
@@ -59,8 +85,18 @@
 	});
 
 	const triggerClass = 'group absolute right-2 top-2 grid size-11 place-items-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-slate-900';
-	const fieldClass = 'h-11 min-w-12 rounded-lg bg-transparent pl-1 pr-1 text-base font-semibold text-slate-900 focus-visible:outline-slate-900';
 </script>
+
+{#snippet stepper(label: string, count: number, minimum: number, less: () => void, more: () => void)}
+	<div class="flex items-center justify-between gap-2">
+		<span>{label}</span>
+		<div class="stepper" role="group" aria-label={label}>
+			<button type="button" aria-label={label + ' −1'} disabled={count <= minimum} onclick={less}><Minus size={15} /></button>
+			<span aria-live="polite">{count}</span>
+			<button type="button" aria-label={label + ' +1'} disabled={atCapacity} onclick={more}><Plus size={15} /></button>
+		</div>
+	</div>
+{/snippet}
 
 {#snippet calendar()}
 	<span class="grid size-8 place-items-center rounded-full bg-white text-slate-800 shadow-sm group-hover:bg-slate-100">
@@ -84,31 +120,59 @@
 				class="-mr-2 grid size-11 place-items-center rounded-full hover:bg-slate-100"><X size={18} aria-hidden="true" /></button>
 		</div>
 		<form action={href} method="GET" data-sveltekit-reload class="text-sm font-medium"
-			onsubmit={() => trackEvent('Booking: Jetzt buchen', { source: 'home-room-card', room: slug })}>
-			{#if today}
-				{#key today}<StayRangeCalendar {today} bind:arrival bind:departure />{/key}
+			onsubmit={(event) => {
+				if (!completeRange || !completeParty) { event.preventDefault(); return; }
+				trackEvent('Booking: Jetzt buchen', { source: 'home-room-card', room: slug });
+			}}>
+			<input type="hidden" name="checkIn" value={arrival} />
+			<input type="hidden" name="checkOut" value={departure} />
+			<input type="hidden" name="adults" value={adults} />
+			{#each childAges as age}<input type="hidden" name="childAge" value={age} />{/each}
+			{#if today && section === 'dates'}
+				<div class="reveal-section pb-2">
+					{#key today}<StayRangeCalendar {today} bind:arrival bind:departure oncomplete={finishDates} />{/key}
+				</div>
+			{:else}
+				<button type="button" class="edit-row" bind:this={dateRow} onclick={editDates}>
+					<CalendarDays size={20} aria-hidden="true" />
+					<span class="grow">
+						<strong>{rangeLabel}</strong>
+						{#if completeRange}<small>{nights} {$t(nights === 1 ? 'price.night' : 'home.rooms.nights')}</small>
+						{:else if arrival}<small>{$t('home.rooms.pickEnd')}</small>{/if}
+					</span>
+					<ChevronRight size={16} aria-hidden="true" />
+				</button>
 			{/if}
-			<div class="mt-3 grid grid-cols-2 gap-x-5 gap-y-1 border-t border-slate-200 py-1">
-			<label class="flex items-center justify-between">{$t('home.rooms.adults')}
-				<select name="adults" bind:value={adults} class={fieldClass}>
-					{#each Array(capacity) as _, i}<option value={i + 1} disabled={i + 1 + children > capacity}>{i + 1}</option>{/each}
-				</select>
-			</label>
-			<label class="flex items-center justify-between">{$t('home.rooms.children')}
-				<select bind:value={children} class={fieldClass}>
-					{#each Array(capacity) as _, i}<option value={i} disabled={i + adults > capacity}>{i}</option>{/each}
-				</select>
-			</label>
-			{#each Array(children) as _, i}
-				<label class="pb-2 text-xs text-slate-600">{$t('home.rooms.childAge').replace('{n}', String(i + 1))}
-					<select name="childAge" required class="mt-1 block h-11 w-full rounded-lg border border-slate-200 bg-white px-2 text-sm text-slate-900">
-						<option value="">{$t('home.rooms.selectAge')}</option>
-						{#each Array(18) as _, age}<option value={age}>{age}</option>{/each}
-					</select>
-				</label>
-			{/each}
+			<button type="button" class="edit-row guest-row" aria-expanded={section === 'guests'} aria-controls={panelId + '-guests'}
+				onclick={() => { section = section === 'guests' ? (completeRange ? 'summary' : 'dates') : 'guests'; }}>
+				<Users size={20} aria-hidden="true" />
+				<span class="grow"><strong>{guestLabel}</strong>
+					{#if !completeParty && section !== 'guests'}<small>{$t('home.rooms.selectAge')}</small>{/if}
+				</span>
+				<ChevronDown size={16} aria-hidden="true" class={section === 'guests' ? 'rotate-180' : ''} />
+			</button>
+			<div id={panelId + '-guests'} hidden={section !== 'guests'}>
+				{#if section === 'guests'}
+					<div class="reveal-section space-y-1 pb-2">
+						{@render stepper($t('home.rooms.adults'), adults, 1, () => adults--, () => adults++)}
+						{@render stepper($t('home.rooms.children'), childAges.length, 0, () => childAges.pop(), () => childAges.push(''))}
+						{#each childAges as _, i}
+							<label class="flex min-h-11 items-center justify-between gap-3">
+								{$t('home.rooms.childAge').replace('{n}', String(i + 1))}
+								<select bind:value={childAges[i]} required class="h-11 rounded-lg border border-slate-200 bg-white px-2">
+									<option value="">{$t('home.rooms.selectAge')}</option>
+									{#each Array(18) as _, age}
+										<option value={age}>{age === 0 ? $t('home.rooms.underOne') : age + ' ' + $t(age === 1 ? 'home.rooms.year' : 'home.rooms.years')}</option>
+									{/each}
+								</select>
+							</label>
+						{/each}
+					</div>
+				{/if}
 			</div>
-			<Button type="submit" disabled={!arrival || !departure} class="mt-1 w-full">{$t('home.rooms.search')}</Button>
+			{#if completeRange && section !== 'dates'}
+				<Button type="submit" disabled={!completeParty} class="mt-2 w-full">{$t('home.rooms.search')}</Button>
+			{/if}
 		</form>
 	</div>
 {:else}
@@ -116,6 +180,17 @@
 {/if}
 
 <style>
+	.edit-row { display: flex; align-items: center; gap: .8rem; width: 100%; text-align: left; padding-block: .85rem; min-height: 52px; }
+	.edit-row strong { font-weight: 600; }
+	.edit-row small { display: block; font-size: .8rem; color: #536171; margin-top: .15rem; }
+	.guest-row { border-top: 1px solid #e2e8f0; }
+	.stepper { display: flex; align-items: center; text-align: center; font-variant-numeric: tabular-nums; }
+	.stepper span { min-width: 1.5rem; }
+	.stepper button { position: relative; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; }
+	.stepper button::before { content: ''; position: absolute; inset: 7px; border: 1px solid #cbd2d9; border-radius: 50%; }
+	.stepper button:enabled:hover::before { border-color: currentColor; }
+	.stepper button:disabled::before { border-color: #e6e9ed; }
+	.stepper button:disabled { color: #aab0b8; }
 	.booking-panel {
 		inset: auto auto 0 0;
 		width: 100%;
@@ -135,6 +210,7 @@
 		.booking-panel::backdrop { background: transparent; }
 	}
 	@media (prefers-reduced-motion: no-preference) {
+		.reveal-section { animation: section-in 160ms ease-out; }
 		.booking-panel {
 			opacity: 0; transform: translateY(var(--enter-y));
 			transition: opacity 160ms ease, transform 190ms cubic-bezier(.2,.75,.25,1), display 190ms allow-discrete, overlay 190ms allow-discrete;
@@ -142,4 +218,5 @@
 		.booking-panel:popover-open { opacity: 1; transform: translateY(0); }
 		@starting-style { .booking-panel:popover-open { opacity: 0; transform: translateY(var(--enter-y)); } }
 	}
+	@keyframes section-in { from { opacity: .3; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
 </style>
