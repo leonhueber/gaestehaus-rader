@@ -670,6 +670,7 @@ import { localizePath } from '$lib/routing';
 			{#each heroSlides as slide, index (slide.id)}
 				<img
 					{...imageAttrs(slide.src, heroImageSizes(slide))}
+					data-room-photo={activeHeroSlide === index ? slide.apartment?.slug : undefined}
 					alt=""
 					class="absolute inset-0 h-full w-full object-cover transition-opacity duration-500 motion-reduce:transition-none"
 					style:object-position={slide.position}
@@ -788,7 +789,7 @@ import { localizePath } from '$lib/routing';
 			</section>
 
 			<!-- ROOMS -->
-			<section use:reveal class="opacity-0 translate-y-8 transition-all duration-700 ease-out mt-4 pt-2 sm:mt-0 sm:pt-4">
+			<section use:reveal data-room-section class="opacity-0 translate-y-8 transition-all duration-700 ease-out mt-4 pt-2 sm:mt-0 sm:pt-4">
 				<div class="flex flex-wrap items-end justify-between gap-3 sm:gap-6">
 					<div class="max-w-2xl">
 						<p class="text-xs font-semibold uppercase tracking-[0.2em] text-brand">
@@ -811,6 +812,7 @@ import { localizePath } from '$lib/routing';
 
 				<div class="mt-8">
 					<div
+						data-room-rail
 						class="-mx-4 mt-2 flex snap-x snap-mandatory gap-8 overflow-x-auto px-4 pb-7 pt-4 scroll-pl-4 scroll-pr-4 [scrollbar-width:thin] [scrollbar-color:theme(colors.slate.300)_transparent] [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-200 hover:[&::-webkit-scrollbar-thumb]:bg-slate-300 sm:mx-0 sm:px-0 sm:pb-5 sm:pt-3 sm:scroll-pl-0 sm:scroll-pr-0"
 					>
 						{#each rooms as r}
@@ -822,7 +824,7 @@ import { localizePath } from '$lib/routing';
 									onclick={() => trackEvent('Content: Room Card Click', { source: 'home', room: r.slug })}
 								>
 									<!-- Image -->
-									<div class="relative aspect-[4/3] overflow-hidden">
+									<div data-room-photo={r.slug} class="relative aspect-[4/3] overflow-hidden rounded-t-2xl">
 										<img
 											{...imageAttrs(r.images.main, '(min-width: 1280px) 363px, (min-width: 1024px) calc((100vw - 128px) / 3), (min-width: 640px) 340px, 280px')}
 											alt={`${$t('home.rooms.card.imageAltPrefix')} ${r.title}`}

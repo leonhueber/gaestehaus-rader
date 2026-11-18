@@ -296,6 +296,7 @@ import { localizePath } from '$lib/routing';
 				<button
 					type="button"
 					class="group relative overflow-hidden rounded-3xl"
+					data-room-photo={accommodation.slug}
 					onclick={() => openGallery(0)}
 				>
 					<img

@@ -13,8 +13,8 @@
 	import Lenis from 'lenis';
 	import { onMount } from 'svelte';
 	import '../app.css';
-	import { afterNavigate } from '$app/navigation';
-	import { fade } from 'svelte/transition';
+	import { afterNavigate, onNavigate } from '$app/navigation';
+	import { transitionPage } from '$lib/page-transition';
 
 	let { children, data } = $props();
 	const currentLocale = $derived(data.locale);
@@ -195,6 +195,8 @@
 		};
 	});
 
+	onNavigate(transitionPage);
+
 	afterNavigate(({ to }) => {
 		bookingQuery = isFullWidth ? window.location.search : '';
 		trackPageview(to?.url.href ?? page.url.href);
@@ -345,7 +347,7 @@
 		class={`w-full flex-1 ${isHome ? '' : isFullWidth ? '' : 'mx-auto max-w-6xl px-2 py-10 sm:px-6'}`}
 	>
 		{#key page.url.pathname}
-			<div in:fade={{ duration: (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) ? 0 : 400, delay: 150 }} class="h-full">
+			<div class="h-full">
 				{@render children()}
 			</div>
 		{/key}

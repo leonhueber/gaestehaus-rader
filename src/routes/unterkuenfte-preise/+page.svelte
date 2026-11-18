@@ -84,7 +84,7 @@
 			{#each rooms as room}
 				{@const detailHref = localizedHref('/unterkuenfte-preise/' + room.slug)}
 				<Card as="article" padding="none" class="flex flex-col overflow-hidden">
-					<a href={detailHref} aria-label={room.title + ' – ' + room.subtitle[$lang]}>
+					<a href={detailHref} data-room-photo={room.slug} class="block overflow-hidden rounded-t-2xl" aria-label={room.title + ' – ' + room.subtitle[$lang]}>
 						<img {...imageAttrs(room.images.main, '(min-width: 768px) 32vw, 94vw')}
 							alt={room.subtitle[$lang]} class="aspect-[16/9] w-full object-cover" />
 					</a>
