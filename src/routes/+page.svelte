@@ -1172,11 +1172,11 @@ import { localizePath } from '$lib/routing';
 				<!-- Cards row (4 columns like screenshot) -->
 				<div
 					class={`mt-6 -mx-4 flex snap-x snap-mandatory items-stretch gap-6 overflow-x-auto px-4 pb-2 scroll-pl-4 scroll-pr-4 [scrollbar-width:thin] [scrollbar-color:theme(colors.slate.300)_transparent] [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-200 hover:[&::-webkit-scrollbar-thumb]:bg-slate-300 sm:mt-10 lg:mx-0 lg:grid lg:overflow-visible lg:px-0 lg:pb-0 ${
-						displayedTrustReviews.length > 3 ? 'lg:grid-cols-[1.3fr_repeat(4,minmax(0,1fr))]' : 'lg:grid-cols-[1.3fr_repeat(3,minmax(0,1fr))]'
+						displayedTrustReviews.length > 3 ? 'lg:grid-cols-[minmax(13.5rem,1fr)_repeat(4,minmax(0,1fr))]' : 'lg:grid-cols-[minmax(13.5rem,1fr)_repeat(3,minmax(0,1fr))]'
 					}`}
 				>
 					<Card tone="default" padding="compact"
-						class="w-[320px] max-w-[calc(100vw-2rem)] shrink-0 snap-start self-start lg:flex lg:w-auto lg:max-w-none lg:flex-col lg:self-stretch"
+						class="w-[270px] max-w-[calc(100vw-2rem)] shrink-0 snap-start self-start lg:flex lg:w-auto lg:max-w-none lg:flex-col lg:self-stretch"
 					>
 						<h3 class="text-lg font-semibold leading-snug text-slate-900">{$t('trust.platforms.title')}</h3>
 						<ul class="mt-2 divide-y divide-slate-200/80 lg:grid lg:flex-1 lg:auto-rows-fr">
@@ -1186,7 +1186,7 @@ import { localizePath } from '$lib/routing';
 										href={platform.href}
 										target="_blank"
 										rel="noreferrer"
-										class="group/platform grid min-h-16 w-full grid-cols-[1.75rem_minmax(0,1fr)_auto_1rem] items-center gap-3 rounded-lg py-2.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate-900"
+										class="group/platform grid min-h-16 w-full grid-cols-[1.75rem_minmax(0,1fr)_auto_1rem] items-center gap-2 rounded-lg py-2.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate-900"
 									>
 										<img src={asset(platform.logo)} alt="" width="28" height="28" class="h-7 w-7 object-contain" loading="lazy" />
 										<span class="min-w-0">

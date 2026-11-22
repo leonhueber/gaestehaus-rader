@@ -473,7 +473,7 @@ const translations: Record<Lang, Record<string, string>> = {
 		'trust.ratingLabel': 'Google Bewertung',
 		'trust.platforms.title': 'Bewertungen',
 		'trust.ratingValue': '4,9',
-		'trust.ratingMeta': 'Basierend auf 24 Rezensionen',
+		'trust.ratingMeta': '24 Rezensionen',
 		'trust.verified': 'Verifizierte Bewertungen',
 		'trust.review.1':
 			'Die Wohnung ist gemütlich, warm und hatte alles, was wir gebraucht haben. Der Vermieter ist sehr nett und hilfsbereit.',
@@ -1635,7 +1635,7 @@ const translations: Record<Lang, Record<string, string>> = {
 		'trust.ratingLabel': 'Google rating',
 		'trust.platforms.title': 'Reviews',
 		'trust.ratingValue': '4.9',
-		'trust.ratingMeta': 'Based on 24 reviews',
+		'trust.ratingMeta': '24 reviews',
 		'trust.verified': 'Verified reviews',
 		'trust.review.1':
 			'The apartment is cozy, warm, and had everything we needed. The host is very kind and helpful.',

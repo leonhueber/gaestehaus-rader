@@ -2,6 +2,7 @@
 	import Button from '$lib/components/ui/Button.svelte';
 	import { cardClasses } from '$lib/components/ui/styles';
 	import { imageAttrs } from '$lib/images';
+	import { closeGalleryToOrigin } from '$lib/gallery-transition';
 	import { ChevronLeft, ChevronRight, X } from 'lucide-svelte';
 
 	export type GalleryLightboxItem = {
@@ -43,6 +44,17 @@
 	);
 	const activeItem = $derived(items[activeIndex]);
 	const hasManyItems = $derived(items.length > 1);
+	let galleryPhoto: HTMLImageElement | undefined = $state();
+	let closing = false;
+
+	const closeGallery = () => {
+		if (closing) return;
+		closing = true;
+		closeGalleryToOrigin(galleryPhoto, () => {
+			onClose();
+			closing = false;
+		});
+	};
 
 	const setIndex = (nextIndex: number) => {
 		if (!items.length) return;
@@ -62,7 +74,7 @@
 	const handleKeydown = (event: KeyboardEvent) => {
 		if (!open) return;
 		if (event.key === 'Escape') {
-			onClose();
+			closeGallery();
 			return;
 		}
 		if (event.key === 'ArrowLeft') {
@@ -100,7 +112,7 @@
 		<button
 			type="button"
 			class="absolute inset-0"
-			onclick={onClose}
+			onclick={closeGallery}
 			aria-label={closeLabel}
 		></button>
 
@@ -109,7 +121,7 @@
 				<p class="min-w-0 text-sm font-medium leading-snug sm:text-base">{title}</p>
 				<Button variant="ghost" size="icon"
 					type="button"
-					onclick={onClose}
+					onclick={closeGallery}
 					aria-label={closeLabel}
 				>
 					<X class="h-5 w-5" strokeWidth={1.75} />
@@ -139,6 +151,7 @@
 
 				<img
 					data-gallery-photo
+					bind:this={galleryPhoto}
 					{...imageAttrs(activeItem.src, imageSizes)}
 					alt={activeItem.alt}
 					class={`absolute inset-0 h-full w-full object-contain ${activeItem.contain ? 'p-4 sm:p-6' : ''}`}

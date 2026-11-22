@@ -1,0 +1,1 @@
+import{_ as i}from"../chunks/B74cWNLZ.js";import"../chunks/BukU7apv.js";import"../chunks/BQw1QrQW.js";import{component as p}from"./6.vl06QoaB.js";function m(o){p(o,{})}export{m as component,i as universal};
