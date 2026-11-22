@@ -83,7 +83,7 @@
 		<div class="space-y-14 sm:space-y-16">
 			{#each rooms as room}
 				{@const roomName = room.typeLabel[$lang] + ' ' + room.title}
-				<Card as="article" padding="none" class="relative isolate overflow-hidden">
+				<Card as="article" id={room.slug} padding="none" class="relative isolate scroll-mt-40 overflow-hidden">
 					<div data-room-photo={room.slug} class="overflow-hidden rounded-t-2xl">
 						<img
 							{...imageAttrs(room.images.main, '(min-width: 896px) 846px, (min-width: 640px) calc(100vw - 50px), calc(100vw - 34px)')}

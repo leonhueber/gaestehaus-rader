@@ -62,7 +62,21 @@
 	<h1 class="font-serif text-3xl leading-tight text-slate-900 sm:text-4xl">{$t('contact.title')}</h1>
 	<div class="mt-8 space-y-8 sm:mt-10 sm:space-y-10">
 		<section aria-labelledby="contact-methods-heading">
-			<h2 id="contact-methods-heading" class="mb-2 text-lg font-semibold text-slate-900">{$t('contact.address.name')}</h2>
+			<div class="mb-5 flex items-start gap-3">
+				<MapPin class="mt-1 h-5 w-5 shrink-0 text-slate-500" aria-hidden="true" strokeWidth={1.5} />
+				<div class="min-w-0">
+					<h2 id="contact-methods-heading" class="text-lg font-semibold text-slate-900">{$t('contact.address.name')}</h2>
+					<address class="mt-1 text-sm not-italic leading-6 text-slate-700">
+						<a href="https://www.google.com/maps/dir/?api=1&destination=Wei%C3%9Fbriach%2092%2C%209622%20Wei%C3%9Fbriach%2C%20Austria"
+							target="_blank" rel="noopener noreferrer" title={$t('contact.route.cta')}
+							onclick={() => trackEvent('Map: Open External', { source: 'contact', placement: 'map-address' })}
+							class="group inline-block underline decoration-slate-300 underline-offset-4 hover:text-slate-950 focus-visible:outline-offset-4">
+							{$t('contact.address.line1')}, {$t('contact.address.line2')}
+							<ArrowUpRight class="inline h-4 w-4 text-slate-500 group-hover:text-slate-900" aria-hidden="true" strokeWidth={1.5} />
+						</a>
+					</address>
+				</div>
+			</div>
 			<div class="divide-y divide-slate-200 border-y border-slate-200">
 				{#each contactMethods as method}
 					<div class="flex items-center gap-2">
@@ -83,17 +97,6 @@
 
 					</div>
 				{/each}
-				<a href="https://www.google.com/maps/dir/?api=1&destination=Wei%C3%9Fbriach%2092%2C%209622%20Wei%C3%9Fbriach%2C%20Austria"
-					target="_blank" rel="noopener noreferrer" title={$t('contact.route.cta')}
-					onclick={() => trackEvent('Map: Open External', { source: 'contact', placement: 'map-address' })}
-					class="group flex items-center gap-3 py-2.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate-900">
-					<MapPin class="h-5 w-5 shrink-0 text-slate-500" aria-hidden="true" strokeWidth={1.5} />
-					<div class="min-w-0 flex-1">
-						<p class="text-xs leading-5 text-slate-600">{$t('contact.map.title')}</p>
-						<address class="mt-0.5 text-sm font-medium not-italic leading-6 text-slate-900 underline-offset-4 group-hover:underline">{$t('contact.address.line1')}, {$t('contact.address.line2')}</address>
-					</div>
-					<ArrowUpRight class="h-4 w-4 shrink-0 text-slate-400 group-hover:text-slate-900" aria-hidden="true" strokeWidth={1.5} />
-				</a>
 			</div>
 		</section>
 
@@ -114,7 +117,6 @@
 
 		<section aria-labelledby="contact-payment-heading" class="min-w-0">
 			<h2 id="contact-payment-heading" class="text-lg font-semibold text-slate-900">{$t('contact.payment.title')}</h2>
-			<p class="mt-1 text-sm leading-relaxed text-slate-600">{$t('contact.payment.subtitle')}</p>
 			<dl class="mt-3 max-w-md divide-y divide-slate-200 border-y border-slate-200">
 				{#each bankDetails as detail}
 					<div class="grid grid-cols-[2.5rem_minmax(0,1fr)_auto] items-center gap-x-2 py-2">
@@ -128,6 +130,7 @@
 					</div>
 				{/each}
 			</dl>
+			<p class="mt-3 text-sm leading-relaxed text-slate-600">{$t('contact.payment.subtitle')}</p>
 			<p role="status" class={copyError ? 'mt-2 text-sm text-slate-600' : 'sr-only'}>{copyError ? $t('contact.payment.copyError') : copied ? $t('contact.payment.copied') : ''}</p>
 		</section>
 	</div>

@@ -1176,7 +1176,7 @@ import { localizePath } from '$lib/routing';
 					}`}
 				>
 					<Card tone="default" padding="compact"
-						class="w-[270px] max-w-[calc(100vw-2rem)] shrink-0 snap-start self-start lg:flex lg:w-auto lg:max-w-none lg:flex-col lg:self-stretch"
+						class="w-[270px] max-w-[calc(100vw-2rem)] shrink-0 snap-start self-start px-4 lg:flex lg:w-auto lg:max-w-none lg:flex-col lg:self-stretch"
 					>
 						<h3 class="text-lg font-semibold leading-snug text-slate-900">{$t('trust.platforms.title')}</h3>
 						<ul class="mt-2 divide-y divide-slate-200/80 lg:grid lg:flex-1 lg:auto-rows-fr">
@@ -1186,7 +1186,7 @@ import { localizePath } from '$lib/routing';
 										href={platform.href}
 										target="_blank"
 										rel="noreferrer"
-										class="group/platform grid min-h-16 w-full grid-cols-[1.75rem_minmax(0,1fr)_auto_1rem] items-center gap-2 rounded-lg py-2.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate-900"
+										class="group/platform grid min-h-16 w-full grid-cols-[1.75rem_minmax(0,1fr)_auto] items-center gap-2 rounded-lg py-2.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate-900"
 									>
 										<img src={asset(platform.logo)} alt="" width="28" height="28" class="h-7 w-7 object-contain" loading="lazy" />
 										<span class="min-w-0">
@@ -1195,11 +1195,10 @@ import { localizePath } from '$lib/routing';
 												<span class="mt-1 block text-xs leading-relaxed text-slate-500">{$t(platform.metaKey)}</span>
 											{/if}
 										</span>
-										<span class="text-right tabular-nums">
-											<span class="block text-2xl font-semibold leading-tight tracking-tight text-slate-900">{$t(platform.scoreKey)}</span>
-											<span class="mt-1 block whitespace-nowrap text-sm leading-snug text-slate-500">/ {platform.scale}</span>
+										<span class="flex items-baseline gap-1 whitespace-nowrap tabular-nums">
+											<span class="text-xl font-semibold leading-tight tracking-tight text-slate-900">{$t(platform.scoreKey)}</span>
+											<span class="text-xs text-slate-500">/ {platform.scale}</span>
 										</span>
-										<ArrowUpRight class="h-4 w-4 text-slate-400 transition-colors group-hover/platform:text-brand motion-reduce:transition-none" aria-hidden="true" strokeWidth={1.5} />
 									</a>
 								</li>
 							{/each}

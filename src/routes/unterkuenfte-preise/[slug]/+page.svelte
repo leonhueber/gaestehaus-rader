@@ -2,6 +2,7 @@
 	import ButtonLink from '$lib/components/ui/ButtonLink.svelte';
 	import Card from '$lib/components/ui/Card.svelte';
 	import { browser } from '$app/environment';
+	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { lang, t } from '$lib/i18n';
 	import { getSortedAccommodationGallery } from '$lib/data/accommodations';
@@ -11,7 +12,7 @@
 	import GalleryLightbox, { type GalleryLightboxItem } from '$lib/components/GalleryLightbox.svelte';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import { SITE_ORIGIN } from '$lib/seo';
-	import { localizePath } from '$lib/routing';
+	import { localizePath, normalizePathname } from '$lib/routing';
 	import {
 		buildBreadcrumbListSchema,
 		buildJsonLdGraph,
@@ -43,9 +44,23 @@
 	const localizedHref = (path: string) => localizePath(path, page.url.pathname);
 	const entryPoint = $derived(browser ? page.url.searchParams.get('from') : null);
 	const fromHome = $derived(entryPoint === 'home' || entryPoint === 'home-rooms');
+	const listHref = $derived(localizedHref('/unterkuenfte-preise'));
 	const backHref = $derived(fromHome
 		? localizedHref('/') + (entryPoint === 'home-rooms' ? '#appartements' : '')
-		: localizedHref('/unterkuenfte-preise'));
+		: listHref + '#' + accommodation.slug);
+	let enteredFromList = false;
+
+	afterNavigate(({ from, type }) => {
+		enteredFromList = type === 'link' && from !== null &&
+			normalizePathname(from.url.pathname) === normalizePathname(listHref);
+	});
+
+	function returnToList(event: MouseEvent) {
+		if (fromHome || !enteredFromList || event.button !== 0 ||
+			event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+		event.preventDefault();
+		history.back();
+	}
 	const siteUrl = SITE_ORIGIN;
 
 	const amenityIcons = {
@@ -236,7 +251,7 @@
 
 <article class="room-detail px-2 sm:px-0">
 	<div class="flex items-center justify-between gap-4">
-		<a href={backHref} class="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-950 hover:underline">
+		<a href={backHref} onclick={returnToList} class="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-950 hover:underline">
 			<ArrowLeft size={16} aria-hidden="true" />{$t(fromHome ? 'nav.home' : 'nav.roomsShort')}
 		</a>
 	</div>
