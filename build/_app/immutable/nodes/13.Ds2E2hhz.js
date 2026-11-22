@@ -1,0 +1,1 @@
+import{e as t,l as r,p as o,_ as n}from"../chunks/DORyNE_t.js";import"../chunks/TNcEmLzY.js";const l=Object.freeze(Object.defineProperty({__proto__:null,entries:t,load:r,prerender:o},Symbol.toStringTag,{value:"Module"}));function _(e,a){n(e,{get data(){return a.data}})}export{_ as component,l as universal};
