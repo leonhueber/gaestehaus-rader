@@ -195,7 +195,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 		return (index % 2 === 0) === (row % 2 === 0) ? 'wide' : 'narrow';
 	}
 	const photoCardClasses =
-		'group relative block w-full scroll-mt-28 overflow-hidden rounded-2xl bg-slate-700 text-left text-white [text-shadow:0_1px_12px_rgba(15,23,42,0.35)] transition-shadow duration-300 hover:shadow-[0_14px_34px_rgba(15,23,42,0.2)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate-900 motion-reduce:transition-none';
+		'group relative block w-full scroll-mt-28 overflow-hidden rounded-2xl bg-slate-700 text-left text-white [text-shadow:0_1px_2px_rgba(15,23,42,0.55),0_2px_14px_rgba(15,23,42,0.45)] transition-shadow duration-300 hover:shadow-[0_14px_34px_rgba(15,23,42,0.2)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate-900 motion-reduce:transition-none';
 
 	function onWindowKeydown(event: KeyboardEvent) {
 		if (event.key === 'Escape' && activeExperience) void closeExperienceModal();
@@ -292,7 +292,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 			]}
 			loading={eager ? 'eager' : 'lazy'} decoding="async" />
 	</div>
-	<div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/30 via-45% to-transparent to-75%" aria-hidden="true"></div>
+	<div class="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-slate-950/15 via-30% to-transparent to-50%" aria-hidden="true"></div>
 {/snippet}
 
 {#snippet featuredCard(event: ExperienceEvent)}
@@ -301,20 +301,20 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 		onclick={(clickEvent) => openExperienceModal(event, clickEvent.currentTarget)}
 		class="group relative block w-full scroll-mt-28 overflow-hidden text-left"
 	>
-		<div class="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 sm:aspect-[2/1] sm:min-h-96"
+		<div class="relative aspect-[4/5] w-full overflow-hidden bg-slate-100 sm:aspect-[2/1] sm:min-h-96"
 			style:view-transition-name={experienceImageTransitionName(event)}>
 			<img {...imageAttrs(event.image, '(max-width: 1024px) 100vw, 1100px')}
 				alt={localize(event.title)}
 				class={['absolute inset-0 h-full w-full object-cover', event.id === 'summer-hike' ? 'object-left' : 'object-center']}
 				loading="eager" decoding="async" />
-			<div class="absolute inset-0 hidden bg-gradient-to-t from-slate-950/25 to-transparent to-60% sm:block" aria-hidden="true"></div>
+			<div class="absolute inset-0 bg-gradient-to-t from-slate-950/35 to-transparent to-55% sm:from-slate-950/25 sm:to-60%" aria-hidden="true"></div>
 		</div>
-		<div class="p-4 sm:absolute sm:bottom-5 sm:left-5 sm:right-5 sm:max-w-xl sm:rounded-xl sm:border sm:border-white/30 sm:bg-slate-950/25 sm:p-5 sm:text-white sm:backdrop-blur-sm sm:[text-shadow:0_1px_8px_rgba(15,23,42,0.45)]">
+		<div class="absolute inset-x-3 bottom-3 rounded-xl border border-white/30 bg-slate-950/25 p-4 text-white backdrop-blur-sm [text-shadow:0_1px_8px_rgba(15,23,42,0.45)] sm:bottom-5 sm:left-5 sm:right-5 sm:max-w-xl sm:p-5">
 			<h3 class="text-xl font-semibold leading-tight sm:text-2xl">{localize(event.title)}</h3>
 			{#if event.description}
-				<p class="mt-2 line-clamp-2 text-sm leading-relaxed text-slate-600 sm:text-white/90">{localize(event.description)}</p>
+				<p class="mt-2 line-clamp-2 text-sm leading-relaxed text-white/90">{localize(event.description)}</p>
 			{/if}
-			<div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-medium text-slate-600 sm:text-white/90">
+			<div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-medium text-white/90">
 				{#each buildSummaryFacts(event) as fact}
 					<span class="inline-flex items-center gap-1.5" title={fact.label}>
 						<fact.icon size={14} aria-hidden="true" />{fact.value}

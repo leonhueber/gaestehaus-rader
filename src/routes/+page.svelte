@@ -684,12 +684,12 @@ import { localizePath } from '$lib/routing';
 		</div>
 
 		<div
-			class={`hero-content relative flex flex-col px-6 pb-28 pt-32 sm:px-10 lg:px-[6vw] ${isLeftAlignedHero ? 'items-start justify-end' : 'items-center justify-center'}`}
+			class={`hero-content relative flex flex-col px-6 pb-24 pt-32 sm:px-10 sm:pb-28 lg:px-[6vw] ${isLeftAlignedHero ? 'items-start justify-end' : 'items-center justify-end sm:justify-center'}`}
 			style:min-height="inherit"
 		>
 			{#each [isLeftAlignedHero] as leftAligned ('hero-copy')}
 				<div animate:flip={{ duration: prefersReducedMotion() ? 0 : 650 }} class={`flex w-full max-w-3xl flex-col ${leftAligned ? 'items-start text-left' : 'items-center text-center'}`}>
-					<h1 id="home-hero-title" class="max-w-4xl whitespace-pre-line text-balance font-serif text-4xl font-medium leading-[1.1] tracking-normal sm:text-6xl sm:leading-[1.1]">
+					<h1 id="home-hero-title" class="max-w-4xl whitespace-pre-line text-balance font-serif text-[2.15rem] font-medium leading-[1.1] tracking-normal sm:text-6xl sm:leading-[1.1]">
 						{isInfoHero ? heroInfo.title : $t('hero.title')}
 					</h1>
 					{#if isInfoHero && heroInfo.meta}
@@ -697,12 +697,12 @@ import { localizePath } from '$lib/routing';
 							{heroInfo.meta}
 						</p>
 					{/if}
-					<p class={`mt-6 whitespace-pre-line text-base font-normal leading-relaxed text-white sm:text-lg ${leftAligned ? 'max-w-lg' : 'max-w-2xl'}`}>
+					<p class={`mt-4 whitespace-pre-line text-base font-normal leading-relaxed text-white sm:mt-6 sm:text-lg ${leftAligned ? 'max-w-lg' : 'max-w-2xl'} ${isInfoHero ? 'hidden sm:block' : ''}`}>
 						{isInfoHero ? heroInfo.description : $t('hero.subtitle')}
 					</p>
 
 					{#if !heroSlide.experience}
-						<div class={`mt-8 flex flex-wrap items-center gap-x-8 gap-y-4 ${leftAligned ? 'justify-start' : 'justify-center'}`}>
+						<div class={`mt-6 flex flex-wrap items-center gap-x-8 gap-y-3 sm:mt-8 sm:gap-y-4 ${leftAligned ? 'justify-start' : 'justify-center'}`}>
 							<ButtonLink variant="primary" size="lg"
 								href={localizedHref(isInfoHero ? heroInfo.href : '/unterkuenfte-preise') + (isInfoHero ? heroInfo.suffix : '')}
 							>
@@ -1243,10 +1243,10 @@ import { localizePath } from '$lib/routing';
 									</div>
 
 									<div class="leading-tight">
-										<p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-900">
+										<p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-900">
 											{review.name}
 										</p>
-										<p class="text-[11px] text-slate-400">
+										<p class="text-xs text-slate-500">
 											{review.date ? formatReviewAge(review.date, $lang) : review.meta[$lang]}
 										</p>
 									</div>
@@ -1275,10 +1275,10 @@ import { localizePath } from '$lib/routing';
 					</p>
 				</div>
 
-				<div class="mt-10 space-y-8 sm:space-y-5 lg:space-y-6">
+				<div class="mt-8 flex snap-x snap-mandatory scroll-px-2 items-stretch gap-4 overflow-x-auto px-2 pb-3 [scrollbar-width:thin] [scrollbar-color:theme(colors.slate.300)_transparent] sm:mt-10 sm:block sm:space-y-5 sm:overflow-visible sm:px-0 sm:pb-0 lg:space-y-6">
 					{#each seasonPanels as season}
 						<article
-							class={`season-row ${season.reverse ? 'season-row--reverse' : ''} overflow-visible rounded-[1.5rem] border border-slate-200/80 ${season.panelClass} shadow-sm ring-1 ring-black/5`}
+							class={`season-row ${season.reverse ? 'season-row--reverse' : ''} w-[86%] max-w-[22rem] shrink-0 snap-start overflow-visible sm:w-auto sm:max-w-none sm:shrink rounded-[1.5rem] border border-slate-200/80 ${season.panelClass} shadow-sm ring-1 ring-black/5`}
 						>
 							<div class={`season-stage grid lg:min-h-[455px] lg:items-stretch ${season.reverse ? 'lg:grid-cols-[1.34fr_1fr]' : 'lg:grid-cols-[0.72fr_1.58fr]'}`}>
 								<div class={`season-copy relative z-10 flex flex-col justify-center p-5 sm:p-8 lg:px-8 lg:py-10 xl:px-10 xl:py-12 ${season.reverse ? 'lg:order-2' : 'lg:order-1'}`}>
@@ -1400,7 +1400,7 @@ import { localizePath } from '$lib/routing';
 			<div class="mt-6 flex flex-wrap items-center gap-3 text-sm text-white/80">
 				<span class="font-semibold text-white/90">{$t('contact.direct.title')}</span>
 				<a
-					class="hover:text-white"
+					class="inline-flex min-h-11 items-center hover:text-white"
 					href="tel:+436766246826"
 					onclick={() => trackEvent('Contact: Phone Click', { source: 'home', line: 'mobile' })}
 				>
@@ -1408,7 +1408,7 @@ import { localizePath } from '$lib/routing';
 				</a>
 				<span class="text-white/50">•</span>
 				<a
-					class="hover:text-white"
+					class="inline-flex min-h-11 items-center hover:text-white"
 					href="tel:+434286222"
 					onclick={() => trackEvent('Contact: Phone Click', { source: 'home', line: 'landline' })}
 				>
@@ -1416,7 +1416,7 @@ import { localizePath } from '$lib/routing';
 				</a>
 				<span class="text-white/50">•</span>
 				<a
-					class="hover:text-white"
+					class="inline-flex min-h-11 items-center hover:text-white"
 					href="mailto:info@rader-gitschtal.at"
 					onclick={() => trackEvent('Contact: Email Click', { source: 'home' })}
 				>
@@ -1453,6 +1453,14 @@ import { localizePath } from '$lib/routing';
 		background:
 			radial-gradient(ellipse at 50% 54%, rgb(15 23 32 / 62%) 0%, rgb(15 23 32 / 42%) 38%, transparent 76%),
 			radial-gradient(ellipse 18% 8% at 50% 96%, rgb(15 23 32 / 25%), transparent 100%);
+	}
+
+	/* On phones the copy sits at the bottom, so only the lower part of the photo is darkened. */
+	@media (max-width: 639px) {
+		.hero-info-shade,
+		.hero-shade {
+			background: linear-gradient(to top, rgb(15 23 32 / 82%) 0%, rgb(15 23 32 / 58%) 30%, rgb(15 23 32 / 14%) 56%, transparent 70%);
+		}
 	}
 
 	.home-hero :global(a:focus-visible) {
@@ -1805,26 +1813,6 @@ import { localizePath } from '$lib/routing';
 			background: #ffffff;
 		}
 
-		.season-row + .season-row {
-			margin-top: 3.75rem !important;
-			position: relative;
-		}
-
-		.season-row + .season-row::before {
-			background: linear-gradient(
-				90deg,
-				transparent,
-				rgba(148, 163, 184, 0.34),
-				transparent
-			);
-			content: '';
-			height: 1px;
-			left: 12%;
-			position: absolute;
-			right: 12%;
-			top: -1.9rem;
-		}
-
 		.season-stage {
 			border-radius: inherit;
 			display: flex;
@@ -1833,7 +1821,7 @@ import { localizePath } from '$lib/routing';
 		}
 
 		.season-visual {
-			min-height: clamp(22rem, 92vw, 25rem);
+			min-height: 15rem;
 			order: 1;
 			position: relative;
 			z-index: 1;
@@ -1897,7 +1885,7 @@ import { localizePath } from '$lib/routing';
 
 		.season-house-image {
 			border-radius: 1.35rem 1.35rem 0 0;
-			height: clamp(22rem, 92vw, 25rem);
+			height: 15rem;
 			min-height: 0;
 		}
 
@@ -1921,7 +1909,8 @@ import { localizePath } from '$lib/routing';
 			border-width: 1px;
 			bottom: auto;
 			box-shadow: 0 18px 38px -22px rgba(15, 23, 42, 0.92);
-			display: block;
+			/* The thumbnails crowd the narrow photo; the main photo still opens the full season gallery. */
+			display: none;
 			height: clamp(6.2rem, 24vw, 7.8rem);
 			right: 0.75rem;
 			width: clamp(7.4rem, 32vw, 9.6rem);
