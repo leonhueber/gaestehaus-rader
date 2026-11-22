@@ -5,7 +5,7 @@
 	import { trackEvent } from '$lib/analytics/plausible';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import { t } from '$lib/i18n';
-	import { ArrowUpRight, Check, Clock3, Copy, Globe2, Mail, MapPin, MessageCircle, Phone, PhoneCall, SquareParking } from 'lucide-svelte';
+	import { ArrowUpRight, Check, Clock3, Copy, Globe2, Mail, MessageCircle, Phone, PhoneCall, SquareParking } from 'lucide-svelte';
 
 	const bankDetails = [
 		{ type: 'iban', label: 'IBAN', value: 'AT86 3936 4001 0361 6109', copyKey: 'contact.payment.copyIban' },
@@ -59,24 +59,21 @@
 <SeoHead titleKey="contact.seo.title" descriptionKey="contact.seo.description" />
 
 <div class="mx-auto max-w-3xl px-2 sm:px-0">
-	<h1 class="font-serif text-3xl leading-tight text-slate-900 sm:text-4xl">{$t('contact.title')}</h1>
-	<div class="mt-8 space-y-8 sm:mt-10 sm:space-y-10">
-		<section aria-labelledby="contact-methods-heading">
-			<div class="mb-5 flex items-start gap-3">
-				<MapPin class="mt-1 h-5 w-5 shrink-0 text-slate-500" aria-hidden="true" strokeWidth={1.5} />
-				<div class="min-w-0">
-					<h2 id="contact-methods-heading" class="text-lg font-semibold text-slate-900">{$t('contact.address.name')}</h2>
-					<address class="mt-1 text-sm not-italic leading-6 text-slate-700">
-						<a href="https://www.google.com/maps/dir/?api=1&destination=Wei%C3%9Fbriach%2092%2C%209622%20Wei%C3%9Fbriach%2C%20Austria"
-							target="_blank" rel="noopener noreferrer" title={$t('contact.route.cta')}
-							onclick={() => trackEvent('Map: Open External', { source: 'contact', placement: 'map-address' })}
-							class="group inline-block underline decoration-slate-300 underline-offset-4 hover:text-slate-950 focus-visible:outline-offset-4">
-							{$t('contact.address.line1')}, {$t('contact.address.line2')}
-							<ArrowUpRight class="inline h-4 w-4 text-slate-500 group-hover:text-slate-900" aria-hidden="true" strokeWidth={1.5} />
-						</a>
-					</address>
-				</div>
-			</div>
+	<header>
+		<h1 class="font-serif text-3xl leading-tight text-slate-900 sm:text-4xl">{$t('contact.title')}</h1>
+		<p class="mt-3 text-lg font-medium leading-snug text-slate-800">{$t('contact.address.name')}</p>
+		<address class="mt-1 text-sm not-italic leading-6 text-slate-700">
+			<a href="https://www.google.com/maps/dir/?api=1&destination=Wei%C3%9Fbriach%2092%2C%209622%20Wei%C3%9Fbriach%2C%20Austria"
+				target="_blank" rel="noopener noreferrer" title={$t('contact.route.cta')}
+				onclick={() => trackEvent('Map: Open External', { source: 'contact', placement: 'map-address' })}
+				class="group inline-flex items-baseline gap-1.5 underline decoration-slate-300 underline-offset-4 hover:text-slate-950 focus-visible:outline-offset-4">
+				<span>{$t('contact.address.line1')}, {$t('contact.address.line2')}</span>
+				<ArrowUpRight class="h-3.5 w-3.5 shrink-0 self-center text-slate-500 group-hover:text-slate-900" aria-hidden="true" strokeWidth={1.5} />
+			</a>
+		</address>
+	</header>
+	<div class="mt-8 sm:mt-10">
+		<section aria-label={$t('contact.title')}>
 			<div class="divide-y divide-slate-200 border-y border-slate-200">
 				{#each contactMethods as method}
 					<div class="flex items-center gap-2">

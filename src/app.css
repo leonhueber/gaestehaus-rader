@@ -31,6 +31,23 @@ body {
 	font-family: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+@media (prefers-reduced-motion: no-preference) {
+	@supports (interpolate-size: allow-keywords) and (transition-behavior: allow-discrete) {
+		details::details-content {
+			interpolate-size: allow-keywords;
+			block-size: 0;
+			overflow: clip;
+			opacity: 0;
+			transition: block-size 240ms ease, opacity 180ms ease, content-visibility 240ms allow-discrete;
+		}
+
+		details[open]::details-content {
+			block-size: auto;
+			opacity: 1;
+		}
+	}
+}
+
 html.lenis,
 html.lenis body {
 	height: auto;

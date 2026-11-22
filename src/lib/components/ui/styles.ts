@@ -5,10 +5,10 @@ export const tooltipClasses =
 	'rounded-lg border border-slate-200/80 bg-[#fbfaf7] px-3 py-2 text-sm font-medium leading-snug text-slate-800 shadow-sm';
 
 const buttonVariants: Record<ButtonVariant, string> = {
-	primary: 'border-transparent bg-brand text-slate-950 hover:bg-brand/90',
-	secondary: 'border-slate-300 bg-white text-slate-800 hover:border-slate-400 hover:bg-slate-50',
-	overlay: 'border-white/60 bg-slate-950/50 text-white hover:bg-slate-950/70 focus-visible:outline-white',
-	ghost: 'border-transparent bg-transparent text-slate-800 hover:bg-slate-100',
+	primary: 'rounded-full border-transparent bg-brand text-white hover:bg-brand/90',
+	secondary: 'rounded-xl border-slate-300 bg-white text-slate-800 hover:border-slate-400 hover:bg-slate-50',
+	overlay: 'rounded-xl border-white/60 bg-slate-950/50 text-white hover:bg-slate-950/70 focus-visible:outline-white',
+	ghost: 'rounded-xl border-transparent bg-transparent text-slate-800 hover:bg-slate-100',
 };
 
 const buttonSizes: Record<ButtonSize, string> = {
@@ -19,7 +19,7 @@ const buttonSizes: Record<ButtonSize, string> = {
 };
 
 export const buttonClasses = (variant: ButtonVariant, size: ButtonSize, className = '') =>
-	`inline-flex items-center justify-center gap-2 rounded-xl border font-semibold leading-snug text-center transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate-900 disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none [&_svg]:shrink-0 ${buttonVariants[variant]} ${buttonSizes[size]} ${className}`;
+	`inline-flex items-center justify-center gap-2 border font-semibold leading-snug text-center transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate-900 disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none [&_svg]:shrink-0 ${buttonVariants[variant]} ${buttonSizes[size]} ${className}`;
 
 export type CardTone = 'default' | 'muted' | 'accent' | 'quiet';
 export type CardPadding = 'none' | 'sm' | 'compact' | 'md' | 'lg';
