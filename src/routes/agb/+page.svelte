@@ -15,7 +15,7 @@
 			<section>
 				<h2 class="text-base font-semibold text-slate-900">Gästehaus Rader</h2>
 				<div class="mt-3 space-y-1">
-					<p class="font-semibold text-slate-800">Familie Herold / Hueber</p>
+					<p class="font-semibold text-slate-800">Astrid Hueber</p>
 					<p>Weißbriach 92</p>
 					<p>9622 Weißbriach</p>
 					<p>Österreich</p>
@@ -80,12 +80,12 @@
 
 			<section>
 				<h2 class="text-base font-semibold text-slate-900">6. Rücktritt (Stornierung) durch den Gast</h2>
-				<p class="mt-3">Sofern nichts Abweichendes vereinbart wurde, gelten folgende Stornobedingungen:</p>
-				<ul class="mt-2 list-inside list-disc space-y-1">
-					<li>Bis zu 14 Tage vor der Anreise: kostenlose Stornierung</li>
-					<li>Innerhalb von 14 Tagen vor der Anreise: 100 % des Gesamtpreises</li>
-					<li>Bei Nichtanreise (No-Show) ohne Stornierung: 100 % des Gesamtpreises</li>
-				</ul>
+				<p class="mt-3">
+					Stornofristen und mögliche Gebühren für Stornierung und Nichtanreise richten sich nach
+					den Bedingungen des gewählten Angebots. Prüfen Sie bei Online-Buchungen die Tarifdetails vor
+					dem verbindlichen Buchungsabschluss. Bei einer Direktbuchung ohne Online-Buchungssystem
+					teilen wir die Bedingungen vor Vertragsabschluss mit.
+				</p>
 				<p class="mt-3">Maßgeblich ist der Zeitpunkt des Einlangens der Stornierung bei Gästehaus Rader.</p>
 			</section>
 
@@ -122,7 +122,7 @@
 
 			<section>
 				<h2 class="text-base font-semibold text-slate-900">10. Tiere</h2>
-				<p class="mt-3">Haustiere sind nur nach vorheriger Vereinbarung gestattet.</p>
+				<p class="mt-3">Haustiere sind nicht erlaubt.</p>
 			</section>
 
 			<section>
@@ -158,7 +158,7 @@
 				</p>
 			</section>
 
-			<p class="pt-2 text-sm text-slate-500">Stand: 22.01.2026</p>
+			<p class="pt-2 text-sm text-slate-500">Stand: 22.11.2026</p>
 		</div>
 	</Card>
 </div>

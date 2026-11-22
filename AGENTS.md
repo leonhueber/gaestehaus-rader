@@ -1,6 +1,6 @@
 # Working on Gästehaus Rader
 
-SvelteKit 5, TypeScript, Tailwind and `lucide-svelte`; statically built for GitHub Pages. See [README.md](README.md) for setup and the project map.
+SvelteKit 5, TypeScript, Tailwind and `lucide-svelte`; statically built for production on DomainFactory/cPanel, with a separate GitHub Pages preview. See [README.md](README.md) for setup and the project map.
 
 ## Implementation
 
@@ -16,6 +16,6 @@ SvelteKit 5, TypeScript, Tailwind and `lucide-svelte`; statically built for GitH
 ## Verification
 
 - Run `npm run check` for code changes and relevant tests with `node --test tests/*.test.cjs` for changed logic.
-- Run `npm run build` when routes, assets, prerendering or deployment behavior change. Check generated output without committing incidental build artifacts.
+- Run `npm run build` when routes, assets, prerendering or deployment behavior change. For production releases, commit the verified `build/` together with its source changes, including removed obsolete hashed assets. cPanel deploys the committed files through `.cpanel.yml` and does not run a build. Do not restore or omit release build artifacts. See [deployment instructions](docs/deployment.md).
 - For UI changes, inspect mobile and desktop layouts, both languages, keyboard focus and loading/error states. Report any unverified behavior.
 - For content changes, follow [docs/seo-freshness-process.md](docs/seo-freshness-process.md). For documentation-only edits, check accuracy and links; no application build is needed.

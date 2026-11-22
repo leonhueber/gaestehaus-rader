@@ -20,7 +20,7 @@
 				<h2 class="text-base font-semibold text-slate-900">1. Verantwortlicher</h2>
 				<div class="mt-3 space-y-1">
 					<p class="font-semibold text-slate-800">Gästehaus Rader</p>
-					<p>Hueber Astrid</p>
+					<p>Astrid Hueber</p>
 					<p>Weißbriach 92</p>
 					<p>9622 Weißbriach</p>
 					<p>Österreich</p>

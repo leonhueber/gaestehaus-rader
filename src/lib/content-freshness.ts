@@ -22,14 +22,14 @@ const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 const staticFreshnessEntries: Record<string, ContentFreshnessEntry> = {
 	'/': {
-		lastModified: '2026-11-18',
+		lastModified: '2026-11-22',
 		reviewGroup: 'core',
-		notes: 'Updated bilingual apartment introduction and coffee information.',
+		notes: 'Updated the Booking.com rating in both languages.',
 	},
 	'/unterkuenfte-preise': {
-		lastModified: '2026-11-18',
+		lastModified: '2026-11-22',
 		reviewGroup: 'accommodations',
-		notes: 'Reviewed indicative nightly rates and linked the selected apartment to booking.',
+		notes: 'Clarified that cancellation terms depend on the selected offer.',
 	},
 	'/erlebnisse': {
 		lastModified: '2026-10-10',
@@ -72,9 +72,9 @@ const staticFreshnessEntries: Record<string, ContentFreshnessEntry> = {
 		notes: 'Facts layer and machine-readable entity information reviewed.',
 	},
 	'/impressum': {
-		lastModified: '2026-02-21',
+		lastModified: '2026-11-22',
 		reviewGroup: 'legal',
-		notes: 'Legal notice content.',
+		notes: 'Identified Astrid Hueber as the responsible operator.',
 	},
 	'/datenschutz': {
 		lastModified: '2026-10-10',
@@ -82,9 +82,9 @@ const staticFreshnessEntries: Record<string, ContentFreshnessEntry> = {
 		notes: 'Google Maps consent flow, OpenStreetMap and stored FOSSGIS routes documented in German and English.',
 	},
 	'/agb': {
-		lastModified: '2026-01-22',
+		lastModified: '2026-11-22',
 		reviewGroup: 'legal',
-		notes: 'Terms and booking conditions.',
+		notes: 'Aligned operator, pet policy and offer-specific cancellation terms.',
 	},
 	'/barrierefreiheit': {
 		lastModified: '2026-01-22',

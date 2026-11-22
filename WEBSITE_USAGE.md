@@ -14,6 +14,13 @@
 - Maintain the existing legal notice, privacy, terms, accessibility and image-credit pages in both languages, with footer links. Their presence alone does not establish completeness or legal compliance.
 - Use images only with documented provenance and usage rights; identify generated imagery accurately where relevant.
 
+## Deskline administration and statistics
+
+- [Deskline WebClient — Gästehaus Rader](https://webclient4.deskline.net/KTN/de/accommodation/overview?LoggedIn=true&LoggedIn=true) is the owner's entry point for availability, prices and statistics. An authenticated session is required; the URL itself does not grant access.
+- Availability is under **Datenwartung → Verfügbarkeiten & Preise → Kalender**. Reports are under **Statistiken**, including **Zimmerbelegung Vorschau** and **Meldewesen Statistiken**.
+- Use these reports when assessing price changes. Check the reporting period, covered booking channels and capacity basis; unavailable dates can also be blocked dates and must not automatically be counted as booked nights.
+- The owner provided this link on 2026-10-10. Reading reports does not authorize changes to prices, availability or bookings.
+
 ## Items requiring confirmation
 
 Keep these open until supported by provider documentation or an owner decision:
