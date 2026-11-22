@@ -1,5 +1,7 @@
 <script lang="ts">
 	import Button from '$lib/components/ui/Button.svelte';
+	import { ArrowRightLeft } from 'lucide-svelte';
+	import { imageAttrs } from '$lib/images';
 	import { page } from '$app/state';
 	import { accommodationBySlug } from '$lib/data/accommodations';
 	import { maximumGuests, readStay, stayQuery, type BookingStay } from '$lib/booking-search';
@@ -29,19 +31,29 @@
 
 <SeoHead titleKey="booking.seo.title" descriptionKey="booking.seo.description" />
 
-<section class="mx-auto w-full max-w-6xl px-4 pt-6 sm:px-6">
-	<h1 class="font-serif text-2xl sm:text-3xl">
-		{apartment ? ($lang === 'de' ? 'Verfügbarkeit für Appartement ' : 'Availability for apartment ') + apartment.title : $t('nav.booking')}
-	</h1>
-	<p class="mt-2 text-sm text-slate-700">{$t('room.detail.card.note')}</p>
+<section class={apartment || invalidStay ? 'mx-auto w-full max-w-6xl px-4 pt-6 sm:px-6' : 'sr-only'}>
+	{#if apartment}
+		<div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-b border-slate-200 pb-4">
+			<div class="flex items-center gap-3 sm:gap-4">
+				<img {...imageAttrs(apartment.images.main, '72px')} alt="" class="h-14 w-16 shrink-0 rounded-lg object-cover sm:h-16 sm:w-[72px]" />
+				<div>
+					<h1 class="font-serif text-2xl leading-tight text-slate-900 sm:text-3xl">
+						{apartment.typeLabel[$lang]} {$lang === 'de' ? apartment.title : apartment.title.replace('Nr.', 'No.')}
+					</h1>
+					<p class="mt-1 text-sm text-slate-600">{apartment.attributes.size} · {apartment.attributes.guests[$lang]}</p>
+				</div>
+			</div>
+			<a class="inline-flex min-h-11 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-medium text-slate-800 hover:border-slate-400 focus-visible:outline-offset-2"
+				data-sveltekit-reload href={localizePath('/buchen', page.url.pathname) + (requestedStay ? stayQuery(requestedStay) : '')}>
+				<ArrowRightLeft size={15} aria-hidden="true" />
+				{$lang === 'de' ? 'Alle Appartements prüfen' : 'Check all apartments'}
+			</a>
+		</div>
+	{:else}
+		<h1 class="sr-only">{$t('nav.booking')}</h1>
+	{/if}
 	{#if invalidStay}
 		<p role="status" class="mt-2 text-sm">{$lang === 'de' ? 'Bitte Reisedaten und Gäste unten neu auswählen.' : 'Please select your dates and guests below.'}</p>
-	{/if}
-	{#if apartment}
-		<a class="inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4"
-			data-sveltekit-reload href={localizePath('/buchen', page.url.pathname) + (requestedStay ? stayQuery(requestedStay) : '')}>
-			{$lang === 'de' ? 'Alle Appartements prüfen' : 'Check all apartments'}
-		</a>
 	{/if}
 </section>
 

@@ -670,16 +670,19 @@ export const activityFilters: ActivityFilter[] = [
 	},
 ];
 
+export const showFestivalSection = false;
+const festivalLink = { id: 'traditionelle-feste', labelKey: 'experiences.nav.festivals' };
+
 export const experienceSectionLinks: SectionLink[] = [
 	{ id: 'aktivitaeten', labelKey: 'experiences.nav.activities' },
-	{ id: 'traditionelle-feste', labelKey: 'experiences.nav.festivals' },
+	...(showFestivalSection ? [festivalLink] : []),
 	{ id: 'gaestecard', labelKey: 'experiences.nav.guestcard' },
 ];
 
 export const experienceSectionTrackingLinks: SectionLink[] = [
 	{ id: 'aktivitaeten', labelKey: 'experiences.nav.activities' },
 	{ id: 'highlights', labelKey: 'experiences.nav.highlights' },
-	{ id: 'traditionelle-feste', labelKey: 'experiences.nav.festivals' },
+	...(showFestivalSection ? [festivalLink] : []),
 	{ id: 'gaestecard', labelKey: 'experiences.nav.guestcard' },
 ];
 

@@ -172,7 +172,6 @@
 			<section id="google-maps">
 				<h2 class="text-base font-semibold text-slate-900">8. Google Maps</h2>
 				{#each mapLegal[$lang].google as paragraph}<p class="mt-3">{paragraph}</p>{/each}
-				<p class="mt-3">{mapLegal[$lang].basis}</p>
 				<p class="mt-3"><a class="underline underline-offset-4" href={`https://policies.google.com/privacy?hl=${$lang}`} target="_blank" rel="noopener noreferrer">Google: {mapLegal[$lang].privacy}</a> · <a class="underline underline-offset-4" href="https://www.google.com/help/terms_maps/" target="_blank" rel="noopener noreferrer">Google Maps: {mapLegal[$lang].terms}</a></p>
 			</section>
 
@@ -272,8 +271,7 @@
 					erforderlich, wir sind gesetzlich dazu verpflichtet oder Sie haben eingewilligt.
 				</p>
 				<p class="mt-3">
-					Durch die Einbindung von Plausible Analytics und Google Maps k&ouml;nnen Plausible Insights
-					O&Uuml; sowie Google als Empf&auml;nger Ihrer Daten auftreten (siehe Punkte 3 und 8). Bei
+					Bei Nutzung von Plausible Analytics kann Plausible Insights OÜ Daten erhalten (siehe Punkt 3). Google Maps öffnet sich über einen externen Link (siehe Punkt 8). Bei
 					Nutzung der Online-Buchung können die Nassfeld-Pressegger See Tourismus GmbH sowie feratel
 					als Empfänger auftreten (siehe Punkt 9). Nach Aktivierung der Umgebungskarte ist auch die
 					OpenStreetMap Foundation Empfänger der in Punkt 8a beschriebenen Zugriffsdaten.

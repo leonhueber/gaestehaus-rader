@@ -91,7 +91,7 @@
 {#if open && activeItem}
 	<div
 		use:portal
-		class="fixed inset-0 z-[9999] flex items-center justify-center bg-[#fbfaf7]/95 p-3 text-slate-900 backdrop-blur-sm sm:p-5"
+		class="fixed inset-0 z-[9999] flex items-center justify-center bg-[#fbfaf7]/55 p-3 text-slate-900 backdrop-blur-[2px] sm:p-5"
 		role="dialog"
 		aria-modal="true"
 		aria-label={title}
@@ -138,6 +138,7 @@
 				{/if}
 
 				<img
+					data-gallery-photo
 					{...imageAttrs(activeItem.src, imageSizes)}
 					alt={activeItem.alt}
 					class={`absolute inset-0 h-full w-full object-contain ${activeItem.contain ? 'p-4 sm:p-6' : ''}`}

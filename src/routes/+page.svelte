@@ -4,8 +4,6 @@
 	import Card from '$lib/components/ui/Card.svelte';
 	import CardButton from '$lib/components/ui/CardButton.svelte';
 	import CardLink from '$lib/components/ui/CardLink.svelte';
-	import ApartmentBookingSearch from '$lib/components/ApartmentBookingSearch.svelte';
-	import { maximumGuests } from '$lib/booking-search';
 	import { tooltipClasses } from '$lib/components/ui/styles';
 	/* eslint-disable */
 	import { lang, t } from '$lib/i18n';
@@ -18,6 +16,7 @@ import { page } from '$app/state';
 	import { imageAttrs, largestImageUrl } from '$lib/images';
 	import { homeTrustReviews } from '$lib/data/reviews';
 	import { trackEvent } from '$lib/analytics/plausible';
+	import { openGalleryFrom } from '$lib/gallery-transition';
 	import GalleryLightbox, { type GalleryLightboxItem } from '$lib/components/GalleryLightbox.svelte';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import { SITE_ORIGIN } from '$lib/seo';
@@ -113,12 +112,11 @@ import { localizePath } from '$lib/routing';
 		const room = heroSlide.apartment;
 		const event = heroSlide.experience;
 		return {
-			kicker: $t(room ? 'hero.apartment.kicker' : 'hero.experience.kicker'),
 			title: heroCaption(heroSlide),
 			meta: room ? `${room.attributes.size} · ${room.attributes.guests[$lang]}` : undefined,
 			description: room ? room.description[$lang][0] : event?.description?.[$lang],
 			href: room ? `/unterkuenfte-preise/${room.slug}` : `/erlebnisse/${event?.season === 'winter' ? 'winter' : 'sommer'}`,
-			hash: event ? `#${event.id}` : '',
+			suffix: room ? '?from=home' : event ? `#${event.id}` : '',
 			primaryKey: room ? 'hero.apartment.primary' : 'hero.experience.primary',
 			secondaryKey: room ? 'hero.apartment.secondary' : 'hero.experience.secondary',
 			secondaryHref: room ? '/unterkuenfte-preise' : '/erlebnisse',
@@ -126,7 +124,7 @@ import { localizePath } from '$lib/routing';
 	});
 	let heroElement: HTMLElement;
 	let heroProgress = $state(0);
-	const heroSlideDuration = 5000;
+	const heroSlideDuration = 4000;
 	let heroAutoplayPaused = $state(true);
 	let heroDocumentVisible = $state(true);
 	let heroImageStates = $state<Record<string, 'loaded' | 'error'>>({});
@@ -454,7 +452,6 @@ import { localizePath } from '$lib/routing';
 				{ labelKey: 'seasons.summer.feature.bike', icon: Bike },
 			],
 			panelClass: 'bg-[#f8f1e5]',
-			kickerClass: 'text-brand',
 			iconClass: 'bg-brand text-white',
 			buttonClass: 'bg-brand text-white hover:bg-brand-dark',
 		},
@@ -479,7 +476,6 @@ import { localizePath } from '$lib/routing';
 				{ labelKey: 'seasons.winter.feature.snow', icon: Snowflake },
 			],
 			panelClass: 'bg-[#edf4f7]',
-			kickerClass: 'text-sky-700',
 			iconClass: 'bg-sky-700 text-white',
 			buttonClass: 'bg-slate-900 text-white hover:bg-slate-700',
 		},
@@ -693,10 +689,7 @@ import { localizePath } from '$lib/routing';
 		>
 			{#each [isLeftAlignedHero] as leftAligned ('hero-copy')}
 				<div animate:flip={{ duration: prefersReducedMotion() ? 0 : 650 }} class={`flex w-full max-w-3xl flex-col ${leftAligned ? 'items-start text-left' : 'items-center text-center'}`}>
-					<p class="text-sm font-medium leading-relaxed text-white">
-						{isInfoHero ? heroInfo.kicker : $t('hero.kicker')}
-					</p>
-					<h1 id="home-hero-title" class="mt-5 max-w-4xl whitespace-pre-line text-balance font-serif text-4xl font-medium leading-[1.1] tracking-normal sm:text-6xl sm:leading-[1.1]">
+					<h1 id="home-hero-title" class="max-w-4xl whitespace-pre-line text-balance font-serif text-4xl font-medium leading-[1.1] tracking-normal sm:text-6xl sm:leading-[1.1]">
 						{isInfoHero ? heroInfo.title : $t('hero.title')}
 					</h1>
 					{#if isInfoHero && heroInfo.meta}
@@ -711,7 +704,7 @@ import { localizePath } from '$lib/routing';
 					{#if !heroSlide.experience}
 						<div class={`mt-8 flex flex-wrap items-center gap-x-8 gap-y-4 ${leftAligned ? 'justify-start' : 'justify-center'}`}>
 							<ButtonLink variant="primary" size="lg"
-								href={localizedHref(isInfoHero ? heroInfo.href : '/unterkuenfte-preise') + (isInfoHero ? heroInfo.hash : '')}
+								href={localizedHref(isInfoHero ? heroInfo.href : '/unterkuenfte-preise') + (isInfoHero ? heroInfo.suffix : '')}
 							>
 								{$t(isInfoHero ? heroInfo.primaryKey : 'hero.cta.primary')}
 							</ButtonLink>
@@ -789,14 +782,11 @@ import { localizePath } from '$lib/routing';
 			</section>
 
 			<!-- ROOMS -->
-			<section use:reveal data-room-section class="opacity-0 translate-y-8 transition-all duration-700 ease-out mt-4 pt-2 sm:mt-0 sm:pt-4">
+			<section id="appartements" use:reveal data-room-section class="scroll-mt-40 opacity-0 translate-y-8 transition-all duration-700 ease-out mt-4 pt-2 sm:mt-0 sm:pt-4">
 				<div class="flex flex-wrap items-end justify-between gap-3 sm:gap-6">
 					<div class="max-w-2xl">
-						<p class="text-xs font-semibold uppercase tracking-[0.2em] text-brand">
-							{$t('rooms.section.kicker')}
-						</p>
-						<h2 class="mt-3 text-4xl font-serif font-medium leading-tight text-slate-900">
-							{$t('rooms.section.title')}
+						<h2 class="text-4xl font-serif font-medium leading-tight text-slate-900">
+							{$t('rooms.page.title')}
 						</h2>
 						<div class="mt-4 h-[3px] w-16 rounded-full bg-brand"></div>
 					</div>
@@ -819,7 +809,7 @@ import { localizePath } from '$lib/routing';
 							{@const roomName = r.typeLabel[$lang] + ' ' + r.title}
 							<article class="relative w-[280px] shrink-0 snap-start sm:w-[340px] lg:w-0 lg:flex-1">
 								<CardLink tone="default" padding="none"
-									href={localizedHref('/unterkuenfte-preise/' + r.slug)}
+									href={localizedHref('/unterkuenfte-preise/' + r.slug) + '?from=home-rooms'}
 									class="group flex h-full flex-col overflow-hidden focus-visible:-outline-offset-2"
 									onclick={() => trackEvent('Content: Room Card Click', { source: 'home', room: r.slug })}
 								>
@@ -848,14 +838,6 @@ import { localizePath } from '$lib/routing';
 										<p class="text-right text-sm leading-relaxed text-slate-500">/ {$t('price.night')}</p>
 									</div>
 								</CardLink>
-								<div class="absolute right-2 top-2">
-									<ApartmentBookingSearch
-										slug={r.slug}
-										{roomName}
-										capacity={maximumGuests(r.attributes.guests.de)}
-										href={localizedHref('/buchen/' + r.slug)}
-									/>
-								</div>
 							</article>
 						{/each}
 					</div>
@@ -866,12 +848,11 @@ import { localizePath } from '$lib/routing';
 			<section aria-labelledby="home-gallery-heading" class="py-2 lg:py-8">
 				<div class="flex flex-wrap items-end justify-between gap-6">
 					<div class="max-w-2xl">
-						<p class="text-xs font-semibold uppercase tracking-[0.2em] text-brand">{$t('home.gallery.kicker')}</p>
-						<h2 id="home-gallery-heading" class="mt-3 text-4xl font-serif font-medium leading-tight text-slate-900">{$t('home.gallery.title')}</h2>
+						<h2 id="home-gallery-heading" class="text-4xl font-serif font-medium leading-tight text-slate-900">{$t('home.gallery.title')}</h2>
 						<div class="mt-4 h-[3px] w-16 rounded-full bg-brand"></div>
 						<p class="mt-5 text-base leading-relaxed text-slate-600">{$t('home.gallery.subtitle')}</p>
 					</div>
-					<Button variant="secondary" onclick={() => openGallery(0)}>
+					<Button variant="secondary" onclick={(event) => openGalleryFrom(event.currentTarget, () => openGallery(0))}>
 						<Images class="h-4 w-4" aria-hidden="true" strokeWidth={1.5} />
 						{$t('home.gallery.cta')}
 						<span class="font-normal text-slate-500">({galleryImages.length})</span>
@@ -884,7 +865,7 @@ import { localizePath } from '$lib/routing';
 							class={position === 0
 								? 'group col-span-2 flex flex-col overflow-hidden lg:row-span-2'
 								: 'group flex flex-col overflow-hidden'}
-							onclick={() => openGallery(image.index)}
+							onclick={(event) => openGalleryFrom(event.currentTarget, () => openGallery(image.index))}
 							aria-label={`${$t('home.gallery.open')}: ${$t(image.altKey)}`}
 						>
 							<div class={position === 0
@@ -950,9 +931,6 @@ import { localizePath } from '$lib/routing';
 							/>
 						</div>
 						<div class="absolute inset-x-0 top-0 z-10 p-5 pt-6 text-white sm:p-8 lg:hidden">
-							<p class="sr-only">
-								{$t('guestcard.landing.kicker')}
-							</p>
 							<h2 class="max-w-[9ch] text-[2.45rem] font-serif font-medium leading-[0.92] drop-shadow-sm sm:text-5xl">
 								{$t('guestcard.landing.title')}
 							</h2>
@@ -977,10 +955,7 @@ import { localizePath } from '$lib/routing';
 							/>
 						</div>
 						<div class="hidden lg:block">
-							<p class="text-xs font-semibold uppercase tracking-[0.35em] text-brand">
-								{$t('guestcard.landing.kicker')}
-							</p>
-							<h2 class="mt-2 text-3xl font-serif font-medium leading-[0.95] text-slate-900 sm:text-4xl">
+							<h2 class="text-3xl font-serif font-medium leading-[0.95] text-slate-900 sm:text-4xl">
 								{$t('guestcard.landing.title')}
 							</h2>
 							<div class="mt-3 h-[3px] w-14 rounded-full bg-brand"></div>
@@ -1066,10 +1041,7 @@ import { localizePath } from '$lib/routing';
 				<section class="py-4 sm:py-10">
 					<div class="grid gap-8 lg:grid-cols-[0.82fr_2.18fr] lg:items-start">
 						<div class="max-w-sm">
-							<p class="text-xs font-semibold uppercase tracking-[0.35em] text-brand">
-								{$t('home.amenities.kicker')}
-							</p>
-							<h2 class="mt-3 text-3xl font-serif font-medium leading-[0.98] text-slate-900 sm:text-4xl">
+							<h2 class="text-3xl font-serif font-medium leading-[0.98] text-slate-900 sm:text-4xl">
 								{$t('home.amenities.title')}
 							</h2>
 							<div class="mt-4 h-[3px] w-14 rounded-full bg-brand"></div>
@@ -1185,10 +1157,7 @@ import { localizePath } from '$lib/routing';
 				<!-- Header row -->
 				<div class="flex flex-wrap items-start justify-between gap-3 sm:gap-6">
 					<div class="max-w-2xl">
-						<p class="text-[11px] font-semibold uppercase tracking-[0.35em] text-brand">
-							{$t('trust.kicker')}
-						</p>
-						<h2 class="mt-3 text-4xl font-serif font-medium leading-[0.95] text-slate-900">
+						<h2 class="text-4xl font-serif font-medium leading-[0.95] text-slate-900">
 							{$t('trust.title')}
 						</h2>
 						<div class="mt-4 h-[3px] w-16 rounded-full bg-brand"></div>
@@ -1207,17 +1176,17 @@ import { localizePath } from '$lib/routing';
 					}`}
 				>
 					<Card tone="default" padding="compact"
-						class="flex h-full w-[320px] max-w-[calc(100vw-2rem)] shrink-0 snap-start flex-col lg:w-auto lg:max-w-none"
+						class="w-[320px] max-w-[calc(100vw-2rem)] shrink-0 snap-start self-start lg:flex lg:w-auto lg:max-w-none lg:flex-col lg:self-stretch"
 					>
 						<h3 class="text-lg font-semibold leading-snug text-slate-900">{$t('trust.platforms.title')}</h3>
-						<ul class="mt-3 flex flex-1 flex-col divide-y divide-slate-200/80">
+						<ul class="mt-2 divide-y divide-slate-200/80 lg:grid lg:flex-1 lg:auto-rows-fr">
 							{#each trustPlatforms as platform}
-								<li class="flex flex-1">
+								<li class="lg:grid">
 									<a
 										href={platform.href}
 										target="_blank"
 										rel="noreferrer"
-										class="group/platform grid min-h-24 w-full grid-cols-[1.75rem_minmax(0,1fr)_auto_1rem] items-center gap-3 rounded-lg py-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate-900"
+										class="group/platform grid min-h-16 w-full grid-cols-[1.75rem_minmax(0,1fr)_auto_1rem] items-center gap-3 rounded-lg py-2.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate-900"
 									>
 										<img src={asset(platform.logo)} alt="" width="28" height="28" class="h-7 w-7 object-contain" loading="lazy" />
 										<span class="min-w-0">
@@ -1298,10 +1267,7 @@ import { localizePath } from '$lib/routing';
 			<!-- SEASONS -->
 			<section id="jahreszeiten" class="relative -mx-4 w-auto max-w-[1380px] px-2 py-10 sm:mx-0 sm:w-full sm:px-6 sm:py-12 lg:left-1/2 lg:w-screen lg:-translate-x-1/2">
 				<div class="text-center">
-					<p class="text-xs font-semibold uppercase tracking-[0.2em] text-brand">
-						{$t('seasons.kicker')}
-					</p>
-					<h2 class="mt-3 text-balance font-serif text-3xl font-medium leading-tight text-slate-900 sm:text-4xl">
+					<h2 class="text-balance font-serif text-3xl font-medium leading-tight text-slate-900 sm:text-4xl">
 						{$t('seasons.title')}
 					</h2>
 					<div class="mx-auto mt-3 h-[3px] w-14 rounded-full bg-brand"></div>
@@ -1317,17 +1283,8 @@ import { localizePath } from '$lib/routing';
 						>
 							<div class={`season-stage grid lg:min-h-[455px] lg:items-stretch ${season.reverse ? 'lg:grid-cols-[1.34fr_1fr]' : 'lg:grid-cols-[0.72fr_1.58fr]'}`}>
 								<div class={`season-copy relative z-10 flex flex-col justify-center p-5 sm:p-8 lg:px-8 lg:py-10 xl:px-10 xl:py-12 ${season.reverse ? 'lg:order-2' : 'lg:order-1'}`}>
-									<div
-										class={`season-kicker hidden w-fit items-center gap-3 text-xs font-semibold uppercase tracking-[0.18em] sm:inline-flex ${season.kickerClass}`}
-									>
-										<span class={`grid h-9 w-9 place-items-center rounded-full bg-transparent ${season.kickerClass}`}>
-											<season.icon class="h-6 w-6" aria-hidden="true" strokeWidth={1.45} />
-										</span>
-										{$t(season.kickerKey)}
-									</div>
-									<div class={`season-divider mt-3 hidden h-[2px] w-7 rounded-full sm:block ${season.reverse ? 'bg-sky-700/55' : 'bg-brand/70'}`}></div>
 
-									<h3 class="mt-4 max-w-[16ch] text-balance font-heading text-[1.75rem] font-semibold leading-[1.2] tracking-tight text-slate-900 sm:mt-5 sm:text-[2rem]">
+									<h3 class="max-w-[16ch] text-balance font-heading text-[1.75rem] font-semibold leading-[1.2] tracking-tight text-slate-900 sm:text-[2rem]">
 										{$t(season.titleKey)}
 									</h3>
 									<p class="mt-4 max-w-[28ch] text-pretty text-base leading-relaxed text-slate-600">
@@ -1361,7 +1318,7 @@ import { localizePath } from '$lib/routing';
 									<button
 										type="button"
 										class="season-house-image relative block h-full min-h-[360px] w-full overflow-hidden bg-slate-200 text-left sm:min-h-[500px] lg:min-h-[455px]"
-										onclick={() => openSeasonGallery(season.seasonKey, 0)}
+										onclick={(event) => openGalleryFrom(event.currentTarget, () => openSeasonGallery(season.seasonKey, 0))}
 										aria-label={`${$t(season.kickerKey)} Galerie öffnen: ${$t(season.heroImage.altKey)}`}
 									>
 										<img
@@ -1380,7 +1337,7 @@ import { localizePath } from '$lib/routing';
 										<button
 											type="button"
 											class={`season-floater season-floater-${index} group/image absolute overflow-hidden rounded-xl bg-slate-200 shadow-[0_20px_42px_-22px_rgba(15,23,42,0.72)]`}
-											onclick={() => openSeasonGallery(season.seasonKey, index + 1)}
+											onclick={(event) => openGalleryFrom(event.currentTarget, () => openSeasonGallery(season.seasonKey, index + 1))}
 											aria-label={`${$t(season.kickerKey)} Galerie öffnen: ${$t(image.altKey)}`}
 										>
 											<img
@@ -1419,10 +1376,7 @@ import { localizePath } from '$lib/routing';
 
 	<section class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
 		<div class="rounded-3xl bg-brand px-6 py-10 text-white sm:px-10 sm:py-12">
-			<p class="text-xs font-semibold uppercase tracking-[0.35em] text-white/70">
-				{$t('brand.name')}
-			</p>
-			<h2 class="mt-3 font-serif text-3xl leading-[0.95] text-white sm:text-4xl">
+			<h2 class="font-serif text-3xl leading-[0.95] text-white sm:text-4xl">
 				{$t('cta.title')}
 			</h2>
 			<div class="mt-3 h-[3px] w-14 rounded-full bg-white/70"></div>
@@ -1898,14 +1852,6 @@ import { localizePath } from '$lib/routing';
 			pointer-events: auto;
 			position: relative;
 			z-index: 2;
-		}
-
-		.season-kicker {
-			display: none;
-		}
-
-		.season-divider {
-			display: none;
 		}
 
 		.season-copy h3 {

@@ -1,7 +1,5 @@
 <script lang="ts">
 	import Card from '$lib/components/ui/Card.svelte';
-	import ApartmentBookingSearch from '$lib/components/ApartmentBookingSearch.svelte';
-	import { maximumGuests } from '$lib/booking-search';
 	import { reveal } from '$lib/actions/reveal';
 	import { lang, t } from '$lib/i18n';
 	import { page } from '$app/state';
@@ -72,20 +70,15 @@
 
 <div class="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6">
 	<div class="space-y-10">
-		<!-- Header / breadcrumb -->
-		<section use:reveal class="opacity-0 translate-y-8 transition-all duration-700 ease-out space-y-4">
-			<p class="text-xs font-semibold uppercase tracking-[0.35em] text-brand">
-				{$t('rooms.page.breadcrumb')}
-			</p>
-
-			<h1 class="mt-4 font-serif text-4xl leading-[0.95] text-slate-900 sm:text-5xl">
+		<header>
+			<h1 class="font-serif text-4xl leading-[0.95] text-slate-900 sm:text-5xl">
 				{$t('rooms.page.title')}
 			</h1>
 			<div class="mt-4 h-[3px] w-14 rounded-full bg-brand"></div>
 			<p class="mt-4 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
 				{$t('rooms.page.subtitle')}
 			</p>
-		</section>
+		</header>
 
 		<div class="space-y-14 sm:space-y-16">
 			{#each rooms as room}
@@ -122,13 +115,6 @@
 							<p class="text-sm text-slate-600">
 								{$t('home.rooms.priceFrom')} <strong class="text-2xl font-semibold text-slate-900">{room.pricePerNightBase} €</strong> / {$t('price.night')}
 							</p>
-							<div class="relative z-10 shrink-0">
-								<ApartmentBookingSearch
-									slug={room.slug} {roomName} source="rooms-list"
-									capacity={maximumGuests(room.attributes.guests.de)}
-									href={localizedHref('/buchen/' + room.slug)}
-								/>
-							</div>
 						</div>
 					</div>
 				</Card>

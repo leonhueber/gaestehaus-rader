@@ -1,1 +1,0 @@
-.booking-card.svelte-1jyuobk{top:9rem}.mobile-sticky-booking.svelte-1jyuobk{position:fixed;left:.75rem;right:.75rem;bottom:calc(.75rem + env(safe-area-inset-bottom));z-index:50;transform:translateY(120%);opacity:0;transition:transform .25s ease,opacity .25s ease}.mobile-sticky-booking.is-visible.svelte-1jyuobk{transform:translateY(0);opacity:1}

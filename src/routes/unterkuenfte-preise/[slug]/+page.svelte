@@ -1,18 +1,17 @@
 <script lang="ts">
-	import Button from '$lib/components/ui/Button.svelte';
 	import ButtonLink from '$lib/components/ui/ButtonLink.svelte';
 	import Card from '$lib/components/ui/Card.svelte';
 	import { browser } from '$app/environment';
-import { page } from '$app/state';
-	import { asset, resolve } from '$app/paths';
+	import { page } from '$app/state';
 	import { lang, t } from '$lib/i18n';
 	import { getSortedAccommodationGallery } from '$lib/data/accommodations';
 	import { imageAttrs } from '$lib/images';
 	import { trackEvent } from '$lib/analytics/plausible';
+	import { openGalleryFrom } from '$lib/gallery-transition';
 	import GalleryLightbox, { type GalleryLightboxItem } from '$lib/components/GalleryLightbox.svelte';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import { SITE_ORIGIN } from '$lib/seo';
-import { localizePath } from '$lib/routing';
+	import { localizePath } from '$lib/routing';
 	import {
 		buildBreadcrumbListSchema,
 		buildJsonLdGraph,
@@ -26,26 +25,27 @@ import { localizePath } from '$lib/routing';
 		Mountain,
 		Ruler,
 		Refrigerator,
-		Building2,
-		MountainSnow,
 		CookingPot,
 		Sofa,
 		Tv,
 		Users,
-		Share2,
 		SquareParking,
 		Sun,
 		Utensils,
 		Wifi,
 		Microwave,
-		Info,
+		ChevronDown,
 	} from 'lucide-svelte';
 
 	let { data } = $props();
 	const accommodation = $derived.by(() => data.accommodation);
 
-	const withAsset = (path: string) => asset(path);
 	const localizedHref = (path: string) => localizePath(path, page.url.pathname);
+	const entryPoint = $derived(browser ? page.url.searchParams.get('from') : null);
+	const fromHome = $derived(entryPoint === 'home' || entryPoint === 'home-rooms');
+	const backHref = $derived(fromHome
+		? localizedHref('/') + (entryPoint === 'home-rooms' ? '#appartements' : '')
+		: localizedHref('/unterkuenfte-preise'));
 	const siteUrl = SITE_ORIGIN;
 
 	const amenityIcons = {
@@ -119,13 +119,9 @@ import { localizePath } from '$lib/routing';
 	const roomUrl = $derived.by(() =>
 		new URL(`${localizedHref('/unterkuenfte-preise')}${accommodation.slug}/`, siteUrl).toString()
 	);
-	const ogImage = $derived.by(() =>
-		new URL(withAsset(accommodation.images.main), siteUrl).toString()
-	);
+	const roomName = $derived(accommodation.typeLabel[$lang] + ' ' + ($lang === 'de' ? accommodation.title : accommodation.title.replace('Nr.', 'No.')));
 	const seoTitle = $derived.by(() => accommodation.seoTitle[$lang]);
 	const seoDescription = $derived.by(() => accommodation.seoDescription[$lang]);
-	const detailHeading = $derived.by(() => accommodation.detailHeading[$lang]);
-	const detailIntro = $derived.by(() => accommodation.detailIntro[$lang]);
 	const amenityLabels = $derived.by(() =>
 		accommodation.amenities.map((amenity) => $t(`amenity.${amenity}`))
 	);
@@ -158,27 +154,15 @@ import { localizePath } from '$lib/routing';
 
 	const galleryPreviewItems = $derived.by(() => galleryItems.slice(0, 3));
 
-	// helper for "+X Bilder" overlay
-	const galleryCount = $derived.by(() => Math.max(0, galleryItems.length - 1));
-	const overlayMore = $derived.by(() => Math.max(0, galleryCount - 2));
-
-	// reviews carousel UI-only
-	let reviewIndex = $state(0);
-	const visibleReviews = 3; // like screenshot
-	const canPrev = $derived.by(() => reviewIndex > 0);
-	const canNext = $derived.by(
-		() => reviewIndex + visibleReviews < (accommodation?.reviews?.length ?? 0)
-	);
-	const reviewCount = $derived.by(() => accommodation?.reviews?.length ?? 0);
-	const averageRating = $derived.by(() => {
-		const ratings = (accommodation?.reviews ?? []).map((review) => review.rating).filter((rating) => rating > 0);
-		if (!ratings.length) return null;
-		return Number((ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length).toFixed(1));
-	});
+	const nightlyPrice = $derived(new Intl.NumberFormat($lang === 'de' ? 'de-AT' : 'en-IE', {
+		style: 'currency', currency: 'EUR', maximumFractionDigits: 0, minimumFractionDigits: 0
+	}).format(accommodation.pricePerNightBase));
+	const reviewDate = $derived(new Intl.DateTimeFormat($lang === 'de' ? 'de-AT' : 'en-GB', {
+		month: 'long', year: 'numeric', timeZone: 'UTC'
+	}));
 
 	let galleryOpen = $state(false);
 	let galleryIndex = $state(0);
-	let shareStatus = $state<'idle' | 'copied' | 'error'>('idle');
 	let priceSectionEl: HTMLElement | null = null;
 	let priceSectionTracked = false;
 	let mainBookingCtaEl = $state<HTMLAnchorElement | null>(null);
@@ -241,36 +225,6 @@ import { localizePath } from '$lib/routing';
 			window.removeEventListener('resize', updateStickyBookingBar);
 		};
 	});
-
-	const shareRoom = async () => {
-		if (!browser) return;
-
-		const shareUrl = roomUrl;
-		const shareTitle = accommodation.title;
-		const shareText = accommodation.subtitle[$lang];
-
-		if (navigator.share) {
-			try {
-				await navigator.share({ title: shareTitle, text: shareText, url: shareUrl });
-				return;
-			} catch {
-				shareStatus = 'error';
-				return;
-			}
-		}
-
-		if (navigator.clipboard) {
-			try {
-				await navigator.clipboard.writeText(shareUrl);
-				shareStatus = 'copied';
-				setTimeout(() => {
-					shareStatus = 'idle';
-				}, 2000);
-			} catch {
-				shareStatus = 'error';
-			}
-		}
-	};
 </script>
 
 <SeoHead title={seoTitle} description={seoDescription} image={accommodation.images.main} />
@@ -280,376 +234,144 @@ import { localizePath } from '$lib/routing';
 	{@html `<script type="application/ld+json">${roomJsonLd}</script>`}
 </svelte:head>
 
-<div class="bg-[#fbfaf7]">
-	<div class="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
-		<section class="room-detail rounded-3xl bg-transparent">
-			<!-- Back -->
-			<a
-				href={localizedHref('/unterkuenfte-preise')}
-				class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-brand hover:opacity-90"
-			>
-				<ArrowLeft class="h-4 w-4" />{$t('room.detail.back')}</a>
-
-			<!-- GALLERY -->
-			<div class="mt-5 grid gap-4 lg:grid-cols-[1fr,340px]">
-				<!-- Left big -->
-				<button
-					type="button"
-					class="group relative overflow-hidden rounded-3xl"
-					data-room-photo={accommodation.slug}
-					onclick={() => openGallery(0)}
-				>
-					<img
-						{...imageAttrs((galleryPreviewItems[0] ?? galleryItems[0]).src, '(max-width: 1024px) 100vw, 900px')}
-						alt={(galleryPreviewItems[0] ?? galleryItems[0]).alt}
-						class={`h-[260px] w-full transition duration-700 group-hover:scale-[1.02] sm:h-[360px] lg:h-[480px] ${(galleryPreviewItems[0] ?? galleryItems[0]).kind === 'floorplan' ? 'object-contain bg-white p-4 sm:p-6' : 'object-cover'}`}
-						loading="eager"
-						fetchpriority="high"
-					/>
-					{#if (galleryPreviewItems[0] ?? galleryItems[0]).kind === 'floorplan'}
-						<span class="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-900 shadow-sm">
-							{$t('room.detail.gallery.floorplanBadge')}
-						</span>
-					{/if}
-				</button>
-
-				<!-- Right stack -->
-				<div class="grid gap-4 grid-cols-2 lg:grid-cols-1">
-					<button
-						type="button"
-						class="room-preview-first relative overflow-hidden rounded-3xl transition hover:opacity-90"
-						onclick={() => openGallery(1)}
-					>
-						<img
-							{...imageAttrs((galleryPreviewItems[1] ?? galleryItems[0]).src, '(max-width: 1024px) 50vw, 340px')}
-							alt={(galleryPreviewItems[1] ?? galleryItems[0]).alt}
-							class={`h-[120px] w-full sm:h-[160px] lg:h-[230px] ${(galleryPreviewItems[1] ?? galleryItems[0]).kind === 'floorplan' ? 'object-contain bg-white p-3' : 'object-cover'}`}
-							loading="lazy"
-							decoding="async"
-						/>
-						{#if (galleryPreviewItems[1] ?? galleryItems[0]).kind === 'floorplan'}
-							<span class="pointer-events-none absolute left-3 top-3 rounded-full bg-white/95 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-900 shadow-sm">
-								{$t('room.detail.gallery.floorplanBadge')}
-							</span>
-						{/if}
-					</button>
-
-					<button
-						type="button"
-						class="room-preview-second relative overflow-hidden rounded-3xl transition hover:opacity-90"
-						onclick={() => openGallery(2)}
-					>
-						<img
-							{...imageAttrs((galleryPreviewItems[2] ?? galleryItems[0]).src, '(max-width: 1024px) 50vw, 340px')}
-							alt={(galleryPreviewItems[2] ?? galleryItems[0]).alt}
-							class={`h-[120px] w-full sm:h-[160px] lg:h-[230px] ${(galleryPreviewItems[2] ?? galleryItems[0]).kind === 'floorplan' ? 'object-contain bg-white p-3' : 'object-cover'}`}
-							loading="lazy"
-							decoding="async"
-						/>
-						{#if (galleryPreviewItems[2] ?? galleryItems[0]).kind === 'floorplan'}
-							<span class="pointer-events-none absolute left-3 top-3 rounded-full bg-white/95 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-900 shadow-sm">
-								{$t('room.detail.gallery.floorplanBadge')}
-							</span>
-						{/if}
-
-						{#if overlayMore > 0}
-							<div class="absolute inset-0 bg-black/35"></div>
-							<div class="absolute inset-0 grid place-items-center">
-								<span
-									class="rounded-full bg-white/90 px-4 py-2 text-xs font-semibold text-slate-900 shadow-sm backdrop-blur"
-								>
-									+{overlayMore} {$t('room.detail.gallery.more')}
-								</span>
-							</div>
-						{/if}
-					</button>
-				</div>
-			</div>
-
-			<!-- HEADER + SHARE -->
-			<div class="room-heading mt-8 flex items-start justify-between gap-6">
-				<div class="min-w-0">
-					<p class="text-xs font-semibold uppercase tracking-[0.35em] text-brand pb-3">
-						{$t('brand.name')} · {accommodation.title}
-					</p>
-					<h1 class="font-serif text-3xl leading-[0.95] text-slate-900 sm:text-5xl">
-						{detailHeading}
-					</h1>
-					<div class="mt-4 h-[3px] w-14 rounded-full bg-brand"></div>
-					<p class="mt-3 max-w-3xl text-sm text-slate-600 sm:text-base">
-						{detailIntro}
-					</p>
-				</div>
-
-				<Button variant="secondary" size="sm"
-					type="button"
-					class="hidden sm:inline-flex"
-					onclick={shareRoom}
-					aria-live="polite"
-				>
-					<Share2 class="h-4 w-4" />
-					{#if shareStatus === 'copied'}
-						{$t('room.detail.shareCopied')}
-					{:else}
-						{$t('room.detail.share')}
-					{/if}
-				</Button>
-			</div>
-
-			<!-- META ROW -->
-			<div class="room-facts mt-7 flex flex-wrap items-center gap-4 text-sm font-semibold text-slate-700">
-				<span class="inline-flex items-center gap-2"><Ruler class="h-4 w-4 text-brand" />{accommodation.attributes.size}</span>
-				<span class="text-slate-300">•</span>
-				<span class="inline-flex items-center gap-2"><Building2 class="h-4 w-4 text-brand" />{accommodation.attributes.floor}</span>
-				<span class="text-slate-300">•</span>
-				<span class="inline-flex items-center gap-2"><MountainSnow class="h-4 w-4 text-brand" />{accommodation.attributes.view[$lang]}</span>
-				<span class="text-slate-300">•</span>
-				<span class="inline-flex items-center gap-2"><Users class="h-4 w-4 text-brand" />{accommodation.attributes.guests[$lang]}</span>
-			</div>
-
-			<!-- MAIN CONTENT + BOOKING CARD -->
-			<div class="mt-4 grid gap-10 lg:grid-cols-[1fr,360px] lg:items-start">
-				<!-- LEFT CONTENT -->
-				<div class="space-y-12 lg:pt-4">
-					<!-- Description -->
-					<section>
-						<h2 class="text-2xl font-serif text-slate-900">{$t('room.detail.sections.homeTitle')}</h2>
-						<div class="mt-4 space-y-4 text-sm leading-relaxed text-slate-600 sm:text-base">
-							{#each accommodation.description[$lang] as paragraph}
-								<p>{paragraph}</p>
-							{/each}
-						</div>
-					</section>
-
-					<!-- Amenities -->
-					<section>
-						<h2 class="text-2xl font-serif text-slate-900">{$t('room.detail.sections.amenities')}</h2>
-						<div class="mt-5 grid gap-x-10 gap-y-4 text-sm text-slate-700 sm:grid-cols-2">
-							{#each accommodation.amenities as amenity}
-								{#if amenityIcons[amenity as keyof typeof amenityIcons]}
-									{@const Icon = amenityIcons[amenity as keyof typeof amenityIcons]}
-									<div class="flex items-center gap-3">
-										<span class="grid h-8 w-8 place-items-center rounded-xl bg-brand/10 text-brand">
-											<Icon class="h-4 w-4" />
-										</span>
-										<span>{$t(`amenity.${amenity}`)}</span>
-									</div>
-								{/if}
-							{/each}
-						</div>
-					</section>
-
-					<!-- Indicative price -->
-					<section bind:this={priceSectionEl}>
-						<h2 class="text-2xl font-serif text-slate-900">{$t('room.detail.sections.prices')}</h2>
-
-						<p class="mt-4 font-semibold">{$t('home.rooms.priceFrom')} {accommodation.pricePerNightBase} € / {$t('price.night')}</p>
-						<p class="mt-2 text-sm text-slate-700">{$lang === 'de'
-							? 'Den Gesamtpreis mit allen Gebühren siehst du nach Auswahl deiner Reisedaten.'
-							: 'Choose your dates to see the total price including fees.'}</p>
-						<p class="mt-3 text-xs text-slate-500">{$t('room.detail.prices.note')}</p>
-					</section>
-
-					<!-- Reviews carousel -->
-					<section>
-						<div class="flex items-center justify-between gap-4">
-							<div>
-								<h2 class="text-2xl font-serif text-slate-900">{$t('room.detail.sections.reviews')}</h2>
-								{#if averageRating}
-									<p class="mt-1 text-sm font-semibold text-slate-700">
-										<span class="text-amber-500">★</span> {averageRating} / 5
-										<span class="font-normal text-slate-500"> · {reviewCount} Bewertungen</span>
-									</p>
-								{/if}
-							</div>
-
-							<div class="flex items-center gap-2">
-								<button
-									type="button"
-									class={`grid h-9 w-9 place-items-center rounded-full border border-slate-200 bg-white shadow-sm transition hover:bg-slate-50 ${
-										!canPrev ? 'opacity-40 pointer-events-none' : ''
-									}`}
-									onclick={() => (reviewIndex = Math.max(0, reviewIndex - 1))}
-									aria-label="{$t('room.detail.reviews.prev')}"
-								>
-									‹
-								</button>
-								<button
-									type="button"
-									class={`grid h-9 w-9 place-items-center rounded-full border border-slate-200 bg-white shadow-sm transition hover:bg-slate-50 ${
-										!canNext ? 'opacity-40 pointer-events-none' : ''
-									}`}
-									onclick={() =>
-										(reviewIndex = Math.min(
-											(accommodation.reviews.length ?? 0) - visibleReviews,
-											reviewIndex + 1
-										))}
-									aria-label="{$t('room.detail.reviews.next')}"
-								>
-									›
-								</button>
-							</div>
-						</div>
-
-						<div class="mt-5 grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
-							{#each accommodation.reviews.slice(reviewIndex, reviewIndex + visibleReviews) as review}
-								<div class="rounded-2xl border border-[#f2e8d9] bg-[#fdfbf7] p-5 shadow-sm">
-									<div class="flex items-center gap-1 text-amber-500">
-										{#each Array(5) as _, starIndex}
-											<span class={`${starIndex < review.rating ? 'opacity-100' : 'opacity-25'}`}>★</span>
-										{/each}
-									</div>
-									<p class="mt-3 text-sm leading-relaxed text-slate-600">“{review.text}”</p>
-
-									<div class="mt-4 flex items-center gap-3">
-										<div
-											class="grid h-9 w-9 place-items-center rounded-full bg-brand/10 text-xs font-semibold text-brand"
-										>
-											{review.name?.slice(0, 2)?.toUpperCase()}
-										</div>
-										<div class="min-w-0">
-											<p class="text-xs font-semibold text-slate-900">{review.name}</p>
-											<p class="text-[10px] text-slate-500">{review.date ?? ''}</p>
-										</div>
-									</div>
-								</div>
-							{/each}
-						</div>
-					</section>
-				</div>
-
-				<!-- RIGHT BOOKING CARD (sticky) -->
-				<aside class="lg:sticky booking-card">
-					<Card tone="default" padding="md"
-					>
-						<!-- Header -->
-						<div>
-							<p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
-								{$t('room.detail.card.priceFrom')}
-							</p>
-							<p class="mt-2 text-slate-900">
-								<span class="text-5xl font-semibold tracking-tight">{accommodation.pricePerNightBase}&euro;</span>
-							</p>
-							<p class="mt-1 text-sm text-slate-500">{$t('price.night')}</p>
-							<p class="mt-2 text-xs text-slate-500">{$t('room.detail.card.vatNote')}</p>
-						</div>
-
-						<!-- Aufschlsselung -->
-						<div class="mt-6 border-t border-slate-200 pt-4">
-							<p class="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500">
-								{$t('room.detail.card.breakdown.title')}
-							</p>
-
-							<div class="mt-3 space-y-2 text-sm text-slate-700">
-								<div class="flex items-center justify-between gap-4">
-									<span class="text-slate-600">{$t('room.detail.card.breakdown.nightLabel')}</span>
-									<span class="font-semibold text-slate-900">
-										{$t('room.detail.card.breakdown.nightFrom')} {accommodation.pricePerNightBase}&euro; /
-										{$t('price.night')}
-									</span>
-								</div>
-								<div class="flex items-center justify-between gap-4">
-									<span class="text-slate-600">{$t('room.detail.card.breakdown.cleaningLabel')}</span>
-									<span class="font-semibold text-slate-900">
-										{$t('room.detail.card.breakdown.cleaningValue')}
-									</span>
-								</div>
-								<div class="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-4 gap-y-1">
-									<span class="text-slate-600">{$t('room.detail.card.breakdown.taxLabel')}</span>
-									<span class="whitespace-nowrap text-right font-semibold tabular-nums text-slate-900">
-										{$t('rooms.page.pricing.tax.price')}
-									</span>
-									<span class="col-span-2 text-xs leading-relaxed text-slate-500">
-										{$t('room.detail.card.breakdown.taxNote')}
-									</span>
-								</div>
-							</div>
-
-							<div class="mt-4 flex items-start gap-2 rounded-xl bg-slate-50 px-3 py-2 text-xs text-slate-600">
-								<Info class="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-500" aria-hidden="true" />
-								<span>
-								{$t('room.detail.card.breakdown.tip')}
-								</span>
-							</div>
-						</div>
-
-						<!-- Fakten -->
-						<div class="mt-6 border-t border-slate-200 pt-4">
-							<p class="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500">
-								{$t('room.detail.card.facts.title')}
-							</p>
-
-							<div class="mt-3 space-y-3 text-sm">
-								<div class="flex items-center justify-between gap-4">
-									<span class="text-slate-600">{$t('room.detail.card.facts.checkinLabel')}</span>
-									<span class="font-semibold text-slate-900">
-										{$t('room.detail.card.facts.checkinValue')}
-									</span>
-								</div>
-								<div class="flex items-center justify-between gap-4">
-									<span class="text-slate-600">{$t('room.detail.card.facts.checkoutLabel')}</span>
-									<span class="font-semibold text-slate-900">
-										{$t('room.detail.card.facts.checkoutValue')}
-									</span>
-								</div>
-								<div class="flex items-center justify-between gap-4">
-									<span class="text-slate-600">{$t('room.detail.card.facts.minStayLabel')}</span>
-									<span class="font-semibold text-slate-900">
-										{$t('room.detail.card.facts.minStayValue')}
-									</span>
-								</div>
-								<div class="flex items-center justify-between gap-4">
-									<span class="text-slate-600">{$t('room.detail.card.facts.cancelLabel')}</span>
-									<span class="font-semibold text-slate-900">
-										{$t('room.detail.card.facts.cancelValue')}
-									</span>
-								</div>
-								<div class="flex items-center justify-between gap-4">
-									<span class="text-slate-600">{$t('room.detail.card.facts.petsLabel')}</span>
-									<span class="font-semibold text-slate-900">
-										{$t('room.detail.card.facts.petsValue')}
-									</span>
-								</div>
-							</div>
-						</div>
-
-						<!-- CTA -->
-						<ButtonLink variant="primary" size="md"
-							href={localizedHref('/buchen/' + accommodation.slug)}
-							bind:element={mainBookingCtaEl}
-							class="mt-5 w-full"
-							onclick={() =>
-								trackEvent('Booking: Jetzt buchen', { source: 'room-detail', room: accommodation.slug })
-							}
-						>
-							{$lang === 'de' ? 'Verfügbarkeit für ' + accommodation.title + ' prüfen' : 'Check availability for ' + accommodation.title}
-						</ButtonLink>
-
-						<!-- Secondary line -->
-						<p class="mt-3 text-center text-[11px] text-slate-500">
-							{$t('room.detail.card.note')}
-						</p>
-					</Card>
-				</aside>
-			</div>
-		</section>
+<article class="room-detail px-2 sm:px-0">
+	<div class="flex items-center justify-between gap-4">
+		<a href={backHref} class="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-950 hover:underline">
+			<ArrowLeft size={16} aria-hidden="true" />{$t(fromHome ? 'nav.home' : 'nav.roomsShort')}
+		</a>
 	</div>
-</div>
+
+	<header class="room-heading mt-3 sm:mt-5">
+		<h1 class="font-serif text-[2rem] leading-tight text-slate-900 sm:text-[2.5rem]">
+			{roomName}
+		</h1>
+		<p class="mt-1 text-base leading-relaxed text-slate-600">{accommodation.subtitle[$lang]}</p>
+	</header>
+	<ul class="room-facts mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm text-slate-700">
+		<li class="flex items-center gap-2"><Ruler size={16} aria-hidden="true" />{accommodation.attributes.size}</li>
+		<li class="flex items-center gap-2"><Users size={16} aria-hidden="true" />{accommodation.attributes.guests[$lang]}</li>
+	</ul>
+
+	<div class="mt-5 grid grid-cols-2 gap-2 sm:mt-6 sm:grid-cols-[2fr_1fr]">
+		{#each galleryPreviewItems as item, i}
+			<button
+				type="button"
+				class={['group relative overflow-hidden rounded-xl', i === 0 ? 'col-span-2 aspect-[16/10] w-full sm:col-span-1 sm:row-span-2 sm:aspect-auto' : i === 1 ? 'room-preview-first aspect-[2/1]' : 'room-preview-second aspect-[2/1]']}
+				data-room-photo={i === 0 ? accommodation.slug : undefined}
+				aria-label={item.alt + ' · ' + (i + 1) + ' / ' + galleryItems.length}
+				onclick={(event) => openGalleryFrom(event.currentTarget, () => openGallery(i))}
+			>
+				<img
+					{...imageAttrs(item.src, i === 0 ? '(max-width: 639px) 100vw, 720px' : '(max-width: 639px) 50vw, 360px')}
+					alt={item.alt}
+					class={['absolute inset-0 h-full w-full motion-safe:transition-transform motion-safe:duration-500 motion-safe:group-hover:scale-[1.02]', item.kind === 'floorplan' ? 'object-contain bg-white p-3' : 'object-cover']}
+					loading={i === 0 ? 'eager' : 'lazy'}
+					fetchpriority={i === 0 ? 'high' : 'auto'}
+				/>
+				{#if i === 2 && galleryItems.length > 3}
+					<span class="absolute bottom-2 right-2 rounded-lg bg-white/95 px-2.5 py-1.5 text-xs font-semibold text-slate-900">
+						+{galleryItems.length - 3} {$t('room.detail.gallery.more')}
+					</span>
+				{:else if item.kind === 'floorplan'}
+					<span class="absolute bottom-2 right-2 rounded-lg bg-white/95 px-2.5 py-1.5 text-xs font-semibold">{$t('room.detail.gallery.floorplanBadge')}</span>
+				{/if}
+			</button>
+		{/each}
+	</div>
+
+	<div class="mt-6 grid items-start gap-8 sm:mt-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-14">
+		<aside class="booking-card lg:sticky lg:col-start-2 lg:row-start-1" bind:this={priceSectionEl}>
+			<Card padding="md">
+				<p class="flex flex-wrap items-baseline gap-x-1.5 text-sm text-slate-600">
+					{$t('home.rooms.priceFrom')} <strong class="text-3xl font-semibold tracking-tight text-slate-900">{nightlyPrice}</strong> / {$t('price.night')}
+				</p>
+				<p class="mt-1 text-xs leading-relaxed text-slate-600">{$t('room.detail.card.vatNote')}</p>
+				<dl aria-label={$t('room.detail.card.breakdown.title')} class="mt-4 space-y-2 border-t border-slate-200 pt-4 text-sm text-slate-700">
+					<div class="flex items-baseline justify-between gap-3">
+						<dt>{$t('room.detail.card.breakdown.cleaningLabel')}</dt>
+						<dd class="text-right font-medium">{$t('room.detail.card.breakdown.cleaningValue')}</dd>
+					</div>
+					<div class="flex items-baseline justify-between gap-3">
+						<dt>
+							{$t('room.detail.card.breakdown.taxLabel')}
+							<span class="mt-0.5 block text-xs leading-relaxed text-slate-600">{$t('room.detail.card.breakdown.taxNote')}</span>
+						</dt>
+						<dd class="shrink-0 font-medium">{$t('rooms.page.pricing.tax.price')}</dd>
+					</div>
+				</dl>
+				<ButtonLink variant="primary" size="md" href={localizedHref('/buchen/' + accommodation.slug)}
+					bind:element={mainBookingCtaEl} class="mt-4 w-full"
+					onclick={() => trackEvent('Booking: Jetzt buchen', { source: 'room-detail', room: accommodation.slug })}>
+					{$t('booking.bar.cta')}
+				</ButtonLink>
+				<details class="group mt-4 border-t border-slate-200">
+					<summary class="flex min-h-11 cursor-pointer items-center justify-between gap-2 pt-2 text-sm font-semibold">
+						{$t('room.detail.card.stayDetails')} <ChevronDown size={16} class="group-open:rotate-180" aria-hidden="true" />
+					</summary>
+					<dl class="space-y-2 pt-2 text-sm">
+						{#each ['checkin', 'checkout', 'minStay', 'cancel', 'pets'] as fact}
+							<div class="flex justify-between gap-3"><dt>{$t('room.detail.card.facts.' + fact + 'Label')}</dt><dd>{$t('room.detail.card.facts.' + fact + 'Value')}</dd></div>
+						{/each}
+					</dl>
+					<p class="mt-3 text-sm leading-relaxed text-slate-600">{$t('room.detail.card.note')}</p>
+				</details>
+			</Card>
+		</aside>
+
+		<div class="min-w-0 space-y-8 lg:col-start-1 lg:row-start-1">
+			<section>
+				<h2 class="text-xl font-semibold leading-snug text-slate-900">{$t('room.detail.sections.amenities')}</h2>
+				<ul class="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm leading-relaxed text-slate-700">
+					{#each accommodation.amenities as amenity}
+						{@const Icon = amenityIcons[amenity as keyof typeof amenityIcons]}
+						<li class="flex items-center gap-2.5">
+							{#if Icon}<Icon size={18} class="shrink-0" strokeWidth={1.5} aria-hidden="true" />{/if}
+							{$t('amenity.' + amenity)}
+						</li>
+					{/each}
+				</ul>
+				<details class="group mt-4 border-b border-slate-200">
+					<summary class="flex min-h-11 cursor-pointer items-center justify-between gap-3 text-sm font-medium">
+						{$lang === 'de' ? 'Mehr zum Appartement' : 'About the apartment'}
+						<ChevronDown size={16} class="group-open:rotate-180" aria-hidden="true" />
+					</summary>
+					<div class="max-w-prose space-y-2 pb-4 text-sm leading-relaxed text-slate-600">
+						<p>{$lang === 'de' ? accommodation.attributes.floor + '. Stock' : 'Floor ' + accommodation.attributes.floor} · {accommodation.attributes.view[$lang]}</p>
+						{#each accommodation.description[$lang] as paragraph}<p>{paragraph}</p>{/each}
+					</div>
+				</details>
+			</section>
+			{#if accommodation.reviews.length}
+				<section>
+					<h2 class="text-xl font-semibold leading-snug text-slate-900">{$t('room.detail.sections.reviews')}</h2>
+					{#each accommodation.reviews as review}
+						<figure class="mt-4 max-w-prose">
+							<figcaption class="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm">
+								<strong class="font-semibold">{review.name}</strong>
+								<span class="text-slate-600"><span class="text-amber-700" aria-hidden="true">★</span> {review.rating} / 5</span>
+								{#if review.date}<time datetime={review.date} class="text-slate-600">{reviewDate.format(new Date(review.date))}</time>{/if}
+							</figcaption>
+							<blockquote class="mt-2 text-sm leading-relaxed text-slate-700">“{review.text}”</blockquote>
+						</figure>
+					{/each}
+				</section>
+			{/if}
+		</div>
+	</div>
+</article>
 
 <div
 	class={`mobile-sticky-booking lg:hidden ${stickyBookingBarVisible ? 'is-visible' : ''}`}
 	inert={!stickyBookingBarVisible}
 >
-	<div class="rounded-2xl border border-white/40 bg-white/75 shadow-[0_18px_50px_rgba(15,23,42,0.22)] backdrop-blur-xl ring-1 ring-slate-200/60">
+	<div class="rounded-2xl border border-white/40 bg-white shadow-md ring-1 ring-slate-200">
 		<div class="flex items-center justify-between gap-3 px-3 py-2">
 			<div class="min-w-0">
-				<p class="text-base font-extrabold leading-tight text-slate-900">
-					{$lang === 'de'
-						? `ab €${accommodation.pricePerNightBase} / ${$t('price.night')}`
-						: `from €${accommodation.pricePerNightBase} / ${$t('price.night')}`}
+				<p class="text-base font-semibold leading-tight text-slate-900">
+					{$t('home.rooms.priceFrom')} {nightlyPrice} / {$t('price.night')}
 				</p>
 				<p class="truncate text-xs text-slate-500">
-					{accommodation.attributes.guests[$lang]} · {accommodation.attributes.size}
+					{roomName}
 				</p>
 			</div>
 			<ButtonLink variant="primary" size="md"
@@ -658,7 +380,7 @@ import { localizePath } from '$lib/routing';
 				onclick={() =>
 					trackEvent('Booking: Jetzt buchen', { source: 'room-detail-sticky', room: accommodation.slug })}
 			>
-				{$lang === 'de' ? 'Verfügbarkeit prüfen' : 'Check availability'}
+				{$t('booking.bar.cta')}
 			</ButtonLink>
 		</div>
 	</div>
@@ -668,7 +390,7 @@ import { localizePath } from '$lib/routing';
 	open={galleryOpen}
 	items={galleryLightboxItems}
 	index={galleryIndex}
-	title={accommodation.title}
+	title={roomName}
 	closeLabel={$t('room.detail.gallery.close')}
 	prevLabel={$t('room.detail.gallery.prev')}
 	nextLabel={$t('room.detail.gallery.next')}
@@ -676,8 +398,9 @@ import { localizePath } from '$lib/routing';
 	onIndexChange={(nextIndex) => (galleryIndex = nextIndex)}
 />
 
-
 <style>
+	summary::-webkit-details-marker { display: none; }
+
 	.booking-card {
 		top: 9rem;
 	}
@@ -698,31 +421,3 @@ import { localizePath } from '$lib/routing';
 		opacity: 1;
 	}
 </style>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

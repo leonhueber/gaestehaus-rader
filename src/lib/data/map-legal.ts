@@ -1,9 +1,6 @@
 export const mapLegal = {
 	de: {
 		google: [
-			'Auf der Kontaktseite verwenden wir Google Maps von Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland, zur Darstellung unseres Standorts und zur Orientierung bei der Anreise. „Karte laden“ öffnet zunächst einen Datenschutzhinweis. Erst mit „Zustimmen & Karte laden“ wird die eingebettete Karte aktiviert. Die Zustimmung wird nicht dauerhaft gespeichert.',
-			'Dabei erhält Google insbesondere deine IP-Adresse sowie Browser- und Geräteinformationen. Abhängig von deinen Google- und Browsereinstellungen können Cookies, Kontozuordnungen und Interaktionen mit der Karte verarbeitet werden. Eine Verarbeitung auf Servern außerhalb der EU, insbesondere in den USA, ist möglich. Einzelheiten zu Empfängern, Speicherdauer und internationalen Übermittlungen beschreibt Google in seiner Datenschutzerklärung.',
-			'Über „Karte schließen“ kannst du die Einbindung wieder beenden. Beim Neuladen der Seite bleibt die Karte zunächst deaktiviert. Bereits übermittelte Daten werden dadurch nicht zurückgeholt. Unsere Website fragt deinen Gerätestandort nicht ab.',
 			'Die Links „Route planen“ und „Route in Google Maps öffnen“ führen nach dem Anklicken zum externen Dienst. Bei der Umgebungskarte werden dabei Gästehaus und gewähltes Ziel als Routenpunkte übergeben, nicht dein Gerätestandort.'
 		],
 		osm: [
@@ -17,9 +14,6 @@ export const mapLegal = {
 	},
 	en: {
 		google: [
-			'Our contact page uses Google Maps, provided by Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Ireland, to show the guesthouse location and help with arrival. “Load map” first opens a privacy notice. Only “Agree & load map” activates the embedded map. Your consent is not stored permanently.',
-			'Google then receives your IP address and browser/device information. Depending on your Google and browser settings, cookies, account associations and map interactions may be processed. Processing outside the EU, including in the United States, is possible. Google’s privacy policy explains recipients, retention and international transfers.',
-			'“Close map” removes the embedded map. Reloading the page leaves it disabled until activated again. This does not undo data already transmitted. Our website does not request your device location.',
 			'“Get directions” and “Open directions in Google Maps” open the external service when clicked. The area map passes the guesthouse and selected destination as route points, not your device location.'
 		],
 		osm: [

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import ButtonLink from '$lib/components/ui/ButtonLink.svelte';
 	import favicon from '$lib/assets/favicon.ico';
 	import { env } from '$env/dynamic/public';
 	import { resolve } from '$app/paths';
@@ -241,19 +240,19 @@
 				headerHidden ? '-translate-y-full' : 'translate-y-0'
 			}`}
 		>
-		<div class="mx-auto flex w-full items-center justify-between gap-6 px-4 py-4 sm:px-6 lg:px-[6vw] lg:py-6">
+		<div class="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:gap-6 sm:px-6 sm:py-4">
 			<a
 				href={localizedHref('/')}
 				class="flex items-center rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/40"
 				aria-label={$lang === 'de' ? 'Gästehaus Rader – Startseite' : 'Guesthouse Rader – Home'}
 			>
 				<div
-					class="flex h-16 w-32 items-center justify-center bg-white"
+					class="flex shrink-0 items-center justify-center rounded-xl bg-white px-3 py-2 sm:px-4"
 				>
 					<img
 						{...imageAttrs('/images/Logo/logo-rader-gitschtal.jpg', '(max-width: 640px) 128px, 208px')}
 						alt="Gästehaus Rader"
-						class="h-12 w-auto object-contain sm:h-14 lg:h-16"
+						class="h-12 w-auto object-contain sm:h-14"
 						loading="eager"
 						fetchpriority="high"
 					/>
@@ -311,13 +310,13 @@
 					</a>
 				</div>
 
-				<ButtonLink variant="primary" size="sm"
+				<a class="inline-flex shrink-0 items-center justify-center rounded-full bg-brand px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-brand/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate-900 sm:px-5 sm:text-sm"
 					href={bookingHref}
 					aria-label={$t('nav.booking')}
 					onclick={() => trackEvent('Booking: Jetzt buchen', { source: 'header' })}
 				>
 					{$t('nav.booking')}
-				</ButtonLink>
+				</a>
 			</div>
 		</div>
 

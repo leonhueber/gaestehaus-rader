@@ -2,11 +2,10 @@
 	import { cardClasses } from '$lib/components/ui/styles';
 	import Button from '$lib/components/ui/Button.svelte';
 	import ButtonLink from '$lib/components/ui/ButtonLink.svelte';
-	import Card from '$lib/components/ui/Card.svelte';
 	import CardButton from '$lib/components/ui/CardButton.svelte';
 	import type { ComponentType } from 'svelte';
 	import { lang, t } from '$lib/i18n';
-	import { asset, resolve } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 import { localizePath } from '$lib/routing';
 	import { imageAttrs, largestImageUrl } from '$lib/images';
@@ -19,6 +18,7 @@ import { localizePath } from '$lib/routing';
 		experienceSectionLinks as sectionLinks,
 		experienceSectionTrackingLinks as sectionTrackingLinks,
 		experienceFestivalSection,
+		showFestivalSection,
 		type ActivityFilterKey,
 		type ExperienceEvent,
 		type ExperienceLinkType,
@@ -28,7 +28,6 @@ import { localizePath } from '$lib/routing';
 	import { onDestroy, onMount, tick } from 'svelte';
 	import {
 		ArrowRight,
-		BusFront,
 		CalendarDays,
 		CarFront,
 		Clock3,
@@ -46,7 +45,6 @@ import { localizePath } from '$lib/routing';
 		SlidersHorizontal,
 		Sun,
 		Ticket,
-		Waves,
 		X,
 	} from 'lucide-svelte';
 
@@ -258,17 +256,9 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 			'https://www.nassfeld.at/de/Unterkunft-finden/Reise-planen/PREMIUM-Cards/GaesteCard-basic',
 		brochure: 'https://www.nassfeld.at/PDFs/NPS/Gaestekarten/BasisCard_Broschuere.pdf',
 	};
-	const guestCardVisual = $derived.by(() =>
-		activeTab === 'winter'
-			? {
-					src: '/images/Umgebung/skigebiet-weissbriach-2.jpg',
-					altKey: 'experiences.guestcard.imageAlt.winter',
-				}
-			: {
-					src: '/images/Umgebung/ski_nassfeld.jpg',
-					altKey: 'experiences.guestcard.imageAlt.summer',
-				}
-	);
+	const guestCardPhoto = $derived((seoSeasonFromUrl ?? activeTab) === 'winter'
+		? { src: '/images/Umgebung/skigebiet-weissbriach-2.jpg', alt: { de: 'Skigebiet Weißbriach', en: 'Weissbriach ski area' } }
+		: { src: '/images/Umgebung/presseggersee.jpg', alt: { de: 'Blick über den Pressegger See', en: 'View across Lake Pressegger See' } });
 	const festivalSection = experienceFestivalSection;
 
 	const sectionIconById: Record<string, any> = {
@@ -305,13 +295,18 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 		await transition.updateCallbackDone.catch(() => undefined);
 	}
 
+	let openingExperienceId = $state<string | null>(null);
+
 	function experienceImageTransitionName(event: ExperienceEvent) {
-		return activeExperience?.id === event.id ? 'none' : `experience-image-${event.id}`;
+		return openingExperienceId === event.id ? `experience-image-${event.id}` : 'none';
 	}
 
 	async function openExperienceModal(event: ExperienceEvent, trigger: EventTarget | null = null) {
 		if (trigger instanceof HTMLElement) lastExperienceTrigger = trigger;
+		openingExperienceId = event.id;
+		await tick();
 		await updateWithViewTransition(() => {
+			openingExperienceId = null;
 			activeExperience = event;
 			isMobileFilterOpen = false;
 			isMobileNavOpen = false;
@@ -761,16 +756,16 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 										class="group block w-full cursor-pointer overflow-hidden text-left"
 									>
 									<div
-										class="relative aspect-[16/10] overflow-hidden rounded-3xl sm:min-h-[420px] lg:h-[min(65dvh,650px)]"
+										class="relative w-full aspect-[16/10] overflow-hidden rounded-3xl sm:min-h-[420px] lg:h-[min(65dvh,650px)]"
 										style={`view-transition-name: ${experienceImageTransitionName(summerFeaturedEvent)};`}
 									>
 											<img
 												{...imageAttrs(summerFeaturedEvent.image, '(max-width: 1024px) 100vw, 1200px')}
 												alt={`${localize(summerFeaturedEvent.title)} – ${localize(summerFeaturedEvent.kicker)}`}
-												class={`absolute inset-0 block h-full w-full object-cover transition-transform duration-700 will-change-transform ${
+												class={`absolute inset-0 block h-full w-full object-cover ${
 													summerFeaturedEvent.id === 'summer-hike'
-														? 'object-left scale-[1.12] group-hover:scale-[1.14]'
-														: 'object-center scale-[1.05] group-hover:scale-[1.07]'
+														? 'object-left'
+														: 'object-center'
 												}`}
 												loading="lazy"
 												decoding="async"
@@ -959,13 +954,13 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 										class="group block w-full cursor-pointer overflow-hidden text-left"
 									>
 									<div
-										class="relative aspect-[16/10] overflow-hidden rounded-3xl sm:min-h-[420px] lg:h-[min(72dvh,720px)]"
+										class="relative w-full aspect-[16/10] overflow-hidden rounded-3xl sm:min-h-[420px] lg:h-[min(72dvh,720px)]"
 										style={`view-transition-name: ${experienceImageTransitionName(winterFeaturedEvent)};`}
 									>
 											<img
 												{...imageAttrs(winterFeaturedEvent.image, '(max-width: 1024px) 100vw, 1200px')}
 												alt={`${localize(winterFeaturedEvent.title)} – ${localize(winterFeaturedEvent.kicker)}`}
-												class="absolute inset-0 h-full w-full scale-[1.05] object-cover object-center transition-transform duration-700 will-change-transform group-hover:scale-[1.07]"
+												class="absolute inset-0 h-full w-full object-cover object-center"
 												loading="lazy"
 												decoding="async"
 											/>
@@ -1138,6 +1133,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 					{/if}
 				</div>
 
+				{#if showFestivalSection}
 				<section class="scroll-mt-28 py-16 sm:py-20" id="traditionelle-feste">
 					<div class="mx-auto w-full max-w-6xl px-4 sm:px-6">
 						<div class="mx-auto max-w-3xl text-center">
@@ -1300,6 +1296,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 						</div>
 					</div>
 				</section>
+				{/if}
 
 				<div class="mt-10 rounded-2xl border border-brand/15 bg-[#fdf8f2] p-6 shadow-sm">
 					<div class="grid gap-6 md:grid-cols-[1.5fr,auto] md:items-center">
@@ -1330,276 +1327,24 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 				</div>
 			</section>
 
-			<div class="mx-auto mt-10 w-full max-w-6xl px-1 sm:mt-14">
-				<div class="h-px w-full bg-gradient-to-r from-transparent via-brand/45 to-transparent"></div>
-			</div>
-
-			<section class="anchor-target mt-12 sm:p-10" id="gaestecard">
-				<div class="mx-auto max-w-3xl text-center">
-					<p class="text-xs font-semibold uppercase tracking-[0.35em] text-brand">
-						INKLUSIVE FÜR ÜBERNACHTUNGSGÄSTE
-					</p>
-					<h2 class="mt-3 font-serif text-4xl leading-[0.95] text-slate-900 sm:text-5xl">
-						Urlaub genießen.<br />Mobil bleiben.<br />Alles inklusive.
-					</h2>
-					<div class="mx-auto mt-3 h-[3px] w-14 rounded-full bg-brand"></div>
-					<p class="mt-4 text-sm leading-relaxed text-slate-600 sm:text-base">
-						Mit der GästeCard Basic nutzen Sie Bus & Bahn kostenlos und entdecken die Region flexibel -
-						ganz ohne Auto.
-					</p>
-				</div>
-
-				<div class="mx-auto mt-10 max-w-6xl space-y-14">
-					<Card tone="default" padding="none" class="overflow-hidden">
-						<div class="grid lg:grid-cols-[0.45fr_0.55fr]">
-							<div class="h-full">
-								<img
-									{...imageAttrs(guestCardVisual.src, '(max-width: 1024px) 100vw, 45vw')}
-									alt={$t(guestCardVisual.altKey)}
-									class="aspect-[16/10] w-full rounded-none object-cover sm:aspect-[4/3] lg:h-full lg:aspect-auto"
-									loading="lazy"
-									decoding="async"
-								/>
-							</div>
-
-							<div class="p-8 sm:p-10 lg:p-12">
-								<p class="text-xs font-semibold uppercase tracking-[0.32em] text-brand">
-									GästeCard Basic inklusive
-								</p>
-								<h2 class="mt-4 font-serif text-3xl leading-[1.02] text-slate-900 sm:text-4xl">
-									Ihre Vorteile auf einen Blick
-								</h2>
-
-								<div class="mt-5 flex flex-wrap gap-2">
-									<span
-										class="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-600"
-									>
-										Bus & Bahn gratis
-									</span>
-									<span
-										class="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-600"
-									>
-										Vorteile ab 1. Nacht
-									</span>
-								</div>
-
-								<p class="mt-6 max-w-xl text-sm leading-relaxed text-slate-600 sm:text-base">
-									Bei Ihrer Übernachtung im Gästehaus Rader ist die GästeCard Basic inklusive. Sie starten
-									direkt in Mobilität, Erholung und Naturerlebnisse - ohne zusätzliche Planung.
-								</p>
-
-								<ul class="mt-7 space-y-2 text-sm text-slate-700">
-									<li class="flex items-start gap-2">
-										<span class="mt-2 h-1.5 w-1.5 rounded-full bg-brand"></span>
-										Bus & Bahn in Kärnten gratis nutzen
-									</li>
-									<li class="flex items-start gap-2">
-										<span class="mt-2 h-1.5 w-1.5 rounded-full bg-brand"></span>
-										Viele Freizeitvorteile ab der ersten Nacht
-									</li>
-									<li class="flex items-start gap-2">
-										<span class="mt-2 h-1.5 w-1.5 rounded-full bg-brand"></span>
-										Mehr Zeit für Urlaub statt Organisation
-									</li>
-								</ul>
-
-								<div class="mt-6 flex flex-wrap items-center gap-3">
-									<ButtonLink variant="primary" size="md"
-										href={guestCardLinks.benefitsOverview}
-										target="_blank"
-										rel="noreferrer"
-									>
-										Alle Vorteile ansehen
-										<ArrowRight class="h-4 w-4" aria-hidden="true" />
-									</ButtonLink>
-									<a
-										href={guestCardLinks.brochure}
-										target="_blank"
-										rel="noreferrer"
-										class="inline-flex items-center gap-1 text-sm font-semibold text-slate-700 underline decoration-slate-300 underline-offset-4 transition hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 motion-reduce:transition-none"
-									>
-										Aktuelle Leistungsübersicht
-									</a>
-								</div>
-							</div>
-						</div>
-					</Card>
-
-					<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-						<Card as="article" tone="default" padding="none"
-							class="reveal group flex h-full flex-col overflow-hidden"
-							style="--reveal-delay: 0ms;"
-						>
-							<img
-								src={asset('/images/Umgebung/train.png')}
-								alt="Zugverbindung durch Kärnten für Ausflüge ohne Auto"
-								class="h-44 w-full object-cover"
-								loading="lazy"
-								decoding="async"
-							/>
-							<div class="flex flex-1 flex-col p-5">
-								<div class="flex items-center gap-2">
-									<BusFront class="h-4 w-4 text-brand" aria-hidden="true" />
-									<h3 class="text-lg font-semibold text-slate-900">Flexibel unterwegs</h3>
-								</div>
-								<p class="mt-2 text-sm leading-relaxed text-slate-600">
-									Kostenfreie Bus- und Bahnverbindungen bringen Sie bequem durch Kärnten - ideal für Ausflüge
-									ohne Auto.
-								</p>
-								<div class="mt-4 flex flex-wrap gap-2">
-									<span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600"
-										>Bus & Bahn gratis</span
-									>
-									<span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600"
-										>Ohne Parkplatzsuche</span
-									>
-								</div>
-								<a
-									href={guestCardLinks.benefitsOverview}
-									target="_blank"
-									rel="noreferrer"
-									class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-slate-800 transition hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 motion-reduce:transition-none"
-								>
-									Mehr erfahren
-									<ArrowRight
-										class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transform-none motion-reduce:transition-none"
-										aria-hidden="true"
-									/>
-								</a>
-							</div>
-						</Card>
-
-						<Card as="article" tone="default" padding="none"
-							class="reveal group flex h-full flex-col overflow-hidden"
-							style="--reveal-delay: 90ms;"
-						>
-							<img
-								{...imageAttrs('/images/Umgebung/sauna.png', '(max-width: 1024px) 100vw, 360px')}
-								alt="Baden und Wellness mit Gästekarte-Vorteilen"
-								class="h-44 w-full object-cover"
-								loading="lazy"
-								decoding="async"
-							/>
-							<div class="flex flex-1 flex-col p-5">
-								<div class="flex items-center gap-2">
-									<Waves class="h-4 w-4 text-brand" aria-hidden="true" />
-									<h3 class="text-lg font-semibold text-slate-900">Baden & Wellness</h3>
-								</div>
-								<p class="mt-2 text-sm leading-relaxed text-slate-600">
-									Freibäder, Seen und ausgewählte Wellness-Angebote machen aus jedem Urlaubstag einen
-									entspannten Genießertag.
-								</p>
-								<div class="mt-4 flex flex-wrap gap-2">
-									<span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600"
-										>Freibäder & Seen</span
-									>
-									<span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600"
-										>Sauna-Vorteile</span
-									>
-								</div>
-								<a
-									href={guestCardLinks.benefitsOverview}
-									target="_blank"
-									rel="noreferrer"
-									class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-slate-800 transition hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 motion-reduce:transition-none"
-								>
-									Mehr erfahren
-									<ArrowRight
-										class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transform-none motion-reduce:transition-none"
-										aria-hidden="true"
-									/>
-								</a>
-							</div>
-						</Card>
-
-						<Card as="article" tone="default" padding="none"
-							class="reveal group flex h-full flex-col overflow-hidden"
-							style="--reveal-delay: 180ms;"
-						>
-							<img
-								{...imageAttrs('/images/Umgebung/aussicht-vom-golz.jpg', '(max-width: 1024px) 100vw, 360px')}
-								alt="Aktiv in der Natur am Nassfeld und im Gailtal"
-								class="h-44 w-full object-cover"
-								loading="lazy"
-								decoding="async"
-							/>
-							<div class="flex flex-1 flex-col p-5">
-								<div class="flex items-center gap-2">
-									<Mountain class="h-4 w-4 text-brand" aria-hidden="true" />
-									<h3 class="text-lg font-semibold text-slate-900">Aktiv & Natur</h3>
-								</div>
-								<p class="mt-2 text-sm leading-relaxed text-slate-600">
-									Von Nassfeld bis Gailtal: Radwege, Bergmomente und geführte Naturerlebnisse für aktive
-									Urlaubstage.
-								</p>
-								<div class="mt-4 flex flex-wrap gap-2">
-									<span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600"
-										>Nassfeld Highlights</span
-									>
-									<span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600"
-										>Naturprogramme</span
-									>
-								</div>
-								<a
-									href={guestCardLinks.benefitsOverview}
-									target="_blank"
-									rel="noreferrer"
-									class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-slate-800 transition hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 motion-reduce:transition-none"
-								>
-									Mehr erfahren
-									<ArrowRight
-										class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transform-none motion-reduce:transition-none"
-										aria-hidden="true"
-									/>
-								</a>
-							</div>
-						</Card>
+			<section id="gaestecard" aria-labelledby="guestcard-title" class="scroll-mt-32 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+				<div class="grid md:grid-cols-2">
+					<div class="relative aspect-[2/1] min-w-0 md:aspect-auto">
+						<img {...imageAttrs(guestCardPhoto.src, '(min-width: 1152px) 520px, (min-width: 768px) 45vw, 100vw')}
+							alt={localize(guestCardPhoto.alt)} class="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async" />
 					</div>
-
-					<details class="group rounded-2xl border border-slate-200 bg-white/70 p-5 shadow-sm">
-						<summary
-							class="flex cursor-pointer list-none items-center justify-between gap-3 text-left text-sm font-semibold text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
-						>
-							<span>Alle Leistungen im Überblick</span>
-							<ArrowRight
-								class="h-4 w-4 transition-transform duration-300 group-open:rotate-90 motion-reduce:transition-none"
-								aria-hidden="true"
-							/>
-						</summary>
-						<div class="mt-4 grid gap-4 border-t border-slate-200 pt-4 sm:grid-cols-2">
-							<div>
-								<h3 class="text-sm font-semibold text-slate-900">Mobilität</h3>
-								<ul class="mt-2 space-y-1.5 text-sm text-slate-600">
-									<li>Regionale Buslinien im Gültigkeitsbereich inklusive</li>
-									<li>ÖBB S-Bahn in Kärnten kostenfrei nutzbar</li>
-									<li>Auch am An- und Abreisetag gültig</li>
-								</ul>
-							</div>
-							<div>
-								<h3 class="text-sm font-semibold text-slate-900">Wellness</h3>
-								<ul class="mt-2 space-y-1.5 text-sm text-slate-600">
-									<li>Ermäßigungen bei Freibädern in der Region</li>
-									<li>Vorteile bei ausgewählten Saunen</li>
-									<li>Seen und Naturbadeplätze schnell erreichbar</li>
-								</ul>
-							</div>
-							<div>
-								<h3 class="text-sm font-semibold text-slate-900">Draußen</h3>
-								<ul class="mt-2 space-y-1.5 text-sm text-slate-600">
-									<li>Vergünstigungen bei Berg- und Naturangeboten</li>
-									<li>Geführte Naturerlebnisse saisonal verfügbar</li>
-									<li>Rad- und Wandererlebnisse rund ums Gailtal</li>
-								</ul>
-							</div>
-							<div>
-								<h3 class="text-sm font-semibold text-slate-900">Kulinarik</h3>
-								<ul class="mt-2 space-y-1.5 text-sm text-slate-600">
-									<li>Vorteile bei regionalen Genuss-Partnern</li>
-									<li>Ausgewählte Produzenten und Hofläden entdecken</li>
-								</ul>
-							</div>
+					<div class="flex flex-col items-start justify-center px-5 py-6 sm:p-8 lg:p-10">
+						<h2 id="guestcard-title" class="text-balance font-serif text-3xl leading-tight text-slate-900 lg:text-4xl">{$t('guestcard.experiences.title')}</h2>
+						<p class="mt-3 max-w-prose text-base leading-relaxed text-slate-700">{$t('guestcard.experiences.staySummary')}</p>
+						<div class="mt-5 flex flex-wrap items-center gap-x-5 gap-y-1">
+							<ButtonLink href={guestCardLinks.benefitsOverview} variant="primary" size="sm" target="_blank" rel="noreferrer">
+								{$lang === 'de' ? 'Vorteile ansehen' : 'View benefits'} <ArrowRight size={16} aria-hidden="true" />
+							</ButtonLink>
+							<a href={guestCardLinks.brochure} target="_blank" rel="noreferrer" class="inline-flex min-h-11 items-center text-sm text-slate-600 underline decoration-slate-300 underline-offset-4 hover:text-slate-900">
+								{$lang === 'de' ? 'Broschüre (PDF)' : 'Brochure (PDF)'}
+							</a>
 						</div>
-					</details>
+					</div>
 				</div>
 			</section>
 		</div>
