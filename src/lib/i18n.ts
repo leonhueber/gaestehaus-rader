@@ -191,6 +191,7 @@ const translations: Record<Lang, Record<string, string>> = {
 		'room.detail.prices.minStay': 'Mindestaufenthalt',
 		'room.detail.prices.note':
 			'Alle Preise für 2 Personen inkl. gesetzlicher MwSt. zzgl. Endreinigung (einmalig 45 €) und Ortstaxe.',
+		'room.detail.prices.bookingNote': 'Den Gesamtpreis sehen Sie nach Auswahl Ihrer Reisedaten.',
 		'room.detail.reviews.prev': 'Vorherige Bewertungen',
 		'room.detail.reviews.next': 'Nächste Bewertungen',
 		'room.detail.card.priceFrom': 'Preis ab',
@@ -395,9 +396,9 @@ const translations: Record<Lang, Record<string, string>> = {
 		'experiences.quickIdeas.winter.sleddingnight': 'Rodeln am Abend',
 		'experiences.quickIdeas.winter.spa': 'Therme & Spa-Day',
 		'experiences.quickIdeas.winter.villagemarket': 'Kleines Dorffest',
-		'experiences.base.kicker': 'Ihr perfekter Ausgangspunkt',
-		'experiences.base.title': 'Ferienwohnungen in Weißbriach',
-		'experiences.base.body': 'Drei Appartements im Gästehaus Rader, jeweils mit eigener Küche und Balkon.',
+		'experiences.base.title': 'Gästehaus Rader als Base für Ihre Auszeit',
+		'experiences.base.body':
+			'Viele Ausflüge starten direkt vor der Haustür. Gerne geben wir Ihnen Tipps für die aktuelle Saison.',
 		'experiences.base.cta.rooms': 'Appartements ansehen',
 		'experiences.base.cta.booking': 'Verfügbarkeit prüfen',
 		'experiences.event.summer.hike.meta1': 'Viele Almwege in der Nähe',
@@ -1350,6 +1351,7 @@ const translations: Record<Lang, Record<string, string>> = {
 		'room.detail.prices.minStay': 'Minimum stay',
 		'room.detail.prices.note':
 			'All prices are for 2 people incl. VAT, plus final cleaning (one-time €45) and local tax.',
+		'room.detail.prices.bookingNote': 'Choose your dates to see the total price.',
 		'room.detail.reviews.prev': 'Previous reviews',
 		'room.detail.reviews.next': 'Next reviews',
 		'room.detail.card.priceFrom': 'Price from',
@@ -1556,9 +1558,9 @@ const translations: Record<Lang, Record<string, string>> = {
 		'experiences.quickIdeas.winter.sleddingnight': 'Evening sledding',
 		'experiences.quickIdeas.winter.spa': 'Spa day',
 		'experiences.quickIdeas.winter.villagemarket': 'Small village event',
-		'experiences.base.kicker': 'Your ideal home base',
-		'experiences.base.title': 'Holiday apartments in Weissbriach',
-		'experiences.base.body': 'Three apartments at Guesthouse Rader, each with its own kitchen and balcony.',
+		'experiences.base.title': 'Guesthouse Rader as your base for every day',
+		'experiences.base.body':
+			'Many outings start right on our doorstep. We’re happy to share tips for the season.',
 		'experiences.base.cta.rooms': 'View apartments',
 		'experiences.base.cta.booking': 'Check availability',
 		'experiences.event.summer.hike.meta1': 'Many alpine trails nearby',

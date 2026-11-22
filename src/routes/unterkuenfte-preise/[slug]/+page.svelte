@@ -169,9 +169,11 @@
 
 	const galleryPreviewItems = $derived.by(() => galleryItems.slice(0, 3));
 
-	const nightlyPrice = $derived(new Intl.NumberFormat($lang === 'de' ? 'de-AT' : 'en-IE', {
+	const priceFormat = $derived(new Intl.NumberFormat($lang === 'de' ? 'de-AT' : 'en-IE', {
 		style: 'currency', currency: 'EUR', maximumFractionDigits: 0, minimumFractionDigits: 0
-	}).format(accommodation.pricePerNightBase));
+	}));
+	const nightlyPrice = $derived(priceFormat.format(accommodation.pricePerNightBase));
+	const winterNightlyPrice = $derived(priceFormat.format(accommodation.pricePerNightWinter));
 	const reviewDate = $derived(new Intl.DateTimeFormat($lang === 'de' ? 'de-AT' : 'en-GB', {
 		month: 'long', year: 'numeric', timeZone: 'UTC'
 	}));
@@ -355,20 +357,56 @@
 						{#each accommodation.description[$lang] as paragraph}<p>{paragraph}</p>{/each}
 					</div>
 				</details>
+				<details class="group border-b border-slate-200">
+					<summary id="room-prices" class="flex min-h-11 cursor-pointer items-center justify-between gap-3 text-sm font-medium">
+						{$t('room.detail.sections.prices')}
+						<ChevronDown size={16} class="group-open:rotate-180" aria-hidden="true" />
+					</summary>
+					<Card padding="none" class="mt-2 overflow-hidden">
+						<table aria-labelledby="room-prices" aria-describedby="room-prices-note" class="w-full text-left text-xs text-slate-700 sm:text-sm [&_td]:px-2 [&_td]:py-3 [&_th]:px-2 [&_th]:py-3 sm:[&_td]:px-4 sm:[&_th]:px-4">
+							<thead class="border-b border-slate-200 bg-slate-50 text-slate-700">
+								<tr class="[overflow-wrap:anywhere] hyphens-auto">
+									<th scope="col">{$t('room.detail.prices.season')}</th>
+									<th scope="col">{$t('room.detail.prices.priceNight')}</th>
+									<th scope="col">{$t('room.detail.prices.extraPerson')}</th>
+									<th scope="col">{$t('room.detail.prices.minStay')}</th>
+								</tr>
+							</thead>
+							<tbody class="divide-y divide-slate-200">
+								{#each [{ season: 'summer', price: nightlyPrice }, { season: 'winter', price: winterNightlyPrice }] as row (row.season)}
+									<tr>
+										<th scope="row" class="font-semibold text-slate-900">{$t('experiences.nav.' + row.season)}</th>
+										<td class="whitespace-nowrap font-semibold tabular-nums text-slate-900">{row.price}</td>
+										<td class="font-medium">{accommodation.slug === 'nr-3' ? '—' : `${$t('rooms.page.pricing.extraPrice')} / ${$t('price.night')}`}</td>
+										<td class="font-medium">{$t('room.detail.card.facts.minStayValue')}</td>
+									</tr>
+								{/each}
+							</tbody>
+						</table>
+					</Card>
+					<p id="room-prices-note" class="mt-3 pb-4 text-xs leading-relaxed text-slate-600">{$t('room.detail.prices.note')} {$t('room.detail.prices.bookingNote')}</p>
+				</details>
 			</section>
 			{#if accommodation.reviews.length}
-				<section>
-					<h2 class="text-xl font-semibold leading-snug text-slate-900">{$t('room.detail.sections.reviews')}</h2>
-					{#each accommodation.reviews as review}
-						<figure class="mt-4 max-w-prose">
-							<figcaption class="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm">
-								<strong class="font-semibold">{review.name}</strong>
-								<span class="text-slate-600"><span class="text-amber-700" aria-hidden="true">★</span> {review.rating} / 5</span>
-								{#if review.date}<time datetime={review.date} class="text-slate-600">{reviewDate.format(new Date(review.date))}</time>{/if}
-							</figcaption>
-							<blockquote class="mt-2 text-sm leading-relaxed text-slate-700">“{review.text}”</blockquote>
-						</figure>
-					{/each}
+				<section aria-labelledby="room-reviews">
+					<h2 id="room-reviews" class="font-serif text-2xl text-slate-900">{$t('room.detail.sections.reviews')}</h2>
+					<div class="mt-4 grid gap-4 sm:grid-cols-[repeat(auto-fit,minmax(min(100%,17rem),1fr))]">
+						{#each accommodation.reviews as review}
+						<Card padding="sm" class="max-w-sm">
+								<figure>
+								<p class="text-sm tracking-wider text-amber-500" aria-hidden="true">
+										{#each [1, 2, 3, 4, 5] as star}{star <= review.rating ? '★' : '☆'}{/each}
+									</p>
+									<span class="sr-only">{review.rating} / 5</span>
+									<blockquote lang="de" class="mt-3 text-sm leading-relaxed text-slate-700">“{review.text}”</blockquote>
+									<figcaption class="mt-4 flex flex-wrap items-baseline gap-x-2 gap-y-1 text-sm">
+										<strong class="font-semibold">{review.name}</strong>
+										{#if review.date}<time datetime={review.date} class="text-xs text-slate-600">{reviewDate.format(new Date(review.date))}</time>{/if}
+									</figcaption>
+								</figure>
+							</Card>
+						{/each}
+					</div>
 				</section>
 			{/if}
 		</div>

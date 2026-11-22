@@ -109,9 +109,9 @@ const buildAccommodationEntries = (
 export const getSitemapFreshnessEntries = (rooms: Accommodation[]): Record<string, ContentFreshnessEntry> => ({
 	...staticFreshnessEntries,
 	...buildAccommodationEntries(rooms, {
-		lastModified: '2026-11-18',
+		lastModified: '2026-11-22',
 		reviewGroup: 'accommodations',
-		notes: 'Reviewed indicative nightly rates and linked the selected apartment to booking.',
+		notes: 'Restored indicative summer and winter rates alongside stay conditions.',
 	}),
 });
 

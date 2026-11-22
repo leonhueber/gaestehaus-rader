@@ -46,6 +46,7 @@ export type Accommodation = {
 	amenities: string[];
 	floorplanImage?: string;
 	pricePerNightBase: number;
+	pricePerNightWinter: number;
 	reviews: Array<{ name: string; rating: number; text: string; date?: string }>;
 	badgeLabel?: string | null;
 	typeLabel: Localized<string>;
@@ -176,6 +177,7 @@ export const accommodations: Accommodation[] = [
 		amenities: ['balkon', 'fernseher', 'kueche', 'ausziehcouch', 'wifi', 'badezimmer'],
 		floorplanImage: '/images/Nr1/floorplan.png',
 		pricePerNightBase: 75,
+		pricePerNightWinter: 85,
 		reviews: [
 			{
 				name: 'Lenka',
@@ -308,6 +310,7 @@ export const accommodations: Accommodation[] = [
 		amenities: ['balkon', 'fernseher', 'kueche', 'wifi', 'badezimmer'],
 		floorplanImage: '/images/Nr2/floorplan.png',
 		pricePerNightBase: 75,
+		pricePerNightWinter: 85,
 		reviews: [
 			{
 				name: 'Lenka',
@@ -432,6 +435,7 @@ export const accommodations: Accommodation[] = [
 		amenities: ['balkon', 'fernseher', 'kueche', 'wifi', 'badezimmer'],
 		floorplanImage: '/images/Nr3/floorplan.png',
 		pricePerNightBase: 70,
+		pricePerNightWinter: 75,
 		reviews: [
 			{
 				name: 'Milena',

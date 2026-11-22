@@ -59,9 +59,10 @@
 <SeoHead titleKey="contact.seo.title" descriptionKey="contact.seo.description" />
 
 <div class="mx-auto max-w-3xl px-2 sm:px-0">
-	<header>
-		<h1 class="font-serif text-3xl leading-tight text-slate-900 sm:text-4xl">{$t('contact.title')}</h1>
-		<p class="mt-3 text-lg font-medium leading-snug text-slate-800">{$t('contact.address.name')}</p>
+	<header class="pt-10">
+		<h1 class="font-serif text-4xl leading-[0.95] text-slate-900 sm:text-5xl">{$t('contact.title')}</h1>
+		<div class="mt-4 h-[3px] w-14 rounded-full bg-brand" aria-hidden="true"></div>
+		<p class="mt-6 text-lg font-medium leading-snug text-slate-800">{$t('contact.address.name')}</p>
 		<address class="mt-1 text-sm not-italic leading-6 text-slate-700">
 			<a href="https://www.google.com/maps/dir/?api=1&destination=Wei%C3%9Fbriach%2092%2C%209622%20Wei%C3%9Fbriach%2C%20Austria"
 				target="_blank" rel="noopener noreferrer" title={$t('contact.route.cta')}

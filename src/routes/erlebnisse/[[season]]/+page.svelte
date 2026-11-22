@@ -508,9 +508,9 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 	<div class="mx-auto w-full max-w-none px-4 sm:px-8 lg:px-10">
 		<!-- CONTENT WRAPPER -->
 		<div class="space-y-14 lg:space-y-20" id="aktivitaeten">
-			<section class="pt-4 sm:pt-6 sm:px-10">
+			<section class="pt-3 sm:px-10">
 				<header class="mx-auto max-w-6xl text-center">
-					<p class="mt-6 text-xs font-semibold uppercase tracking-[0.35em] text-brand sm:mt-7">
+					<p class="text-xs font-semibold uppercase tracking-[0.35em] text-brand">
 						{$t('experiences.destinations.kicker')}
 					</p>
 					<h1 class="mt-3 font-serif text-4xl leading-[0.95] text-slate-900 sm:text-5xl">
@@ -861,20 +861,21 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 				</section>
 				{/if}
 
-				<section aria-labelledby="experiences-stay-title" class="mt-14 grid gap-5 rounded-2xl border border-[#e8dfd1] bg-[#f5efe6] p-6 sm:p-8 lg:mt-16 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-8">
-					<div>
+				<section aria-labelledby="experiences-stay-title" class="mt-14 rounded-2xl border border-[#e8dfd1] bg-[#f5efe6] p-6 sm:p-8 lg:mt-16">
+					<div class="max-w-2xl">
 						<h2 id="experiences-stay-title" class="text-balance font-serif text-2xl leading-tight text-slate-900 sm:text-3xl">
 							{$t('experiences.base.title')}
 						</h2>
 						<p class="mt-2 text-sm leading-relaxed text-slate-700 sm:text-base">{$t('experiences.base.body')}</p>
 					</div>
-					<div class="flex flex-wrap gap-2 lg:grid">
-						<ButtonLink variant="secondary" size="sm" href={localizedHref('/unterkuenfte-preise')}>
-							{$t('experiences.base.cta.rooms')}
-						</ButtonLink>
+					<div class="mt-5 flex flex-wrap gap-3">
 						<ButtonLink variant="primary" size="sm" href={localizedHref('/buchen')}>
 							{$t('experiences.base.cta.booking')}
 						</ButtonLink>
+						<a href={localizedHref('/unterkuenfte-preise')}
+							class="inline-flex min-h-11 items-center px-2 text-sm font-semibold text-slate-900 underline decoration-slate-400 underline-offset-4 hover:decoration-slate-900 focus-visible:outline-offset-2">
+							{$t('experiences.base.cta.rooms')}
+						</a>
 					</div>
 				</section>
 			</section>
