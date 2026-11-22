@@ -69,3 +69,13 @@ test('season month follows Vienna at UTC month boundaries', () => {
 	assert.equal(getViennaMonth(new Date('2026-04-30T22:30:00Z')), 5);
 	assert.equal(getViennaMonth(new Date('2026-09-30T21:30:00Z')), 9);
 });
+
+test('experiences page defaults to summer from May to October and winter otherwise', () => {
+	const { getExperienceSeason } = load('src/lib/hero-season.ts');
+	const seasons = Array.from({ length: 12 }, (_, index) => getExperienceSeason(index + 1));
+	assert.deepEqual(seasons, [
+		'winter', 'winter', 'winter', 'winter',
+		'summer', 'summer', 'summer', 'summer', 'summer', 'summer',
+		'winter', 'winter',
+	]);
+});

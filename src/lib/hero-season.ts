@@ -18,3 +18,8 @@ export function getHeroExperienceIds(month: number): string[] {
 	if (month === 9) return ['summer-lake', 'summer-hike'];
 	return [];
 }
+
+// Experiences page default: May–October shows summer ideas, November–April shows winter ideas.
+export function getExperienceSeason(month: number): 'summer' | 'winter' {
+	return month >= 5 && month <= 10 ? 'summer' : 'winter';
+}

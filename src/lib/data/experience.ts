@@ -73,11 +73,6 @@ export type ActivityFilter = {
 	labelKey: string;
 };
 
-export type SectionLink = {
-	id: string;
-	labelKey: string;
-};
-
 export type FestivalFeature = {
 	id: string;
 	icon: ComponentType;
@@ -671,18 +666,6 @@ export const activityFilters: ActivityFilter[] = [
 ];
 
 export const showFestivalSection = false;
-const festivalLink = { id: 'traditionelle-feste', labelKey: 'experiences.nav.festivals' };
-
-export const experienceSectionLinks: SectionLink[] = [
-	{ id: 'aktivitaeten', labelKey: 'experiences.nav.activities' },
-	...(showFestivalSection ? [festivalLink] : []),
-];
-
-export const experienceSectionTrackingLinks: SectionLink[] = [
-	{ id: 'aktivitaeten', labelKey: 'experiences.nav.activities' },
-	{ id: 'highlights', labelKey: 'experiences.nav.highlights' },
-	...(showFestivalSection ? [festivalLink] : []),
-];
 
 export const experienceFestivalSection: FestivalSection = {
 	kicker: { de: 'Echt Gitschtal', en: 'Authentic Gitschtal' },

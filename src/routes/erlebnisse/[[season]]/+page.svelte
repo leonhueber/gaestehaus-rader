@@ -5,25 +5,21 @@
 	import CardButton from '$lib/components/ui/CardButton.svelte';
 	import type { ComponentType } from 'svelte';
 	import { lang, t } from '$lib/i18n';
-	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 import { localizePath } from '$lib/routing';
 	import { imageAttrs, largestImageUrl } from '$lib/images';
 	import SeoHead from '$lib/components/SeoHead.svelte';
-	import { scrollPageToElement } from '$lib/scroll';
+	import { getExperienceSeason, getViennaMonth } from '$lib/hero-season';
 	import {
 		experienceEvents as events,
 		experienceSeasonContent as content,
-		experienceSectionLinks as sectionLinks,
-		experienceSectionTrackingLinks as sectionTrackingLinks,
 		experienceFestivalSection,
 		showFestivalSection,
 		type ExperienceEvent,
 		type ExperienceLinkType,
 		type SeasonKey,
-		type SectionLink,
 	} from '$lib/data/experience';
-	import { onDestroy, onMount, tick } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import {
 		ArrowRight,
 		CalendarDays,
@@ -31,13 +27,10 @@ import { localizePath } from '$lib/routing';
 		Clock3,
 		ExternalLink,
 		Gauge,
-		List,
 		MapPinned,
 		Mountain,
-		PartyPopper,
 		Route,
 		Snowflake,
-		Sparkles,
 		Sun,
 		X,
 	} from 'lucide-svelte';
@@ -138,47 +131,42 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 	};
 	const getEventLinks = (event: ExperienceEvent) => event.links ?? [];
 
-	// get active tab from url param (default: summer)
-	const seoSeasonFromUrl = $derived.by(() => {
+	const seasonPaths: Record<SeasonKey, string> = {
+		summer: '/erlebnisse/sommer',
+		winter: '/erlebnisse/winter',
+	};
+	const seasonOptions: Array<{ key: SeasonKey; icon: ComponentType }> = [
+		{ key: 'summer', icon: Sun },
+		{ key: 'winter', icon: Snowflake },
+	];
+
+	const seoSeasonFromUrl = $derived.by((): SeasonKey | null => {
 		const season = page.params.season;
 		if (season === 'winter') return 'winter';
 		if (season === 'sommer' || season === 'summer') return 'summer';
 		return null;
 	});
 
-	const seasonFromUrl = $derived.by(() => {
-		const season = seoSeasonFromUrl;
-		if (season) return season;
-		return 'summer';
-	});
+	// The overview starts with the prerendered season and switches to the visitor's current season after mount.
+	let currentSeason = $state<SeasonKey>(
+		(page.data as { defaultSeason?: SeasonKey }).defaultSeason ?? 'summer'
+	);
+	const activeSeason = $derived(seoSeasonFromUrl ?? currentSeason);
 
-	let activeTab = $state<SeasonKey>('summer');
-	let activeHighlightsSeason = $state<SeasonKey>('summer');
 	let activeExperience = $state<ExperienceEvent | null>(null);
 	let modalCloseButton = $state<HTMLButtonElement | null>(null);
 	let lastExperienceTrigger: HTMLElement | null = null;
 	let reduceMotion = $state(false);
 	let supportsViewTransitions = $state(false);
-	let showAllSeasons = $state(true);
-	let activeSectionId = $state('aktivitaeten');
-	let isMobileNavOpen = $state(false);
-	let highlightObserver: IntersectionObserver | null = null;
-	let seasonScrollTimers: number[] = [];
-	let lastMobileNavPointerAt = 0;
-	$effect(() => {
-		if (activeTab !== seasonFromUrl) {
-			activeTab = seasonFromUrl;
-		}
-	});
 
-	const summerEvents = events.filter((event) => event.season === 'summer');
-	const winterEvents = events.filter((event) => event.season === 'winter');
-	const summerFeaturedEvent = summerEvents[0];
-	const summerSecondaryEvents = summerEvents.slice(1);
-	const winterFeaturedEvent = winterEvents[0];
-	const winterSecondaryEvents = winterEvents.slice(1);
+	const eventsBySeason: Record<SeasonKey, ExperienceEvent[]> = {
+		summer: events.filter((event) => event.season === 'summer'),
+		winter: events.filter((event) => event.season === 'winter'),
+	};
+	const featuredEvent = $derived(eventsBySeason[activeSeason][0]);
+	const secondaryEvents = $derived(eventsBySeason[activeSeason].slice(1));
 
-	const currentContent = $derived(content[activeTab]);
+	const currentContent = $derived(content[activeSeason]);
 	const seo = $derived.by(() => {
 		if (!seoSeasonFromUrl) {
 			return {
@@ -197,29 +185,20 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 		};
 	});
 
-	const navActiveSectionId = $derived(activeSectionId === 'highlights' ? '' : activeSectionId);
-
-	const activeSectionLabelKey = $derived.by(() => {
-		if (activeSectionId === 'highlights') {
-			return activeHighlightsSeason === 'winter' ? 'experiences.nav.winter' : 'experiences.nav.summer';
-		}
-		const match = sectionTrackingLinks.find((section) => section.id === activeSectionId);
-		return match?.labelKey ?? 'experiences.nav.title';
-	});
-
 	const festivalSection = experienceFestivalSection;
 
-	const sectionIconById: Record<string, any> = {
-		aktivitaeten: Mountain,
-		highlights: Sparkles,
-		'traditionelle-feste': PartyPopper,
-	};
+	// Desktop rows alternate a wide (2/3) and a narrow (1/3) card; an odd last card spans the full row.
+	type CardLayout = 'wide' | 'narrow' | 'panorama';
+	function cardLayout(index: number, count: number): CardLayout {
+		if (count % 2 === 1 && index === count - 1) return 'panorama';
+		const row = Math.floor(index / 2);
+		return (index % 2 === 0) === (row % 2 === 0) ? 'wide' : 'narrow';
+	}
+	const photoCardClasses =
+		'group relative block w-full scroll-mt-28 overflow-hidden rounded-2xl bg-slate-700 text-left text-white [text-shadow:0_1px_12px_rgba(15,23,42,0.35)] transition-shadow duration-300 hover:shadow-[0_14px_34px_rgba(15,23,42,0.2)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate-900 motion-reduce:transition-none';
 
 	function onWindowKeydown(event: KeyboardEvent) {
-		if (event.key === 'Escape') {
-			if (activeExperience) void closeExperienceModal();
-			if (isMobileNavOpen) isMobileNavOpen = false;
-		}
+		if (event.key === 'Escape' && activeExperience) void closeExperienceModal();
 	}
 
 	async function updateWithViewTransition(update: () => void) {
@@ -254,7 +233,6 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 		await updateWithViewTransition(() => {
 			openingExperienceId = null;
 			activeExperience = event;
-			isMobileNavOpen = false;
 		});
 		modalCloseButton?.focus({ preventScroll: true });
 	}
@@ -267,79 +245,6 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 		lastExperienceTrigger = null;
 	}
 
-	function scrollToSection(id: string, behavior: ScrollBehavior = 'smooth') {
-		const scrollNow = () => {
-			const topOffset = window.innerWidth < 1024 ? 92 : 28;
-			return scrollPageToElement(id, {
-				behavior,
-				offset: -topOffset,
-			});
-		};
-
-		if (scrollNow()) return true;
-		window.setTimeout(() => {
-			scrollNow();
-		}, 120);
-		return false;
-	}
-
-	function openMobileNav() {
-		isMobileNavOpen = true;
-	}
-
-	function closeMobileNav() {
-		isMobileNavOpen = false;
-	}
-
-	function onMobileNavSelect(id: string) {
-		scrollToSection(id);
-		closeMobileNav();
-		window.setTimeout(() => {
-			scrollToSection(id);
-		}, 120);
-	}
-
-	function onMobileNavPointerUp(event: PointerEvent, id: string) {
-		event.preventDefault();
-		event.stopPropagation();
-		lastMobileNavPointerAt = Date.now();
-		onMobileNavSelect(id);
-	}
-
-	function onMobileNavClick(event: MouseEvent, id: string) {
-		if (Date.now() - lastMobileNavPointerAt < 350) return;
-		event.stopPropagation();
-		onMobileNavSelect(id);
-	}
-
-	function clearSeasonScrollTimers() {
-		seasonScrollTimers.forEach((timer) => clearTimeout(timer));
-		seasonScrollTimers = [];
-	}
-
-	function scrollToSeasonHighlightsFromUrl(behavior: ScrollBehavior = 'auto') {
-		if (!seoSeasonFromUrl) return;
-		const linkedExperience = events.find((event) => `#${event.id}` === page.url.hash && event.season === seoSeasonFromUrl);
-		const targetId = linkedExperience?.id ?? (seoSeasonFromUrl === 'winter' ? 'highlights-winter' : 'highlights-summer');
-		activeSectionId = 'highlights';
-		activeHighlightsSeason = seoSeasonFromUrl;
-		scrollToSection(targetId, behavior);
-	}
-
-	function scheduleSeasonHighlightsScroll() {
-		if (!seoSeasonFromUrl) return;
-		clearSeasonScrollTimers();
-		for (const delay of [0, 120, 420, 900]) {
-			seasonScrollTimers.push(
-				window.setTimeout(() => scrollToSeasonHighlightsFromUrl('auto'), delay)
-			);
-		}
-	}
-
-	function onWindowScroll() {
-		updateActiveSectionFromViewport();
-	}
-
 	$effect(() => {
 		if (typeof document === 'undefined') return;
 		document.body.style.overflow = activeExperience ? 'hidden' : '';
@@ -348,87 +253,8 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 		};
 	});
 
-	function updateActiveSectionFromViewport() {
-		const marker = window.innerHeight * 0.33;
-		let current = sectionTrackingLinks[0]?.id ?? 'aktivitaeten';
-		for (const section of sectionTrackingLinks) {
-			const el = document.getElementById(section.id);
-			if (!el) continue;
-			if (el.getBoundingClientRect().top <= marker) {
-				current = section.id;
-			} else {
-				break;
-			}
-		}
-		activeSectionId = current;
-
-		const summerHighlightsEl = document.getElementById('highlights-summer');
-		const winterHighlightsEl = document.getElementById('highlights-winter');
-		if (summerHighlightsEl && winterHighlightsEl) {
-			const summerTop = summerHighlightsEl.getBoundingClientRect().top;
-			const winterTop = winterHighlightsEl.getBoundingClientRect().top;
-			if (winterTop <= marker) {
-				activeHighlightsSeason = 'winter';
-			} else if (summerTop <= marker) {
-				activeHighlightsSeason = 'summer';
-			}
-		}
-	}
-
-	function reveal(node: HTMLElement, opts?: { once?: boolean; rootMargin?: string }) {
-		const once = opts?.once ?? true;
-		const io = new IntersectionObserver(
-			([entry]) => {
-				if (entry.isIntersecting) {
-					node.classList.add('is-revealed');
-					if (once) io.disconnect();
-				}
-			},
-			{ threshold: 0.12, rootMargin: opts?.rootMargin ?? '0px 0px -10% 0px' }
-		);
-		io.observe(node);
-		return {
-			destroy() {
-				io.disconnect();
-			},
-		};
-	}
-
-	function enableHighlightSeasonAuto() {
-		highlightObserver?.disconnect();
-		highlightObserver = null;
-		const container = document.getElementById('highlights');
-		if (!container) return;
-		const cards = Array.from(container.querySelectorAll<HTMLElement>('[data-season]'));
-		if (!cards.length) return;
-		highlightObserver = new IntersectionObserver(
-			(entries) => {
-				if (activeSectionId !== 'highlights') return;
-				if (!showAllSeasons) return;
-				const best = entries
-					.filter((entry) => entry.isIntersecting)
-					.sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-				const seasonAttr = best?.target?.getAttribute('data-season');
-				const season =
-					seasonAttr === 'summer' || seasonAttr === 'winter' ? (seasonAttr as SeasonKey) : null;
-				if (season && season !== activeTab) activeTab = season;
-			},
-			{
-				root: null,
-				threshold: [0.25, 0.4, 0.55, 0.7],
-				rootMargin: '-20% 0px -55% 0px',
-			}
-		);
-		cards.forEach((card) => highlightObserver?.observe(card));
-	}
-
-	$effect(() => {
-		seoSeasonFromUrl;
-		page.url.hash;
-		queueMicrotask(scheduleSeasonHighlightsScroll);
-	});
-
 	onMount(() => {
+		currentSeason = getExperienceSeason(getViennaMonth());
 		const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 		const updateMotionPreference = () => {
 			reduceMotion = motionQuery.matches;
@@ -438,31 +264,6 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 		motionQuery.addEventListener('change', updateMotionPreference);
 		return () => motionQuery.removeEventListener('change', updateMotionPreference);
 	});
-
-	onMount(() => {
-		updateActiveSectionFromViewport();
-		window.addEventListener('scroll', onWindowScroll, { passive: true });
-		window.addEventListener('resize', updateActiveSectionFromViewport);
-		queueMicrotask(scheduleSeasonHighlightsScroll);
-		return () => {
-			window.removeEventListener('scroll', onWindowScroll);
-			window.removeEventListener('resize', updateActiveSectionFromViewport);
-			clearSeasonScrollTimers();
-		};
-	});
-
-	onMount(() => {
-		enableHighlightSeasonAuto();
-		return () => {
-			highlightObserver?.disconnect();
-			highlightObserver = null;
-		};
-	});
-
-	onDestroy(() => {
-		highlightObserver?.disconnect();
-		clearSeasonScrollTimers();
-	});
 </script>
 
 <svelte:window onkeydown={onWindowKeydown} />
@@ -470,22 +271,45 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 <SeoHead titleKey={seo.titleKey} descriptionKey={seo.descriptionKey} image={currentContent.bg} />
 
 
+{#snippet factsLine(event: ExperienceEvent)}
+	{#if buildSummaryFacts(event).length}
+		<p class="mt-2 text-sm text-white/90">
+			{#each buildSummaryFacts(event) as fact, index}
+				{#if index > 0}<span class="px-1.5 text-white/60" aria-hidden="true">·</span>{/if}<span
+					class="whitespace-nowrap"><span class="sr-only">{fact.label}: </span>{fact.value}</span>
+			{/each}
+		</p>
+	{/if}
+{/snippet}
+
+{#snippet photoLayer(event: ExperienceEvent, sizes: string, eager: boolean)}
+	<div class="absolute inset-0 overflow-hidden" style:view-transition-name={experienceImageTransitionName(event)}>
+		<img {...imageAttrs(event.image, sizes)}
+			alt=""
+			class={[
+				'h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100',
+				event.id === 'summer-hike' ? 'object-left' : event.id === 'winter-hike' ? 'object-[center_58%]' : 'object-center',
+			]}
+			loading={eager ? 'eager' : 'lazy'} decoding="async" />
+	</div>
+	<div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/30 via-45% to-transparent to-75%" aria-hidden="true"></div>
+{/snippet}
+
 {#snippet featuredCard(event: ExperienceEvent)}
 	<CardButton tone="default" padding="none"
 		id={event.id}
-		data-season={event.season}
 		onclick={(clickEvent) => openExperienceModal(event, clickEvent.currentTarget)}
-		class="group relative block w-full overflow-hidden text-left"
+		class="group relative block w-full scroll-mt-28 overflow-hidden text-left"
 	>
 		<div class="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 sm:aspect-[2/1] sm:min-h-96"
 			style:view-transition-name={experienceImageTransitionName(event)}>
 			<img {...imageAttrs(event.image, '(max-width: 1024px) 100vw, 1100px')}
 				alt={localize(event.title)}
 				class={['absolute inset-0 h-full w-full object-cover', event.id === 'summer-hike' ? 'object-left' : 'object-center']}
-				loading="lazy" decoding="async" />
-			<div class="absolute inset-0 hidden bg-gradient-to-t from-slate-950/45 to-transparent sm:block" aria-hidden="true"></div>
+				loading="eager" decoding="async" />
+			<div class="absolute inset-0 hidden bg-gradient-to-t from-slate-950/25 to-transparent to-60% sm:block" aria-hidden="true"></div>
 		</div>
-		<div class="p-4 sm:absolute sm:bottom-5 sm:left-5 sm:right-5 sm:max-w-xl sm:rounded-xl sm:border sm:border-white/25 sm:bg-slate-950/45 sm:p-5 sm:text-white sm:backdrop-blur-md">
+		<div class="p-4 sm:absolute sm:bottom-5 sm:left-5 sm:right-5 sm:max-w-xl sm:rounded-xl sm:border sm:border-white/30 sm:bg-slate-950/25 sm:p-5 sm:text-white sm:backdrop-blur-sm sm:[text-shadow:0_1px_8px_rgba(15,23,42,0.45)]">
 			<h3 class="text-xl font-semibold leading-tight sm:text-2xl">{localize(event.title)}</h3>
 			{#if event.description}
 				<p class="mt-2 line-clamp-2 text-sm leading-relaxed text-slate-600 sm:text-white/90">{localize(event.description)}</p>
@@ -501,10 +325,27 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 	</CardButton>
 {/snippet}
 
+{#snippet eventCard(event: ExperienceEvent, layout: CardLayout)}
+	<button type="button"
+		id={event.id}
+		onclick={(clickEvent) => openExperienceModal(event, clickEvent.currentTarget)}
+		class={[photoCardClasses, 'aspect-[4/3] lg:aspect-auto lg:h-full', layout === 'panorama' ? 'sm:aspect-[2/1]' : 'sm:aspect-[4/5]']}
+	>
+		{@render photoLayer(event, layout === 'narrow'
+			? '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 370px'
+			: '(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 1152px', false)}
+		<div class="absolute inset-x-5 bottom-5 sm:inset-x-6 sm:bottom-6">
+			<p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80">{localize(event.kicker)}</p>
+			<h3 class={['mt-1.5 font-serif text-2xl leading-tight sm:text-[1.7rem]', layout !== 'narrow' && 'lg:text-[2.1rem]']}>{localize(event.title)}</h3>
+			{@render factsLine(event)}
+		</div>
+	</button>
+{/snippet}
+
 <!-- ERLEBNISSE PAGE (Tailwind) -->
 <!-- Requirements: Tailwind + your bg-brand/text-brand utilities available -->
 
-<main class="min-h-dvh bg-[#fbfaf7] pb-24 lg:pb-0">
+<div class="min-h-dvh bg-[#fbfaf7] pb-16">
 	<div class="mx-auto w-full max-w-none px-4 sm:px-8 lg:px-10">
 		<!-- CONTENT WRAPPER -->
 		<div class="space-y-14 lg:space-y-20" id="aktivitaeten">
@@ -522,178 +363,48 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 					</p>
 				</header>
 
-				<div class="anchor-target mt-8 sm:mt-10" id="highlights">
-					<p class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
-						{$t('experiences.destinations.topHighlights')}
-					</p>
-					{#if showAllSeasons || activeTab === 'summer'}
-						<div
-							class="mt-4 space-y-6"
-							id="highlights-summer"
-							in:fly={{ y: 26, duration: 520, easing: cubicOut }}
+				<nav aria-label={$t('experiences.nav.season')} class="mt-8 flex justify-center sm:mt-10">
+					<div class="inline-flex rounded-full border border-slate-200 bg-white p-1">
+						{#each seasonOptions as option (option.key)}
+							{@const isActive = activeSeason === option.key}
+							<a
+								href={localizedHref(seasonPaths[option.key])}
+								data-sveltekit-noscroll
+								data-sveltekit-replacestate
+								aria-current={isActive ? 'true' : undefined}
+								class={[
+									'inline-flex min-h-11 items-center gap-2 rounded-full px-5 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 motion-reduce:transition-none',
+									isActive ? 'bg-brand/10 text-slate-900' : 'text-slate-600 hover:text-slate-900',
+								]}
+							>
+								<option.icon size={16} class={isActive ? 'text-brand' : ''} aria-hidden="true" />
+								{$t(`experiences.nav.${option.key}`)}
+							</a>
+						{/each}
+					</div>
+				</nav>
+
+				<div class="mx-auto mt-8 max-w-6xl" id="highlights">
+					{#key activeSeason}
+						<section
+							aria-labelledby="highlights-title"
+							id={`highlights-${activeSeason}`}
+							in:fade={{ duration: reduceMotion ? 0 : 180 }}
 						>
-							<h2 class="font-serif text-2xl leading-tight text-slate-900">{$t('experiences.nav.summer')}</h2>
-							{#if summerFeaturedEvent}
-								{@render featuredCard(summerFeaturedEvent)}
+							<h2 id="highlights-title" class="sr-only">{$t(`experiences.nav.${activeSeason}`)}</h2>
+							{#if featuredEvent}
+								{@render featuredCard(featuredEvent)}
 							{/if}
-							<div class="mt-6">
-								<div class="divide-y divide-slate-200/70">
-									{#each summerSecondaryEvents as event, i (event.id)}
-										<button
-											type="button"
-											id={event.id}
-											onclick={(clickEvent) => openExperienceModal(event, clickEvent.currentTarget)}
-											use:reveal
-											data-season={event.season}
-											class="reveal group grid w-full cursor-pointer gap-6 py-8 text-left focus-visible:outline-offset-4 sm:grid-cols-[240px,1fr] lg:grid-cols-[320px,1fr] lg:items-center"
-											style={`--reveal-delay: ${i * 70}ms;`}
-										>
-											<div
-												class={`relative w-full overflow-hidden rounded-2xl bg-slate-100 aspect-[16/10] sm:aspect-[4/3] lg:aspect-[16/10] ${
-													i % 2 === 1 ? 'sm:order-2' : ''
-												}`}
-												style={`view-transition-name: ${experienceImageTransitionName(event)};`}
-											>
-												<img
-													{...imageAttrs(event.image, '(max-width: 640px) 100vw, 320px')}
-													alt={`${localize(event.title)} – ${localize(event.kicker)}`}
-													class={`h-full w-full object-center transition duration-700 will-change-transform object-cover group-hover:scale-[1.03] group-hover:saturate-[1.06]`}
-													loading="lazy"
-													decoding="async"
-												/>
-
-											</div>
-
-											<div class={`min-w-0 ${i % 2 === 1 ? 'sm:pr-6' : 'sm:pl-6'}`}>
-												<p
-													class="flex items-center gap-2 text-xs font-medium text-slate-600"
-												>
-													<event.icon class="h-4 w-4" aria-hidden="true" />
-													{localize(event.kicker)}
-												</p>
-
-												<h3 class="mt-1 text-xl font-semibold leading-tight text-slate-900">
-													<span
-														class="underline-offset-4 group-hover:underline"
-													>
-														{localize(event.title)}
-													</span>
-												</h3>
-
-												{#if event.description}
-													<p class="mt-2 line-clamp-2 text-sm leading-relaxed text-slate-600">
-														{localize(event.description)}
-													</p>
-												{/if}
-
-												{#if buildSummaryFacts(event).length}
-													<div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-semibold text-slate-600">
-														{#each buildSummaryFacts(event) as fact}
-															<span class="inline-flex items-center gap-1.5" title={fact.label}>
-																<fact.icon class="h-3.5 w-3.5 text-brand" aria-hidden="true" />
-																{fact.value}
-															</span>
-														{/each}
-													</div>
-												{/if}
-
-												<div class="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-slate-800">
-													{$lang === 'de' ? 'Details ansehen' : 'View details'}
-													<ArrowRight size={16} aria-hidden="true" />
-												</div>
-											</div>
-										</button>
-									{/each}
-								</div>
-							</div>
-						</div>
-					{/if}
-
-					{#if showAllSeasons || activeTab === 'winter'}
-						<div
-							class="mt-10 space-y-6"
-							id="highlights-winter"
-							in:fly={{ y: 26, duration: 520, easing: cubicOut }}
-						>
-							<h2 class="font-serif text-2xl leading-tight text-slate-900">{$t('experiences.nav.winter')}</h2>
-							{#if winterFeaturedEvent}
-								{@render featuredCard(winterFeaturedEvent)}
-							{/if}
-							<div class="mt-6">
-								<div class="divide-y divide-slate-200/70">
-									{#each winterSecondaryEvents as event, i (event.id)}
-										<button
-											type="button"
-											id={event.id}
-											onclick={(clickEvent) => openExperienceModal(event, clickEvent.currentTarget)}
-											use:reveal
-											data-season={event.season}
-											class="reveal group grid w-full cursor-pointer gap-6 py-8 text-left focus-visible:outline-offset-4 sm:grid-cols-[240px,1fr] lg:grid-cols-[320px,1fr] lg:items-center"
-											style={`--reveal-delay: ${i * 70}ms;`}
-										>
-											<div
-												class={`relative w-full overflow-hidden rounded-2xl bg-slate-100 aspect-[16/10] sm:aspect-[4/3] lg:aspect-[16/10] ${
-													i % 2 === 1 ? 'sm:order-2' : ''
-												}`}
-												style={`view-transition-name: ${experienceImageTransitionName(event)};`}
-											>
-												<img
-													{...imageAttrs(event.image, '(max-width: 640px) 100vw, 320px')}
-													alt={`${localize(event.title)} – ${localize(event.kicker)}`}
-													class={`h-full w-full object-center transition duration-700 will-change-transform ${
-														event.id === 'winter-hike'
-															? 'object-cover object-[center_58%] group-hover:scale-[1.02] group-hover:saturate-[1.06]'
-															: 'object-cover group-hover:scale-[1.03] group-hover:saturate-[1.06]'
-													}`}
-													loading="lazy"
-													decoding="async"
-												/>
-											</div>
-
-											<div class={`min-w-0 ${i % 2 === 1 ? 'sm:pr-6' : 'sm:pl-6'}`}>
-												<p
-													class="flex items-center gap-2 text-xs font-medium text-slate-600"
-												>
-													<event.icon class="h-4 w-4" aria-hidden="true" />
-													{localize(event.kicker)}
-												</p>
-
-												<h3 class="mt-1 text-xl font-semibold leading-tight text-slate-900">
-													<span
-														class="underline-offset-4 group-hover:underline"
-													>
-														{localize(event.title)}
-													</span>
-												</h3>
-
-												{#if event.description}
-													<p class="mt-2 line-clamp-2 text-sm leading-relaxed text-slate-600">
-														{localize(event.description)}
-													</p>
-												{/if}
-
-												{#if buildSummaryFacts(event).length}
-													<div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-semibold text-slate-600">
-														{#each buildSummaryFacts(event) as fact}
-															<span class="inline-flex items-center gap-1.5" title={fact.label}>
-																<fact.icon class="h-3.5 w-3.5 text-brand" aria-hidden="true" />
-																{fact.value}
-															</span>
-														{/each}
-													</div>
-												{/if}
-
-												<div class="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-slate-800">
-													{$lang === 'de' ? 'Details ansehen' : 'View details'}
-													<ArrowRight size={16} aria-hidden="true" />
-												</div>
-											</div>
-										</button>
-									{/each}
-								</div>
-							</div>
-						</div>
-					{/if}
+							<ul class="mt-6 grid gap-6 sm:grid-cols-2 lg:auto-rows-[26rem] lg:grid-cols-3">
+								{#each secondaryEvents as event, index (event.id)}
+									{@const layout = cardLayout(index, secondaryEvents.length)}
+									<li class={[layout === 'wide' && 'lg:col-span-2', layout === 'panorama' && 'sm:col-span-2 lg:col-span-3']}>
+										{@render eventCard(event, layout)}
+									</li>
+								{/each}
+							</ul>
+						</section>
+					{/key}
 				</div>
 
 				{#if showFestivalSection}
@@ -713,7 +424,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 						</div>
 
 						<div class="mt-12 grid gap-7 lg:grid-cols-[1.28fr,0.72fr] lg:items-center lg:gap-12">
-							<figure use:reveal class="reveal group h-[340px] overflow-hidden rounded-3xl bg-slate-100 sm:h-[430px] lg:h-[500px]">
+							<figure class="group h-[340px] overflow-hidden rounded-3xl bg-slate-100 sm:h-[430px] lg:h-[500px]">
 								<img
 									{...imageAttrs(festivalSection.feature.image.src, '(max-width: 1024px) 100vw, 700px')}
 									alt={localize(festivalSection.feature.image.alt)}
@@ -723,7 +434,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 								/>
 							</figure>
 
-							<article use:reveal class="reveal py-1 lg:pl-1" style="--reveal-delay: 80ms;">
+							<article class="py-1 lg:pl-1">
 								<div class="grid h-11 w-11 place-items-center rounded-2xl bg-brand/10 text-brand">
 									<festivalSection.feature.icon class="h-5 w-5" aria-hidden="true" />
 								</div>
@@ -745,7 +456,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 
 						{#each festivalSection.localEvents.slice(0, 1) as event}
 							<div class="mt-16 grid gap-7 border-t border-slate-200 pt-12 lg:grid-cols-[0.72fr,1.28fr] lg:items-center lg:gap-12">
-								<article use:reveal class="reveal order-2 py-1 lg:order-1 lg:pr-1">
+								<article class="order-2 py-1 lg:order-1 lg:pr-1">
 									<div class="grid h-11 w-11 place-items-center rounded-2xl bg-brand/10 text-brand">
 										<event.icon class="h-5 w-5" aria-hidden="true" />
 									</div>
@@ -764,7 +475,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 									</span>
 								</article>
 
-								<figure use:reveal class="reveal group order-1 h-[320px] overflow-hidden rounded-3xl bg-slate-100 sm:h-[400px] lg:order-2 lg:h-[440px]" style="--reveal-delay: 80ms;">
+								<figure class="group order-1 h-[320px] overflow-hidden rounded-3xl bg-slate-100 sm:h-[400px] lg:order-2 lg:h-[440px]">
 									<img
 										{...imageAttrs(event.image.src, '(max-width: 1024px) 100vw, 700px')}
 										alt={localize(event.image.alt)}
@@ -777,8 +488,8 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 						{/each}
 
 						<div class="mt-16 grid gap-10 border-t border-slate-200 pt-12 md:grid-cols-2 md:gap-6 lg:gap-8">
-							{#each festivalSection.localEvents.slice(1) as event, index}
-								<article use:reveal class="reveal" style={`--reveal-delay: ${index * 90}ms;`}>
+							{#each festivalSection.localEvents.slice(1) as event}
+								<article>
 									<figure class="group h-[300px] overflow-hidden rounded-3xl bg-slate-100 sm:h-[360px]">
 										<img
 											{...imageAttrs(event.image.src, '(max-width: 768px) 100vw, 560px')}
@@ -1009,172 +720,4 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 		</div>
 	{/if}
 
-	<div class="fixed inset-x-0 bottom-0 z-50 px-3 pb-3 lg:hidden">
-		<div
-			class="rounded-2xl border border-white/40 bg-white/75 shadow-[0_18px_50px_rgba(15,23,42,0.22)] backdrop-blur-xl ring-1 ring-slate-200/60"
-		>
-			<div class="flex items-center justify-between px-3 py-2">
-				<Button variant="secondary" size="md"
-					type="button"
-					onclick={openMobileNav}
-				>
-					<List class="h-4 w-4 text-brand" aria-hidden="true" />
-					<span class="max-w-[55vw] truncate">{$t(activeSectionLabelKey)}</span>
-				</Button>
-			</div>
-		</div>
-	</div>
-
-	{#if isMobileNavOpen}
-		<button
-			type="button"
-			class="fixed inset-0 z-[90] bg-slate-950/50 backdrop-blur-[2px]"
-			onclick={closeMobileNav}
-			aria-label="Navigation schließen"
-		></button>
-		<div
-			class="fixed inset-x-0 bottom-0 z-[100] rounded-t-3xl border border-white/20 bg-white p-4 shadow-2xl"
-		>
-			<div class="flex items-center justify-between">
-				<p class="text-sm font-semibold text-slate-900">{$t('experiences.nav.title')}</p>
-				<Button variant="secondary" size="icon"
-					type="button"
-					onclick={closeMobileNav}
-					aria-label="Navigation schließen"
-				>
-					<X class="h-5 w-5" aria-hidden="true" />
-				</Button>
-			</div>
-
-			<div class="mt-3 space-y-2">
-				{#each sectionLinks as section}
-					{@const SectionIcon = sectionIconById[section.id] ?? List}
-					<button
-						type="button"
-						class={`touch-manipulation flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left text-sm font-semibold transition ${
-							navActiveSectionId === section.id
-								? 'bg-brand/10 text-slate-900 ring-1 ring-brand/25'
-								: 'bg-slate-50 text-slate-700 hover:bg-white'
-						}`}
-						onpointerup={(event) => onMobileNavPointerUp(event, section.id)}
-						onclick={(event) => onMobileNavClick(event, section.id)}
-					>
-						<span class="grid h-9 w-9 place-items-center rounded-xl bg-white ring-1 ring-slate-200">
-							<SectionIcon class="h-4 w-4 text-brand" aria-hidden="true" />
-						</span>
-						{$t(section.labelKey)}
-					</button>
-
-					{#if section.id === 'aktivitaeten'}
-						<div class="space-y-2 pl-4">
-							<button
-								type="button"
-								class={`touch-manipulation flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition ${
-									activeSectionId === 'highlights' && activeHighlightsSeason === 'summer'
-										? 'bg-brand/10 text-slate-900 ring-1 ring-brand/25'
-										: 'bg-slate-50 text-slate-700 hover:bg-white'
-								}`}
-								onpointerup={(event) => onMobileNavPointerUp(event, 'highlights-summer')}
-								onclick={(event) => onMobileNavClick(event, 'highlights-summer')}
-							>
-								<Sun class="h-4 w-4 text-brand" aria-hidden="true" />
-								{$t('experiences.nav.summer')}
-							</button>
-							<button
-								type="button"
-								class={`touch-manipulation flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition ${
-									activeSectionId === 'highlights' && activeHighlightsSeason === 'winter'
-										? 'bg-brand/10 text-slate-900 ring-1 ring-brand/25'
-										: 'bg-slate-50 text-slate-700 hover:bg-white'
-								}`}
-								onpointerup={(event) => onMobileNavPointerUp(event, 'highlights-winter')}
-								onclick={(event) => onMobileNavClick(event, 'highlights-winter')}
-							>
-								<Snowflake class="h-4 w-4 text-brand" aria-hidden="true" />
-								{$t('experiences.nav.winter')}
-							</button>
-						</div>
-					{/if}
-				{/each}
-			</div>
-		</div>
-	{/if}
-
-</main>
-
-<style>
-	.anchor-target {
-		scroll-margin-top: 7rem;
-		border-radius: 1rem;
-		transition:
-			background-color 240ms ease,
-			box-shadow 240ms ease;
-	}
-
-	.anchor-target:target {
-		background-color: rgba(247, 171, 0, 0.05);
-		box-shadow:
-			0 0 0 1px rgba(247, 171, 0, 0.22),
-			0 0 0 12px rgba(247, 171, 0, 0.07),
-			0 12px 28px -22px rgba(247, 171, 0, 0.45);
-		animation: anchorTargetPulse 800ms ease-out 1;
-	}
-
-	@keyframes anchorTargetPulse {
-		0% {
-			background-color: rgba(247, 171, 0, 0.13);
-			box-shadow:
-				0 0 0 1px rgba(247, 171, 0, 0.3),
-				0 0 0 16px rgba(247, 171, 0, 0.1),
-				0 14px 30px -22px rgba(247, 171, 0, 0.5);
-		}
-		100% {
-			background-color: rgba(247, 171, 0, 0.05);
-			box-shadow:
-				0 0 0 1px rgba(247, 171, 0, 0.22),
-				0 0 0 12px rgba(247, 171, 0, 0.07),
-				0 12px 28px -22px rgba(247, 171, 0, 0.45);
-		}
-	}
-
-	.tab-btn {
-		position: relative;
-	}
-	.tab-btn.is-active::after {
-		content: '';
-		position: absolute;
-		inset: -2px;
-		border-radius: 9999px;
-		filter: blur(10px);
-		opacity: 0.35;
-		background: radial-gradient(circle, rgba(255, 180, 0, 0.6), transparent 60%);
-	}
-
-	.reveal {
-		opacity: 0;
-		transform: translateY(12px);
-		filter: blur(2px);
-		transition:
-			opacity 600ms ease,
-			transform 600ms ease,
-			filter 600ms ease;
-		transition-delay: var(--reveal-delay, 0ms);
-		will-change: opacity, transform, filter;
-	}
-
-	.reveal.is-revealed {
-		opacity: 1;
-		transform: translateY(0);
-		filter: blur(0);
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.reveal,
-		.reveal.is-revealed {
-			transition: none;
-			transform: none;
-			filter: none;
-			opacity: 1;
-		}
-	}
-</style>
+</div>
