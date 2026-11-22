@@ -396,9 +396,8 @@ const translations: Record<Lang, Record<string, string>> = {
 		'experiences.quickIdeas.winter.spa': 'Therme & Spa-Day',
 		'experiences.quickIdeas.winter.villagemarket': 'Kleines Dorffest',
 		'experiences.base.kicker': 'Ihr perfekter Ausgangspunkt',
-		'experiences.base.title': 'Gästehaus Rader als Base für Ihre Auszeit',
-		'experiences.base.body':
-			'Starten Sie direkt vor der Haustür in Ihren Urlaubstag und kommen Sie am Abend entspannt zurück. Gerne helfen wir Ihnen bei der passenden Planung für Ihre Interessen und die aktuelle Saison.',
+		'experiences.base.title': 'Ferienwohnungen in Weißbriach',
+		'experiences.base.body': 'Drei Appartements im Gästehaus Rader, jeweils mit eigener Küche und Balkon.',
 		'experiences.base.cta.rooms': 'Appartements ansehen',
 		'experiences.base.cta.booking': 'Verfügbarkeit prüfen',
 		'experiences.event.summer.hike.meta1': 'Viele Almwege in der Nähe',
@@ -1558,9 +1557,8 @@ const translations: Record<Lang, Record<string, string>> = {
 		'experiences.quickIdeas.winter.spa': 'Spa day',
 		'experiences.quickIdeas.winter.villagemarket': 'Small village event',
 		'experiences.base.kicker': 'Your ideal home base',
-		'experiences.base.title': 'Guesthouse Rader as your base for every day',
-		'experiences.base.body':
-			'Start your day right from our doorstep and return in the evening to calm surroundings. We are happy to help you plan the best options for your interests and the current season.',
+		'experiences.base.title': 'Holiday apartments in Weissbriach',
+		'experiences.base.body': 'Three apartments at Guesthouse Rader, each with its own kitchen and balcony.',
 		'experiences.base.cta.rooms': 'View apartments',
 		'experiences.base.cta.booking': 'Check availability',
 		'experiences.event.summer.hike.meta1': 'Many alpine trails nearby',

@@ -12,14 +12,12 @@ import { localizePath } from '$lib/routing';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import { scrollPageToElement } from '$lib/scroll';
 	import {
-		activityFilters,
 		experienceEvents as events,
 		experienceSeasonContent as content,
 		experienceSectionLinks as sectionLinks,
 		experienceSectionTrackingLinks as sectionTrackingLinks,
 		experienceFestivalSection,
 		showFestivalSection,
-		type ActivityFilterKey,
 		type ExperienceEvent,
 		type ExperienceLinkType,
 		type SeasonKey,
@@ -35,16 +33,12 @@ import { localizePath } from '$lib/routing';
 		Gauge,
 		List,
 		MapPinned,
-		Menu,
 		Mountain,
 		PartyPopper,
-		Pin,
 		Route,
 		Snowflake,
 		Sparkles,
-		SlidersHorizontal,
 		Sun,
-		Ticket,
 		X,
 	} from 'lucide-svelte';
 
@@ -143,10 +137,6 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 		website: { label: { de: 'Website', en: 'Website' }, icon: ExternalLink },
 	};
 	const getEventLinks = (event: ExperienceEvent) => event.links ?? [];
-	const badgeClass = (tier?: 'top' | 'tip') =>
-		tier === 'top'
-			? 'border border-brand/30 bg-brand text-white'
-			: 'border border-white/45 bg-white/88 text-slate-900';
 
 	// get active tab from url param (default: summer)
 	const seoSeasonFromUrl = $derived.by(() => {
@@ -164,7 +154,6 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 
 	let activeTab = $state<SeasonKey>('summer');
 	let activeHighlightsSeason = $state<SeasonKey>('summer');
-	let selectedActivity = $state<ActivityFilterKey | null>(null);
 	let activeExperience = $state<ExperienceEvent | null>(null);
 	let modalCloseButton = $state<HTMLButtonElement | null>(null);
 	let lastExperienceTrigger: HTMLElement | null = null;
@@ -172,31 +161,10 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 	let supportsViewTransitions = $state(false);
 	let showAllSeasons = $state(true);
 	let activeSectionId = $state('aktivitaeten');
-	let isMobileFilterOpen = $state(false);
 	let isMobileNavOpen = $state(false);
-	let isNavPinned = $state(false);
-	let isNavPointerInside = $state(false);
-	let isNavFocusWithin = $state(false);
-	let isNavDismissed = $state(false);
 	let highlightObserver: IntersectionObserver | null = null;
 	let seasonScrollTimers: number[] = [];
 	let lastMobileNavPointerAt = 0;
-	let manualTabUntil = 0;
-	const ROW_BASE =
-		'min-h-11 rounded-lg border-l-2 text-sm transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 motion-reduce:transition-none';
-	const ROW_PEEK = 'flex w-full items-center gap-3 px-3 py-2.5 text-left';
-	const ROW_COMPACT = 'mx-auto grid h-11 w-11 place-items-center';
-	const ROW_ACTIVE = 'border-brand bg-brand/10 font-semibold text-slate-900';
-	const ROW_IDLE = 'border-transparent font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900';
-	const seasonNavLinks = [
-		{ id: 'highlights-summer', season: 'summer', labelKey: 'experiences.nav.summer', icon: Sun },
-		{ id: 'highlights-winter', season: 'winter', labelKey: 'experiences.nav.winter', icon: Snowflake },
-	];
-
-	const isPeek = $derived(
-		isNavPinned || (!isNavDismissed && (isNavPointerInside || isNavFocusWithin))
-	);
-
 	$effect(() => {
 		if (activeTab !== seasonFromUrl) {
 			activeTab = seasonFromUrl;
@@ -205,22 +173,10 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 
 	const summerEvents = events.filter((event) => event.season === 'summer');
 	const winterEvents = events.filter((event) => event.season === 'winter');
-	const filteredSummerEvents = $derived.by(() => {
-		const activity = selectedActivity;
-		if (!activity) return summerEvents;
-		const matches = summerEvents.filter((event) => event.activities.includes(activity));
-		return matches.length ? matches : summerEvents;
-	});
-	const filteredWinterEvents = $derived.by(() => {
-		const activity = selectedActivity;
-		if (!activity) return winterEvents;
-		const matches = winterEvents.filter((event) => event.activities.includes(activity));
-		return matches.length ? matches : winterEvents;
-	});
-	const summerFeaturedEvent = $derived(filteredSummerEvents[0]);
-	const summerSecondaryEvents = $derived(filteredSummerEvents.slice(1));
-	const winterFeaturedEvent = $derived(filteredWinterEvents[0]);
-	const winterSecondaryEvents = $derived(filteredWinterEvents.slice(1));
+	const summerFeaturedEvent = summerEvents[0];
+	const summerSecondaryEvents = summerEvents.slice(1);
+	const winterFeaturedEvent = winterEvents[0];
+	const winterSecondaryEvents = winterEvents.slice(1);
 
 	const currentContent = $derived(content[activeTab]);
 	const seo = $derived.by(() => {
@@ -251,27 +207,17 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 		return match?.labelKey ?? 'experiences.nav.title';
 	});
 
-	const guestCardLinks = {
-		benefitsOverview:
-			'https://www.nassfeld.at/de/Unterkunft-finden/Reise-planen/PREMIUM-Cards/GaesteCard-basic',
-		brochure: 'https://www.nassfeld.at/PDFs/NPS/Gaestekarten/BasisCard_Broschuere.pdf',
-	};
-	const guestCardPhoto = $derived((seoSeasonFromUrl ?? activeTab) === 'winter'
-		? { src: '/images/Umgebung/skigebiet-weissbriach-2.jpg', alt: { de: 'Skigebiet Weißbriach', en: 'Weissbriach ski area' } }
-		: { src: '/images/Umgebung/presseggersee.jpg', alt: { de: 'Blick über den Pressegger See', en: 'View across Lake Pressegger See' } });
 	const festivalSection = experienceFestivalSection;
 
 	const sectionIconById: Record<string, any> = {
 		aktivitaeten: Mountain,
 		highlights: Sparkles,
 		'traditionelle-feste': PartyPopper,
-		gaestecard: Ticket,
 	};
 
 	function onWindowKeydown(event: KeyboardEvent) {
 		if (event.key === 'Escape') {
 			if (activeExperience) void closeExperienceModal();
-			if (isMobileFilterOpen) isMobileFilterOpen = false;
 			if (isMobileNavOpen) isMobileNavOpen = false;
 		}
 	}
@@ -308,7 +254,6 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 		await updateWithViewTransition(() => {
 			openingExperienceId = null;
 			activeExperience = event;
-			isMobileFilterOpen = false;
 			isMobileNavOpen = false;
 		});
 		modalCloseButton?.focus({ preventScroll: true });
@@ -338,22 +283,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 		return false;
 	}
 
-	function setDesktopNavTarget(id: string) {
-		if (id === 'highlights-summer' || id === 'highlights-winter') {
-			activeSectionId = 'highlights';
-			activeHighlightsSeason = id === 'highlights-winter' ? 'winter' : 'summer';
-		} else {
-			activeSectionId = id;
-		}
-	}
-
-	function onDesktopNavSelect(id: string) {
-		setDesktopNavTarget(id);
-		scrollToSection(id);
-	}
-
 	function openMobileNav() {
-		isMobileFilterOpen = false;
 		isMobileNavOpen = true;
 	}
 
@@ -404,44 +334,6 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 				window.setTimeout(() => scrollToSeasonHighlightsFromUrl('auto'), delay)
 			);
 		}
-	}
-
-	function setActiveTabManual(next: SeasonKey) {
-		activeTab = next;
-		manualTabUntil = Date.now() + 1500;
-	}
-
-	function onNavEnter() {
-		isNavPointerInside = true;
-	}
-
-	function onNavLeave() {
-		isNavPointerInside = false;
-		isNavDismissed = false;
-	}
-
-	function onNavFocusIn() {
-		isNavFocusWithin = true;
-	}
-
-	function onNavFocusOut(event: FocusEvent) {
-		const panel = event.currentTarget as HTMLElement;
-		const nextTarget = event.relatedTarget;
-		if (nextTarget instanceof Node && panel.contains(nextTarget)) return;
-		isNavFocusWithin = false;
-		if (!isNavPointerInside) isNavDismissed = false;
-	}
-
-	function toggleDesktopNav(event: MouseEvent) {
-		if (isNavPinned) {
-			isNavPinned = false;
-			isNavDismissed = true;
-			(event.currentTarget as HTMLButtonElement).blur();
-			isNavFocusWithin = false;
-			return;
-		}
-		isNavDismissed = false;
-		isNavPinned = true;
 	}
 
 	function onWindowScroll() {
@@ -513,7 +405,6 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 			(entries) => {
 				if (activeSectionId !== 'highlights') return;
 				if (!showAllSeasons) return;
-				if (Date.now() < manualTabUntil) return;
 				const best = entries
 					.filter((entry) => entry.isIntersecting)
 					.sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
@@ -530,13 +421,6 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 		);
 		cards.forEach((card) => highlightObserver?.observe(card));
 	}
-
-	$effect(() => {
-		filteredSummerEvents.length;
-		filteredWinterEvents.length;
-		showAllSeasons;
-		queueMicrotask(enableHighlightSeasonAuto);
-	});
 
 	$effect(() => {
 		seoSeasonFromUrl;
@@ -585,115 +469,37 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 
 <SeoHead titleKey={seo.titleKey} descriptionKey={seo.descriptionKey} image={currentContent.bg} />
 
-<aside class="hidden lg:block">
-	<div class="pointer-events-none fixed left-6 top-36 z-40">
-		<div
-			class={`pointer-events-auto origin-top-left transition-[width] duration-200 ease-out motion-reduce:transition-none ${isPeek ? 'w-72' : 'w-16'}`}
-			role="group"
-			aria-label={$t('experiences.nav.title')}
-			onpointerenter={onNavEnter}
-			onpointerleave={onNavLeave}
-			onfocusin={onNavFocusIn}
-			onfocusout={onNavFocusOut}
-		>
-			<div class={cardClasses('default', 'none', false, 'experience-nav-scroll max-h-[calc(100dvh-10rem)] overflow-x-hidden overflow-y-auto overscroll-contain shadow-sm')}>
-				<div class={`flex min-h-16 items-center px-2 py-2 ${isPeek ? 'gap-3' : 'justify-center'}`}>
-					<button
-						type="button"
-						class={`grid h-11 w-11 shrink-0 place-items-center rounded-lg transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 motion-reduce:transition-none ${isNavPinned ? 'bg-brand/10 text-slate-900' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
-						aria-label={isNavPinned
-							? $lang === 'de' ? 'Navigation schließen' : 'Close navigation'
-							: isPeek
-								? $lang === 'de' ? 'Navigation offen halten' : 'Keep navigation open'
-								: $lang === 'de' ? 'Navigation öffnen' : 'Open navigation'}
-						aria-expanded={isPeek}
-						aria-pressed={isNavPinned}
-						onclick={toggleDesktopNav}
-					>
-						{#if isNavPinned}
-							<X class="h-5 w-5" aria-hidden="true" strokeWidth={1.5} />
-						{:else if isPeek}
-							<Pin class="h-5 w-5" aria-hidden="true" strokeWidth={1.5} />
-						{:else}
-							<Menu class="h-5 w-5" aria-hidden="true" strokeWidth={1.5} />
-						{/if}
-					</button>
-					{#if isPeek}
-						<p class="min-w-0 pr-2 text-sm font-semibold leading-snug text-slate-900">{$t('experiences.nav.title')}</p>
-					{/if}
-				</div>
 
-				<nav aria-label={$t('experiences.nav.title')} class="space-y-1 px-2 pb-3">
-					{#each sectionLinks as section}
-						{@const SectionIcon = sectionIconById[section.id] ?? List}
-						{@const isActive = navActiveSectionId === section.id}
-						<div>
-							<button
-								type="button"
-								class={`${ROW_BASE} ${isPeek ? ROW_PEEK : ROW_COMPACT} ${isActive ? ROW_ACTIVE : ROW_IDLE}`}
-								onclick={() => onDesktopNavSelect(section.id)}
-								aria-label={$t(section.labelKey)}
-								aria-current={isActive ? 'location' : undefined}
-								title={isPeek ? undefined : $t(section.labelKey)}
-							>
-								<SectionIcon class={`h-5 w-5 shrink-0 ${isActive ? 'text-brand' : 'text-slate-500'}`} aria-hidden="true" strokeWidth={1.5} />
-								{#if isPeek}<span class="min-w-0 leading-snug">{$t(section.labelKey)}</span>{/if}
-							</button>
-							{#if section.id === 'aktivitaeten'}
-								<div class={`mt-1 space-y-1 ${isPeek ? 'pl-5' : ''}`}>
-									{#each seasonNavLinks as season}
-										{@const isSeasonActive = activeSectionId === 'highlights' && activeHighlightsSeason === season.season}
-										<button
-											type="button"
-											class={`${ROW_BASE} ${isPeek ? ROW_PEEK : ROW_COMPACT} ${isSeasonActive ? ROW_ACTIVE : ROW_IDLE}`}
-											onclick={() => onDesktopNavSelect(season.id)}
-											aria-label={$t(season.labelKey)}
-											aria-current={isSeasonActive ? 'location' : undefined}
-											title={isPeek ? undefined : $t(season.labelKey)}
-										>
-											<season.icon class={`h-5 w-5 shrink-0 ${isSeasonActive ? 'text-brand' : 'text-slate-500'}`} aria-hidden="true" strokeWidth={1.5} />
-											{#if isPeek}<span class="min-w-0 leading-snug">{$t(season.labelKey)}</span>{/if}
-										</button>
-									{/each}
-								</div>
-							{/if}
-						</div>
-					{/each}
-				</nav>
-
-				{#if isPeek}
-					<div class="border-t border-slate-100 px-4 py-4">
-						<div class="flex flex-wrap items-center justify-between gap-2">
-							<p class="text-xs font-semibold text-slate-700">{$t('experiences.nav.filters')}</p>
-							{#if selectedActivity}
-								<button
-									type="button"
-									class="rounded py-1 text-xs font-medium text-slate-600 underline underline-offset-4 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900"
-									onclick={() => (selectedActivity = null)}
-								>
-									{$t('experiences.nav.reset')}
-								</button>
-							{/if}
-						</div>
-						<div class="mt-3 flex flex-wrap gap-2">
-							{#each activityFilters as filter}
-								<button
-									type="button"
-									class={`inline-flex min-h-10 max-w-full items-center gap-1.5 rounded-lg border px-2.5 py-2 text-left text-xs font-medium leading-snug transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 motion-reduce:transition-none ${selectedActivity === filter.id ? 'border-brand/40 bg-brand/10 text-slate-900' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}
-									onclick={() => (selectedActivity = selectedActivity === filter.id ? null : filter.id)}
-									aria-pressed={selectedActivity === filter.id}
-								>
-									<filter.icon class="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-									<span class="min-w-0">{$t(filter.labelKey)}</span>
-								</button>
-							{/each}
-						</div>
-					</div>
-				{/if}
+{#snippet featuredCard(event: ExperienceEvent)}
+	<CardButton tone="default" padding="none"
+		id={event.id}
+		data-season={event.season}
+		onclick={(clickEvent) => openExperienceModal(event, clickEvent.currentTarget)}
+		class="group relative block w-full overflow-hidden text-left"
+	>
+		<div class="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 sm:aspect-[2/1] sm:min-h-96"
+			style:view-transition-name={experienceImageTransitionName(event)}>
+			<img {...imageAttrs(event.image, '(max-width: 1024px) 100vw, 1100px')}
+				alt={localize(event.title)}
+				class={['absolute inset-0 h-full w-full object-cover', event.id === 'summer-hike' ? 'object-left' : 'object-center']}
+				loading="lazy" decoding="async" />
+			<div class="absolute inset-0 hidden bg-gradient-to-t from-slate-950/45 to-transparent sm:block" aria-hidden="true"></div>
+		</div>
+		<div class="p-4 sm:absolute sm:bottom-5 sm:left-5 sm:right-5 sm:max-w-xl sm:rounded-xl sm:border sm:border-white/25 sm:bg-slate-950/45 sm:p-5 sm:text-white sm:backdrop-blur-md">
+			<h3 class="text-xl font-semibold leading-tight sm:text-2xl">{localize(event.title)}</h3>
+			{#if event.description}
+				<p class="mt-2 line-clamp-2 text-sm leading-relaxed text-slate-600 sm:text-white/90">{localize(event.description)}</p>
+			{/if}
+			<div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-medium text-slate-600 sm:text-white/90">
+				{#each buildSummaryFacts(event) as fact}
+					<span class="inline-flex items-center gap-1.5" title={fact.label}>
+						<fact.icon size={14} aria-hidden="true" />{fact.value}
+					</span>
+				{/each}
 			</div>
 		</div>
-	</div>
-</aside>
+	</CardButton>
+{/snippet}
 
 <!-- ERLEBNISSE PAGE (Tailwind) -->
 <!-- Requirements: Tailwind + your bg-brand/text-brand utilities available -->
@@ -703,150 +509,32 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 		<!-- CONTENT WRAPPER -->
 		<div class="space-y-14 lg:space-y-20" id="aktivitaeten">
 			<section class="pt-4 sm:pt-6 sm:px-10">
-				<div class="mx-auto max-w-6xl text-center">
+				<header class="mx-auto max-w-6xl text-center">
 					<p class="mt-6 text-xs font-semibold uppercase tracking-[0.35em] text-brand sm:mt-7">
 						{$t('experiences.destinations.kicker')}
 					</p>
 					<h1 class="mt-3 font-serif text-4xl leading-[0.95] text-slate-900 sm:text-5xl">
 						{$t('experiences.destinations.title')}
 					</h1>
-					<div class="mx-auto mt-3 h-[3px] w-14 rounded-full bg-brand"></div>
+					<div class="mx-auto mt-3 h-[3px] w-14 rounded-full bg-brand" aria-hidden="true"></div>
 					<p class="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-slate-600 sm:text-base">
 						{$t('experiences.destinations.subtitle')}
 					</p>
-				</div>
-				<!-- <div class="anchor-target mt-10" id="interessen">
-					<p class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
-						{$t('experiences.interests.title')}
-					</p>
-					<div class="mt-4 flex flex-wrap gap-3">
-						{#each interestLinks as interest}
-							<a
-								href={interest.href}
-								class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-3 text-base font-semibold text-slate-700 shadow-sm transition duration-300 hover:scale-[1.02] hover:border-brand/30 hover:text-slate-900"
-							>
-								<interest.icon class="h-4 w-4 text-brand" aria-hidden="true" />
-								{$t(interest.labelKey)}
-							</a>
-						{/each}
-					</div>
-				</div> -->
+				</header>
 
-				<div class="anchor-target mt-8 sm:mt-9" id="highlights">
+				<div class="anchor-target mt-8 sm:mt-10" id="highlights">
 					<p class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
 						{$t('experiences.destinations.topHighlights')}
 					</p>
-
 					{#if showAllSeasons || activeTab === 'summer'}
 						<div
 							class="mt-4 space-y-6"
 							id="highlights-summer"
 							in:fly={{ y: 26, duration: 520, easing: cubicOut }}
 						>
-							<p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">
-								{$t('experiences.nav.summer')}
-							</p>
+							<h2 class="font-serif text-2xl leading-tight text-slate-900">{$t('experiences.nav.summer')}</h2>
 							{#if summerFeaturedEvent}
-								<div class="mx-auto w-full max-w-6xl px-0 sm:px-0 lg:px-0">
-									<CardButton tone="default" padding="none"
-										type="button"
-										id={summerFeaturedEvent.id}
-										onclick={(clickEvent) => openExperienceModal(summerFeaturedEvent, clickEvent.currentTarget)}
-										data-season={summerFeaturedEvent.season}
-										class="group block w-full cursor-pointer overflow-hidden text-left"
-									>
-									<div
-										class="relative w-full aspect-[16/10] overflow-hidden rounded-3xl sm:min-h-[420px] lg:h-[min(65dvh,650px)]"
-										style={`view-transition-name: ${experienceImageTransitionName(summerFeaturedEvent)};`}
-									>
-											<img
-												{...imageAttrs(summerFeaturedEvent.image, '(max-width: 1024px) 100vw, 1200px')}
-												alt={`${localize(summerFeaturedEvent.title)} – ${localize(summerFeaturedEvent.kicker)}`}
-												class={`absolute inset-0 block h-full w-full object-cover ${
-													summerFeaturedEvent.id === 'summer-hike'
-														? 'object-left'
-														: 'object-center'
-												}`}
-												loading="lazy"
-												decoding="async"
-											/>
-											<div class="absolute inset-0 hidden bg-gradient-to-t from-black/78 via-black/38 to-black/8 sm:block"></div>
-
-											{#if summerFeaturedEvent.badge}
-												<span
-													class={`absolute right-5 top-5 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] shadow-sm ${badgeClass(summerFeaturedEvent.badgeTier)}`}
-												>
-													{localize(summerFeaturedEvent.badge)}
-												</span>
-											{/if}
-
-											<div
-												class="hidden sm:absolute sm:inset-x-0 sm:bottom-0 sm:block sm:px-6 sm:pb-6 sm:pt-6"
-											>
-												<div
-													class="relative max-w-[86%] rounded-2xl border border-white/25 bg-white/16 p-3 shadow-[0_10px_26px_rgba(15,23,42,0.16)] backdrop-blur-md sm:max-w-2xl sm:p-6"
-												>
-													<div class="overflow-visible pr-0 sm:overflow-visible sm:pr-0">
-														<p
-															class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-brand"
-														>
-															<summerFeaturedEvent.icon class="h-4 w-4 text-brand" aria-hidden="true" />
-															{localize(summerFeaturedEvent.kicker)}
-														</p>
-														<h3
-															class={`mt-2 font-semibold text-white ${summerFeaturedEvent.titleSize ?? 'text-xl'}`}
-														>
-															{localize(summerFeaturedEvent.title)}
-														</h3>
-														{#if summerFeaturedEvent.description}
-															<p class="mt-2 max-w-xl text-sm text-white/85">
-																{localize(summerFeaturedEvent.description)}
-															</p>
-														{/if}
-														{#if buildSummaryFacts(summerFeaturedEvent).length}
-															<div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-semibold text-white/90">
-																{#each buildSummaryFacts(summerFeaturedEvent) as fact}
-																	<span class="inline-flex items-center gap-1.5" title={fact.label}>
-																		<fact.icon class="h-3.5 w-3.5 text-brand" aria-hidden="true" />
-																		{fact.value}
-																	</span>
-																{/each}
-															</div>
-														{/if}
-													</div>
-												</div>
-											</div>
-										</div>
-										<div class="border-t border-slate-200/80 p-4 sm:hidden">
-											<p
-												class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-brand"
-											>
-												<summerFeaturedEvent.icon class="h-4 w-4 text-brand" aria-hidden="true" />
-												{localize(summerFeaturedEvent.kicker)}
-											</p>
-											<h3
-												class={`mt-2 font-semibold text-slate-900 ${summerFeaturedEvent.titleSize ?? 'text-xl'}`}
-											>
-												{localize(summerFeaturedEvent.title)}
-											</h3>
-											{#if summerFeaturedEvent.description}
-												<p class="mt-2 max-w-xl text-sm text-slate-600">
-													{localize(summerFeaturedEvent.description)}
-												</p>
-											{/if}
-										{#if buildSummaryFacts(summerFeaturedEvent).length}
-											<div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-semibold text-slate-600">
-												{#each buildSummaryFacts(summerFeaturedEvent) as fact}
-													<span class="inline-flex items-center gap-1.5" title={fact.label}>
-														<fact.icon class="h-3.5 w-3.5 text-brand" aria-hidden="true" />
-														{fact.value}
-													</span>
-												{/each}
-											</div>
-										{/if}
-										</div>
-									</CardButton>
-								</div>
+								{@render featuredCard(summerFeaturedEvent)}
 							{/if}
 							<div class="mt-6">
 								<div class="divide-y divide-slate-200/70">
@@ -857,7 +545,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 											onclick={(clickEvent) => openExperienceModal(event, clickEvent.currentTarget)}
 											use:reveal
 											data-season={event.season}
-											class="reveal group grid w-full cursor-pointer gap-6 py-8 text-left transition duration-300 hover:-translate-y-0.5 hover:drop-shadow-[0_18px_30px_rgba(15,23,42,0.10)] sm:grid-cols-[240px,1fr] lg:grid-cols-[320px,1fr] lg:items-center"
+											class="reveal group grid w-full cursor-pointer gap-6 py-8 text-left focus-visible:outline-offset-4 sm:grid-cols-[240px,1fr] lg:grid-cols-[320px,1fr] lg:items-center"
 											style={`--reveal-delay: ${i * 70}ms;`}
 										>
 											<div
@@ -874,18 +562,11 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 													decoding="async"
 												/>
 
-												{#if event.badge}
-													<span
-														class="absolute left-3 top-3 rounded-full bg-white/80 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-800 backdrop-blur"
-													>
-														{localize(event.badge)}
-													</span>
-												{/if}
 											</div>
 
 											<div class={`min-w-0 ${i % 2 === 1 ? 'sm:pr-6' : 'sm:pl-6'}`}>
 												<p
-													class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-brand"
+													class="flex items-center gap-2 text-xs font-medium text-slate-600"
 												>
 													<event.icon class="h-4 w-4" aria-hidden="true" />
 													{localize(event.kicker)}
@@ -893,7 +574,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 
 												<h3 class="mt-1 text-xl font-semibold leading-tight text-slate-900">
 													<span
-														class="bg-gradient-to-r from-slate-900 to-slate-700 bg-[length:0%_2px] bg-left-bottom bg-no-repeat transition-[background-size] duration-300 group-hover:bg-[length:100%_2px]"
+														class="underline-offset-4 group-hover:underline"
 													>
 														{localize(event.title)}
 													</span>
@@ -917,15 +598,8 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 												{/if}
 
 												<div class="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-slate-800">
-													Mehr erfahren
-													<span
-														class="grid h-8 w-8 place-items-center rounded-full bg-white shadow-sm ring-1 ring-slate-200 transition group-hover:translate-x-1 group-hover:shadow-md"
-													>
-														<ArrowRight
-															class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5"
-															aria-hidden="true"
-														/>
-													</span>
+													{$lang === 'de' ? 'Details ansehen' : 'View details'}
+													<ArrowRight size={16} aria-hidden="true" />
 												</div>
 											</div>
 										</button>
@@ -941,106 +615,9 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 							id="highlights-winter"
 							in:fly={{ y: 26, duration: 520, easing: cubicOut }}
 						>
-							<p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">
-								{$t('experiences.nav.winter')}
-							</p>
+							<h2 class="font-serif text-2xl leading-tight text-slate-900">{$t('experiences.nav.winter')}</h2>
 							{#if winterFeaturedEvent}
-								<div class="mx-auto w-full max-w-6xl px-0 sm:px-0 lg:px-0">
-									<CardButton tone="default" padding="none"
-										type="button"
-										id={winterFeaturedEvent.id}
-										onclick={(clickEvent) => openExperienceModal(winterFeaturedEvent, clickEvent.currentTarget)}
-										data-season={winterFeaturedEvent.season}
-										class="group block w-full cursor-pointer overflow-hidden text-left"
-									>
-									<div
-										class="relative w-full aspect-[16/10] overflow-hidden rounded-3xl sm:min-h-[420px] lg:h-[min(72dvh,720px)]"
-										style={`view-transition-name: ${experienceImageTransitionName(winterFeaturedEvent)};`}
-									>
-											<img
-												{...imageAttrs(winterFeaturedEvent.image, '(max-width: 1024px) 100vw, 1200px')}
-												alt={`${localize(winterFeaturedEvent.title)} – ${localize(winterFeaturedEvent.kicker)}`}
-												class="absolute inset-0 h-full w-full object-cover object-center"
-												loading="lazy"
-												decoding="async"
-											/>
-											<div class="absolute inset-0 hidden bg-gradient-to-t from-black/78 via-black/38 to-black/8 sm:block"></div>
-
-											{#if winterFeaturedEvent.badge}
-												<span
-													class={`absolute right-5 top-5 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] shadow-sm ${badgeClass(winterFeaturedEvent.badgeTier)}`}
-												>
-													{localize(winterFeaturedEvent.badge)}
-												</span>
-											{/if}
-
-											<div
-												class="hidden sm:absolute sm:inset-x-0 sm:bottom-0 sm:block sm:px-6 sm:pb-6 sm:pt-6"
-											>
-												<div
-													class="relative max-w-[86%] rounded-2xl border border-white/25 bg-white/16 p-3 shadow-[0_10px_26px_rgba(15,23,42,0.16)] backdrop-blur-md sm:max-w-2xl sm:p-6"
-												>
-													<div class="overflow-visible pr-0 sm:overflow-visible sm:pr-0">
-														<p
-															class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-brand"
-														>
-															<winterFeaturedEvent.icon class="h-4 w-4 text-brand" aria-hidden="true" />
-															{localize(winterFeaturedEvent.kicker)}
-														</p>
-														<h3
-															class={`mt-2 font-semibold text-white ${winterFeaturedEvent.titleSize ?? 'text-xl'}`}
-														>
-															{localize(winterFeaturedEvent.title)}
-														</h3>
-														{#if winterFeaturedEvent.description}
-															<p class="mt-2 max-w-xl text-sm text-white/85">
-																{localize(winterFeaturedEvent.description)}
-															</p>
-														{/if}
-														{#if buildSummaryFacts(winterFeaturedEvent).length}
-															<div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-semibold text-white/90">
-																{#each buildSummaryFacts(winterFeaturedEvent) as fact}
-																	<span class="inline-flex items-center gap-1.5" title={fact.label}>
-																		<fact.icon class="h-3.5 w-3.5 text-brand" aria-hidden="true" />
-																		{fact.value}
-																	</span>
-																{/each}
-															</div>
-														{/if}
-													</div>
-												</div>
-											</div>
-										</div>
-										<div class="border-t border-slate-200/80 p-4 sm:hidden">
-											<p
-												class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-brand"
-											>
-												<winterFeaturedEvent.icon class="h-4 w-4 text-brand" aria-hidden="true" />
-												{localize(winterFeaturedEvent.kicker)}
-											</p>
-											<h3
-												class={`mt-2 font-semibold text-slate-900 ${winterFeaturedEvent.titleSize ?? 'text-xl'}`}
-											>
-												{localize(winterFeaturedEvent.title)}
-											</h3>
-											{#if winterFeaturedEvent.description}
-												<p class="mt-2 max-w-xl text-sm text-slate-600">
-													{localize(winterFeaturedEvent.description)}
-												</p>
-											{/if}
-										{#if buildSummaryFacts(winterFeaturedEvent).length}
-											<div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-semibold text-slate-600">
-												{#each buildSummaryFacts(winterFeaturedEvent) as fact}
-													<span class="inline-flex items-center gap-1.5" title={fact.label}>
-														<fact.icon class="h-3.5 w-3.5 text-brand" aria-hidden="true" />
-														{fact.value}
-													</span>
-												{/each}
-											</div>
-										{/if}
-										</div>
-									</CardButton>
-								</div>
+								{@render featuredCard(winterFeaturedEvent)}
 							{/if}
 							<div class="mt-6">
 								<div class="divide-y divide-slate-200/70">
@@ -1051,7 +628,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 											onclick={(clickEvent) => openExperienceModal(event, clickEvent.currentTarget)}
 											use:reveal
 											data-season={event.season}
-											class="reveal group grid w-full cursor-pointer gap-6 py-8 text-left transition duration-300 hover:-translate-y-0.5 hover:drop-shadow-[0_18px_30px_rgba(15,23,42,0.10)] sm:grid-cols-[240px,1fr] lg:grid-cols-[320px,1fr] lg:items-center"
+											class="reveal group grid w-full cursor-pointer gap-6 py-8 text-left focus-visible:outline-offset-4 sm:grid-cols-[240px,1fr] lg:grid-cols-[320px,1fr] lg:items-center"
 											style={`--reveal-delay: ${i * 70}ms;`}
 										>
 											<div
@@ -1071,18 +648,11 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 													loading="lazy"
 													decoding="async"
 												/>
-												{#if event.badge}
-													<span
-														class="absolute left-3 top-3 rounded-full bg-white/80 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-800 backdrop-blur"
-													>
-														{localize(event.badge)}
-													</span>
-												{/if}
 											</div>
 
 											<div class={`min-w-0 ${i % 2 === 1 ? 'sm:pr-6' : 'sm:pl-6'}`}>
 												<p
-													class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-brand"
+													class="flex items-center gap-2 text-xs font-medium text-slate-600"
 												>
 													<event.icon class="h-4 w-4" aria-hidden="true" />
 													{localize(event.kicker)}
@@ -1090,7 +660,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 
 												<h3 class="mt-1 text-xl font-semibold leading-tight text-slate-900">
 													<span
-														class="bg-gradient-to-r from-slate-900 to-slate-700 bg-[length:0%_2px] bg-left-bottom bg-no-repeat transition-[background-size] duration-300 group-hover:bg-[length:100%_2px]"
+														class="underline-offset-4 group-hover:underline"
 													>
 														{localize(event.title)}
 													</span>
@@ -1114,15 +684,8 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 												{/if}
 
 												<div class="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-slate-800">
-													Mehr erfahren
-													<span
-														class="grid h-8 w-8 place-items-center rounded-full bg-white shadow-sm ring-1 ring-slate-200 transition group-hover:translate-x-1 group-hover:shadow-md"
-													>
-														<ArrowRight
-															class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5"
-															aria-hidden="true"
-														/>
-													</span>
+													{$lang === 'de' ? 'Details ansehen' : 'View details'}
+													<ArrowRight size={16} aria-hidden="true" />
 												</div>
 											</div>
 										</button>
@@ -1298,55 +861,25 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 				</section>
 				{/if}
 
-				<div class="mt-10 rounded-2xl border border-brand/15 bg-[#fdf8f2] p-6 shadow-sm">
-					<div class="grid gap-6 md:grid-cols-[1.5fr,auto] md:items-center">
-						<div>
-							<p class="text-xs font-semibold uppercase tracking-[0.22em] text-brand">
-								{$t('experiences.base.kicker')}
-							</p>
-							<h3 class="mt-2 text-2xl font-semibold text-slate-900">
-								{$t('experiences.base.title')}
-							</h3>
-							<p class="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">
-								{$t('experiences.base.body')}
-							</p>
-						</div>
-						<div class="flex flex-wrap gap-3 md:flex-col md:justify-center">
-							<ButtonLink variant="secondary" size="md"
-								href={localizedHref('/unterkuenfte-preise')}
-							>
-								{$t('experiences.base.cta.rooms')}
-							</ButtonLink>
-							<ButtonLink variant="primary" size="md"
-								href={localizedHref('/buchen')}
-							>
-								{$t('experiences.base.cta.booking')}
-							</ButtonLink>
-						</div>
+				<section aria-labelledby="experiences-stay-title" class="mt-14 grid gap-5 rounded-2xl border border-[#e8dfd1] bg-[#f5efe6] p-6 sm:p-8 lg:mt-16 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-8">
+					<div>
+						<h2 id="experiences-stay-title" class="text-balance font-serif text-2xl leading-tight text-slate-900 sm:text-3xl">
+							{$t('experiences.base.title')}
+						</h2>
+						<p class="mt-2 text-sm leading-relaxed text-slate-700 sm:text-base">{$t('experiences.base.body')}</p>
 					</div>
-				</div>
+					<div class="flex flex-wrap gap-2 lg:grid">
+						<ButtonLink variant="secondary" size="sm" href={localizedHref('/unterkuenfte-preise')}>
+							{$t('experiences.base.cta.rooms')}
+						</ButtonLink>
+						<ButtonLink variant="primary" size="sm" href={localizedHref('/buchen')}>
+							{$t('experiences.base.cta.booking')}
+						</ButtonLink>
+					</div>
+				</section>
 			</section>
 
-			<section id="gaestecard" aria-labelledby="guestcard-title" class="scroll-mt-32 overflow-hidden rounded-2xl border border-slate-200 bg-white">
-				<div class="grid md:grid-cols-2">
-					<div class="relative aspect-[2/1] min-w-0 md:aspect-auto">
-						<img {...imageAttrs(guestCardPhoto.src, '(min-width: 1152px) 520px, (min-width: 768px) 45vw, 100vw')}
-							alt={localize(guestCardPhoto.alt)} class="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async" />
-					</div>
-					<div class="flex flex-col items-start justify-center px-5 py-6 sm:p-8 lg:p-10">
-						<h2 id="guestcard-title" class="text-balance font-serif text-3xl leading-tight text-slate-900 lg:text-4xl">{$t('guestcard.experiences.title')}</h2>
-						<p class="mt-3 max-w-prose text-base leading-relaxed text-slate-700">{$t('guestcard.experiences.staySummary')}</p>
-						<div class="mt-5 flex flex-wrap items-center gap-x-5 gap-y-1">
-							<ButtonLink href={guestCardLinks.benefitsOverview} variant="primary" size="sm" target="_blank" rel="noreferrer">
-								{$lang === 'de' ? 'Vorteile ansehen' : 'View benefits'} <ArrowRight size={16} aria-hidden="true" />
-							</ButtonLink>
-							<a href={guestCardLinks.brochure} target="_blank" rel="noreferrer" class="inline-flex min-h-11 items-center text-sm text-slate-600 underline decoration-slate-300 underline-offset-4 hover:text-slate-900">
-								{$lang === 'de' ? 'Broschüre (PDF)' : 'Brochure (PDF)'}
-							</a>
-						</div>
-					</div>
-				</div>
-			</section>
+
 		</div>
 	</div>
 
@@ -1393,7 +926,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 							class="p-5 sm:p-8 lg:p-9"
 							in:fly={{ x: reduceMotion ? 0 : 14, duration: reduceMotion ? 0 : 320, delay: reduceMotion ? 0 : 70, easing: cubicOut }}
 						>
-							<p class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-brand">
+							<p class="flex items-center gap-2 text-xs font-medium text-slate-600">
 								<activeExperience.icon class="h-4 w-4 text-brand" aria-hidden="true" />
 								{localize(activeExperience.kicker)}
 							</p>
@@ -1487,16 +1020,6 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 					<List class="h-4 w-4 text-brand" aria-hidden="true" />
 					<span class="max-w-[55vw] truncate">{$t(activeSectionLabelKey)}</span>
 				</Button>
-				<Button variant="primary" size="md"
-					type="button"
-					onclick={() => (isMobileFilterOpen = true)}
-				>
-					<SlidersHorizontal class="h-4 w-4" aria-hidden="true" />
-					{$t('experiences.nav.filters')}
-					{#if selectedActivity}
-						<span class="ml-1 rounded-full bg-white/20 px-2 py-0.5 text-xs">1</span>
-					{/if}
-				</Button>
 			</div>
 		</div>
 	</div>
@@ -1576,84 +1099,9 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 		</div>
 	{/if}
 
-	{#if isMobileFilterOpen}
-		<button
-			type="button"
-			class="fixed inset-0 z-[90] bg-slate-950/50 backdrop-blur-[2px]"
-			onclick={() => (isMobileFilterOpen = false)}
-			aria-label="Filter schließen"
-		></button>
-		<div
-			class="fixed inset-x-0 bottom-0 z-[100] rounded-t-3xl border border-white/20 bg-white p-4 shadow-2xl"
-		>
-			<div class="flex items-center justify-between">
-				<p class="text-sm font-semibold text-slate-900">{$t('experiences.nav.filters')}</p>
-				<Button variant="secondary" size="icon"
-					type="button"
-					onclick={() => (isMobileFilterOpen = false)}
-					aria-label="Filter schließen"
-				>
-					<X class="h-5 w-5" aria-hidden="true" />
-				</Button>
-			</div>
-
-			<div class="mt-3 flex flex-wrap gap-2">
-				{#each activityFilters as filter}
-					<button
-						type="button"
-						class={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${
-							selectedActivity === filter.id
-								? 'bg-brand text-white'
-								: 'border border-slate-200 bg-white text-slate-700'
-						}`}
-						onclick={() => (selectedActivity = selectedActivity === filter.id ? null : filter.id)}
-						aria-pressed={selectedActivity === filter.id}
-					>
-						<filter.icon class="h-4 w-4" aria-hidden="true" />
-						{$t(filter.labelKey)}
-					</button>
-				{/each}
-			</div>
-
-			<div class="mt-4 flex gap-2">
-				<Button variant="secondary" size="md"
-					type="button"
-					class="flex-1"
-					onclick={() => (selectedActivity = null)}
-				>
-					{$t('experiences.nav.reset')}
-				</Button>
-				<Button variant="primary" size="md"
-					type="button"
-					class="flex-1"
-					onclick={() => (isMobileFilterOpen = false)}
-				>
-					{$t('experiences.nav.apply')}
-				</Button>
-			</div>
-		</div>
-	{/if}
 </main>
 
 <style>
-	.experience-nav-scroll {
-		scrollbar-width: thin;
-		scrollbar-color: rgba(100, 116, 139, 0.45) transparent;
-	}
-
-	.experience-nav-scroll::-webkit-scrollbar {
-		width: 6px;
-	}
-
-	.experience-nav-scroll::-webkit-scrollbar-thumb {
-		border-radius: 999px;
-		background: rgba(100, 116, 139, 0.38);
-	}
-
-	.experience-nav-scroll::-webkit-scrollbar-track {
-		background: transparent;
-	}
-
 	.anchor-target {
 		scroll-margin-top: 7rem;
 		border-radius: 1rem;

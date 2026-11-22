@@ -32,17 +32,17 @@ const staticFreshnessEntries: Record<string, ContentFreshnessEntry> = {
 		notes: 'Clarified that cancellation terms depend on the selected offer.',
 	},
 	'/erlebnisse': {
-		lastModified: '2026-10-10',
+		lastModified: '2026-11-22',
 		reviewGroup: 'activities',
-		notes: 'Reisskofel and Nassfeld snowshoe access points, links and approach estimates aligned with the homepage map.',
+		notes: 'Shortened the introduction and clarified the seasonal presentation.',
 	},
 	'/erlebnisse/sommer': {
-		lastModified: '2026-10-10',
+		lastModified: '2026-11-22',
 		reviewGroup: 'summer',
 		notes: 'Reisskofel location and provider link corrected; unsupported fixed tour metrics removed and summit difficulty clarified.',
 	},
 	'/erlebnisse/winter': {
-		lastModified: '2026-10-10',
+		lastModified: '2026-11-22',
 		reviewGroup: 'winter',
 		notes: 'Snowshoe experience located at Nassfeld with matching access point and provider link.',
 	},

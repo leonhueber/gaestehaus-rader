@@ -676,14 +676,12 @@ const festivalLink = { id: 'traditionelle-feste', labelKey: 'experiences.nav.fes
 export const experienceSectionLinks: SectionLink[] = [
 	{ id: 'aktivitaeten', labelKey: 'experiences.nav.activities' },
 	...(showFestivalSection ? [festivalLink] : []),
-	{ id: 'gaestecard', labelKey: 'experiences.nav.guestcard' },
 ];
 
 export const experienceSectionTrackingLinks: SectionLink[] = [
 	{ id: 'aktivitaeten', labelKey: 'experiences.nav.activities' },
 	{ id: 'highlights', labelKey: 'experiences.nav.highlights' },
 	...(showFestivalSection ? [festivalLink] : []),
-	{ id: 'gaestecard', labelKey: 'experiences.nav.guestcard' },
 ];
 
 export const experienceFestivalSection: FestivalSection = {
