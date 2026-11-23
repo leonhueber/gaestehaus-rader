@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Check, ChevronDown, X } from 'lucide-svelte';
 	import { page } from '$app/state';
+	import { localizePath } from '$lib/routing';
 	import { lang, t } from '$lib/i18n';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import { SITE_ORIGIN } from '$lib/seo';
@@ -89,4 +90,6 @@
 			</div>
 		</section>
 	{/each}
+	<a class="mt-6 inline-block text-sm font-semibold text-slate-800 underline underline-offset-4 hover:text-brand focus-visible:outline-offset-4"
+		href={localizePath('/fakten', page.url.pathname)}>{$t('faq.houseFacts')}</a>
 </div>

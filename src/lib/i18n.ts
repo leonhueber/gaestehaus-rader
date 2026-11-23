@@ -256,15 +256,18 @@ const translations: Record<Lang, Record<string, string>> = {
 		'badge.popular': 'Beliebt',
 		'badge.exclusive': 'Besonders ruhig',
 		'experiences.title': 'Erlebnisse rund um das Gästehaus',
-		'experiences.seo.title': 'Erlebnisse im Gitschtal & in Kärnten | Gästehaus Rader',
+		'experiences.seo.heading': 'Ausflugsziele rund um Weißbriach',
+		'experiences.seo.title': 'Ausflugsziele rund um Weißbriach | Gästehaus Rader',
 		'experiences.seo.description':
-			'Entdecken Sie Erlebnisse rund um Weißbriach: Wandern, Seen, Winteraktivitäten und regionale Genusskultur mit Gailtaler Speck, Almkäse, Kasnudeln und saisonalen Festen.',
-		'experiences.seo.summer.title': 'Sommer-Erlebnisse rund ums Gitschtal | Gästehaus Rader',
+			'Vom Gästehaus Rader erreichen Sie im Sommer die Garnitzenklamm und den Pressegger See. Im Winter führen die Ausflüge zum Nassfeld und an den Weißensee.',
+		'experiences.seo.summer.heading': 'Sommer in Weißbriach',
+		'experiences.seo.summer.title': 'Sommer in Weißbriach | Gästehaus Rader',
 		'experiences.seo.summer.description':
-			'Wandern, Radfahren, Badeseen und echter regionaler Genuss: Sommer-Erlebnisse rund um Weißbriach mit Almen, Bauernmärkten, Gailtaler Speck und Kärntner Kasnudeln.',
-		'experiences.seo.winter.title': 'Winter-Erlebnisse in Kärnten | Gästehaus Rader',
+			'Wandern Sie durch die Garnitzenklamm, radeln Sie auf dem Gailtalradweg oder verbringen Sie einen Badetag am Pressegger See. Hier finden Sie die Anfahrt ab dem Gästehaus.',
+		'experiences.seo.winter.heading': 'Winter in Weißbriach',
+		'experiences.seo.winter.title': 'Winter in Weißbriach | Gästehaus Rader',
 		'experiences.seo.winter.description':
-			'Skifahren am Nassfeld, Eislaufen am Weißensee und Langlaufen in Weißbriach: Winter-Erlebnisse rund um das Gästehaus Rader im Gitschtal.',
+			'Entdecken Sie die Loipen im Gitschtal und die Skipisten am Nassfeld. Bei freigegebener Eisfläche können Sie am Weißensee eislaufen.',
 		'experiences.body':
 			'Das Gitschtal rund um Weißbriach ist eine ruhige Basis für aktive Tage - mit Natur, Wanderungen und Radwegen direkt vor der Haustür.',
 		'experiences.tabs.summer': 'Sommer',
@@ -354,9 +357,6 @@ const translations: Record<Lang, Record<string, string>> = {
 		'experiences.meta.familyfun': 'Spaß für Familien',
 		'experiences.meta.evening': 'Ideal am Abend',
 		'experiences.destinations.kicker': 'Ausflugsziele',
-		'experiences.destinations.title': 'In der Umgebung entdecken',
-		'experiences.destinations.subtitle':
-			'In der Umgebung entdecken Sie vom Gästehaus Rader aus Seen, Berge und Ausflugsideen in kurzer Zeit - von Sommer-Erlebnissen bis Winter-Erlebnissen in Kärnten, passend zu Ihrem Urlaubsstil.',
 		'experiences.guestcard.imageAlt.summer': 'Bergbahn-Erlebnis in Kärnten mit GästeCard-Vorteilen',
 		'experiences.guestcard.imageAlt.winter': 'Sonnige Skipiste im Skigebiet Weißbriach',
 		'experiences.destinations.topHighlights': 'Highlights rund ums Gästehaus',
@@ -1116,6 +1116,9 @@ const translations: Record<Lang, Record<string, string>> = {
 		'faq.arrival': 'Anreise & Zahlung',
 		'faq.apartments': 'Appartements & Ausstattung',
 		'faq.title': 'Häufige Fragen',
+		'faq.houseFacts': 'Alle Hausinfos auf einen Blick',
+		'booking.directEnquiry': 'Sie möchten direkt anfragen?',
+		'booking.contactLink': 'Kontakt aufnehmen',
 		'faq.seo.title': 'FAQ Gästehaus Rader – Häufige Fragen zum Aufenthalt',
 		'faq.seo.description':
 			'Antworten zu Check-in, Parkplatz, WLAN, Haustieren, Bezahlung und GästeCard Basic.',
@@ -1416,15 +1419,18 @@ const translations: Record<Lang, Record<string, string>> = {
 		'badge.popular': 'Popular',
 		'badge.exclusive': 'Especially quiet',
 		'experiences.title': 'Experiences nearby',
-		'experiences.seo.title': 'Experiences in the Gitschtal & Carinthia | Guesthouse Rader',
+		'experiences.seo.heading': 'Day trips from Weissbriach',
+		'experiences.seo.title': 'Day trips from Weissbriach | Guesthouse Rader',
 		'experiences.seo.description':
-			'Discover experiences around Weissbriach: hiking, lakes, winter activities, and regional food culture with Gailtaler Speck, alpine cheese, Kasnudeln, and seasonal festivals.',
-		'experiences.seo.summer.title': 'Summer experiences around the Gitschtal | Guesthouse Rader',
+			'From Guesthouse Rader, explore Garnitzenklamm Gorge and Lake Pressegger See in summer. In winter, head to Nassfeld for skiing or to Lake Weissensee for a day on the ice.',
+		'experiences.seo.summer.heading': 'Summer in Weissbriach',
+		'experiences.seo.summer.title': 'Summer in Weissbriach | Guesthouse Rader',
 		'experiences.seo.summer.description':
-			'Hiking, cycling, alpine lakes, and authentic local flavors: summer around Weissbriach with alpine huts, farmers markets, Gailtaler Speck, and Carinthian Kasnudeln.',
-		'experiences.seo.winter.title': 'Winter experiences in Carinthia | Guesthouse Rader',
+			'Hike through Garnitzenklamm Gorge, cycle the Gailtal cycle path or swim in Lake Pressegger See. Find driving times from the guesthouse for each outing.',
+		'experiences.seo.winter.heading': 'Winter in Weissbriach',
+		'experiences.seo.winter.title': 'Winter in Weissbriach | Guesthouse Rader',
 		'experiences.seo.winter.description':
-			'Skiing at Nassfeld, ice skating on Lake Weißensee, and cross-country trails in Weißbriach: winter experiences around Guesthouse Rader in the Gitschtal.',
+			'Explore the cross-country trails in the Gitschtal or ski at Nassfeld. When the ice is open for skating, head to Lake Weissensee.',
 		'experiences.body':
 			'The Gitschtal around Weißbriach is a calm base for active days - with nature, hiking routes, and cycling paths right at your doorstep.',
 		'experiences.tabs.summer': 'Summer',
@@ -1514,9 +1520,6 @@ const translations: Record<Lang, Record<string, string>> = {
 		'experiences.meta.familyfun': 'Family fun',
 		'experiences.meta.evening': 'Best in the evening',
 		'experiences.destinations.kicker': 'Day trips',
-		'experiences.destinations.title': 'Explore nearby highlights',
-		'experiences.destinations.subtitle':
-			'Explore nearby highlights from Guesthouse Rader: lakes, mountains, and excursion spots are all within quick reach - from summer experiences to winter experiences in Carinthia, matched to season and travel style.',
 		'experiences.guestcard.imageAlt.summer':
 			'Cable car experience in Carinthia with Guest Card benefits',
 		'experiences.guestcard.imageAlt.winter':
@@ -2264,6 +2267,9 @@ const translations: Record<Lang, Record<string, string>> = {
 		'faq.arrival': 'Arrival & payment',
 		'faq.apartments': 'Apartments & amenities',
 		'faq.title': 'Frequently asked questions',
+		'faq.houseFacts': 'Guesthouse facts at a glance',
+		'booking.directEnquiry': 'Prefer to enquire directly?',
+		'booking.contactLink': 'Contact us',
 		'faq.seo.title': 'FAQ Guesthouse Rader – questions about your stay',
 		'faq.seo.description':
 			'Answers about check-in, parking, Wi-Fi, pets, payment, and the Guest Card Basic.',

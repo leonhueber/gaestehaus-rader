@@ -142,17 +142,12 @@ const locale = $derived.by(() => ($lang === 'en' ? 'en' : 'de'));
 
 <div class="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
 	<Card as="section" tone="default" padding="lg"  >
-		<p class="text-xs font-semibold uppercase tracking-[0.35em] text-brand">{pageCopy.kicker[locale]}</p>
-		<h1 class="mt-4 max-w-3xl font-serif text-4xl leading-[0.95] text-slate-900 sm:text-5xl">
+		<h1 class="max-w-3xl font-serif text-4xl leading-[0.95] text-slate-900 sm:text-5xl">
 			{pageCopy.title[locale]}
 		</h1>
 		<div class="mt-4 h-[3px] w-14 rounded-full bg-brand"></div>
 		<p class="mt-4 max-w-3xl text-base leading-relaxed text-slate-600">
 			{pageCopy.subtitle[locale]}
-		</p>
-		<p class="mt-5 inline-flex items-center gap-2 rounded-full bg-brand/5 px-4 py-2 text-sm text-slate-700">
-			<Sparkles class="h-4 w-4 text-brand" />
-			{pageCopy.machineReadable[locale]}
 		</p>
 	</Card>
 

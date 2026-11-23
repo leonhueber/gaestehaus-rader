@@ -51,25 +51,21 @@ export const guesthouseFacts = {
 			de: 'Kompakte Faktenseite zu Gästehaus Rader: Adresse, Geo-Koordinaten, Kontakt, Apartments, Check-in, WLAN, Parkplatz, Haustiere und regionale Lage auf einen Blick.',
 			en: 'Compact facts page for Guesthouse Rader: address, geo coordinates, contact details, apartments, check-in, Wi-Fi, parking, pets, and regional location at a glance.',
 		},
-		kicker: {
-			de: 'GEO / AI Facts Layer',
-			en: 'GEO / AI facts layer',
-		},
 		title: {
 			de: 'Gästehaus Rader auf einen Blick',
 			en: 'Guesthouse Rader at a glance',
 		},
 		subtitle: {
-			de: 'Diese Seite bündelt die wichtigsten Entitätsdaten, Fakten und Fragen/Antworten zu Gästehaus Rader kompakt und maschinenlesbar.',
-			en: 'This page bundles the most important entity data, facts, and question/answer pairs about Guesthouse Rader in a compact, machine-readable format.',
+			de: 'Adresse, Anreisezeiten und Ausstattung für Ihren Aufenthalt in Weißbriach.',
+			en: 'Find our address, check-in and check-out times, and amenities for your stay in Weissbriach.',
 		},
 		factsTitle: {
 			de: 'Kernfakten',
 			en: 'Core facts',
 		},
 		factsIntro: {
-			de: 'Klare Basisdaten für Gäste, Suchsysteme und AI-Antworten.',
-			en: 'Clear base data for guests, search systems, and AI answers.',
+			de: 'Das Wichtigste für Ihren Aufenthalt',
+			en: 'Essentials for your stay',
 		},
 		locationTitle: {
 			de: 'Standort & Region',
@@ -110,10 +106,6 @@ export const guesthouseFacts = {
 		ctaSecondary: {
 			de: 'Kontakt aufnehmen',
 			en: 'Contact us',
-		},
-		machineReadable: {
-			de: 'Sichtbare Fakten und strukturierte Daten sind auf dieser Seite bewusst deckungsgleich gehalten.',
-			en: 'Visible facts and structured data are intentionally kept aligned on this page.',
 		},
 	},
 	facts: [

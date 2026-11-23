@@ -25,7 +25,6 @@ import { localizePath } from '$lib/routing';
 		BUSINESS_SAME_AS,
 		LODGING_BUSINESS_CORE,
 		buildJsonLdGraph,
-		buildOfferSchema,
 		buildVacationRentalSchema,
 	} from '$lib/structured-data';
 	import { onMount } from 'svelte';
@@ -234,6 +233,7 @@ import { localizePath } from '$lib/routing';
 			const roomUrl = new URL(`${localizedHref('/unterkuenfte-preise')}${room.slug}/`, siteUrl).toString();
 			const amenityLabels = (room.amenities ?? []).map((amenity) => $t(`amenity.${amenity}`));
 			return buildVacationRentalSchema({
+				translate: $t,
 				accommodation: room,
 				locale: $lang,
 				pageUrl: roomUrl,
@@ -241,16 +241,6 @@ import { localizePath } from '$lib/routing';
 				imagePaths: [room.images.main, ...getAccommodationGallerySources(room)],
 				amenityLabels,
 				description: room.subtitle[$lang],
-			});
-		})
-	);
-	const lodgingOffers = $derived.by(() =>
-		rooms.map((room) => {
-			const roomUrl = new URL(`${localizedHref('/unterkuenfte-preise')}${room.slug}/`, siteUrl).toString();
-			return buildOfferSchema({
-				id: `${roomUrl}#lodging-offer`,
-				url: roomUrl,
-				itemOfferedId: `${roomUrl}#vacation-rental`,
 			});
 		})
 	);
@@ -280,9 +270,7 @@ import { localizePath } from '$lib/routing';
 				containsPlace: roomStructuredData.map((room) => ({
 					'@id': room.vacationRentalId,
 				})),
-				makesOffer: lodgingOffers.map((offer) => ({
-					'@id': offer['@id'] as string,
-				})),
+				makesOffer: roomStructuredData.flatMap((room) => room.vacationRentalNode.offers),
 				telephone: ['+43 676 6246826', '+43 4286 222'],
 				email: 'info@rader-gitschtal.at',
 			},
@@ -311,11 +299,7 @@ import { localizePath } from '$lib/routing';
 				sameAs: businessSameAs,
 				hasMap: 'https://maps.app.goo.gl/cXgd5iJbYPmSx2ad9',
 				amenityFeature: amenityFeatures,
-				offers: {
-					'@type': 'Offer',
-					priceCurrency: 'EUR',
-					url: new URL(localizedHref('/unterkuenfte-preise'), siteUrl).toString(),
-				},
+				makesOffer: roomStructuredData.flatMap((room) => room.vacationRentalNode.offers),
 			},
 			{
 				'@type': 'TouristDestination',
@@ -328,9 +312,8 @@ import { localizePath } from '$lib/routing';
 			...roomStructuredData.flatMap((room) => [
 				room.vacationRentalNode,
 				room.accommodationNode,
-				room.offerNode,
+				...room.offerNodes,
 			]),
-			...lodgingOffers,
 		])
 	);
 

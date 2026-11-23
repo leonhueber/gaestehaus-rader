@@ -1,4 +1,4 @@
-import type { Accommodation } from '$lib/data/accommodations';
+import { allowsExtraGuest, seasonalRates, type Accommodation } from '$lib/data/accommodations';
 import type { Lang } from '$lib/i18n';
 
 const localeToLanguageTag: Record<Lang, string> = {
@@ -61,6 +61,7 @@ type FaqQuestion = {
 };
 
 type VacationRentalSchemaOptions = {
+	translate: (key: string) => string;
 	accommodation: Accommodation;
 	locale: Lang;
 	pageUrl: string;
@@ -169,32 +170,8 @@ export const buildFaqPageSchema = (pageUrl: string, locale: Lang, questions: Faq
 	})),
 });
 
-export const buildOfferSchema = ({
-	id,
-	url,
-	price,
-	itemOfferedId,
-}: {
-	id: string;
-	url: string;
-	price?: number;
-	itemOfferedId?: string;
-}) => ({
-	'@type': 'Offer',
-	'@id': id,
-	url,
-	...(typeof price === 'number' ? { price } : {}),
-	priceCurrency: 'EUR',
-	...(itemOfferedId
-		? {
-			itemOffered: {
-				'@id': itemOfferedId,
-			},
-		}
-		: {}),
-});
-
 export const buildVacationRentalSchema = ({
+	translate,
 	accommodation,
 	locale,
 	pageUrl,
@@ -210,7 +187,6 @@ export const buildVacationRentalSchema = ({
 	const bathrooms = Math.max(1, countGalleryCategory(accommodation, ['bathroom', 'wc', 'shower']));
 	const beds = guestCapacity?.maxValue ?? 1;
 	const accommodationId = `${pageUrl}#accommodation`;
-	const offerId = `${pageUrl}#offer`;
 	const vacationRentalId = `${pageUrl}#vacation-rental`;
 
 	const accommodationNode = {
@@ -244,12 +220,35 @@ export const buildVacationRentalSchema = ({
 		},
 	};
 
-	const offerNode = buildOfferSchema({
-		id: offerId,
+	const rateConditions = [
+		translate('room.detail.prices.note'),
+		translate('rooms.page.pricing.tax') + ': ' + translate('rooms.page.pricing.tax.price') + '.',
+		translate('room.detail.prices.minStay') + ': ' + translate('room.detail.card.facts.minStayValue') + '.',
+	];
+	if (allowsExtraGuest(accommodation)) {
+		rateConditions.push(
+			translate('room.detail.prices.extraPerson') + ': ' + translate('rooms.page.pricing.extraPrice') + ' / ' + translate('price.night') + '.',
+			translate('rooms.page.pricing.kids')
+		);
+	}
+
+	const offerNodes = seasonalRates(accommodation).map(({ season, price }) => ({
+		'@type': 'Offer',
+		'@id': pageUrl + '#offer-' + season,
 		url: pageUrl,
-		price: accommodation.pricePerNightBase,
-		itemOfferedId: vacationRentalId,
-	});
+		name: translate('experiences.nav.' + season) + ' – ' + translate('room.detail.prices.priceNight'),
+		description: rateConditions.join(' '),
+		itemOffered: { '@id': vacationRentalId },
+		priceCurrency: 'EUR',
+		price,
+		priceSpecification: {
+			'@type': 'UnitPriceSpecification',
+			price,
+			priceCurrency: 'EUR',
+			valueAddedTaxIncluded: true,
+			referenceQuantity: { '@type': 'QuantitativeValue', value: 1, unitCode: 'DAY', unitText: translate('price.night') },
+		},
+	}));
 
 	const vacationRentalNode = {
 		'@type': 'VacationRental',
@@ -269,17 +268,14 @@ export const buildVacationRentalSchema = ({
 			'@id': accommodationId,
 		},
 		amenityFeature: amenityFeatures,
-		offers: {
-			'@id': offerId,
-		},
+		offers: offerNodes.map((offer) => ({ '@id': offer['@id'] })),
 	};
 
 	return {
 		vacationRentalId,
 		accommodationId,
-		offerId,
 		vacationRentalNode,
 		accommodationNode,
-		offerNode,
+		offerNodes,
 	};
 };

@@ -22,9 +22,9 @@ const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 const staticFreshnessEntries: Record<string, ContentFreshnessEntry> = {
 	'/': {
-		lastModified: '2026-11-22',
+		lastModified: '2026-11-23',
 		reviewGroup: 'core',
-		notes: 'Updated the Booking.com rating in both languages.',
+		notes: 'Published seasonal offer details for each apartment.',
 	},
 	'/unterkuenfte-preise': {
 		lastModified: '2026-11-22',
@@ -32,24 +32,24 @@ const staticFreshnessEntries: Record<string, ContentFreshnessEntry> = {
 		notes: 'Clarified that cancellation terms depend on the selected offer.',
 	},
 	'/erlebnisse': {
-		lastModified: '2026-11-22',
+		lastModified: '2026-11-23',
 		reviewGroup: 'activities',
 		notes: 'Shortened the introduction and clarified the seasonal presentation.',
 	},
 	'/erlebnisse/sommer': {
-		lastModified: '2026-11-22',
+		lastModified: '2026-11-23',
 		reviewGroup: 'summer',
 		notes: 'Reisskofel location and provider link corrected; unsupported fixed tour metrics removed and summit difficulty clarified.',
 	},
 	'/erlebnisse/winter': {
-		lastModified: '2026-11-22',
+		lastModified: '2026-11-23',
 		reviewGroup: 'winter',
 		notes: 'Snowshoe experience located at Nassfeld with matching access point and provider link.',
 	},
 	'/faq': {
-		lastModified: '2026-04-25',
+		lastModified: '2026-11-23',
 		reviewGroup: 'guestcard',
-		notes: 'Guest Card FAQ and stay-related guidance reviewed.',
+		notes: 'Added a direct link to the guesthouse facts.',
 	},
 	'/ueber-uns': {
 		lastModified: '2026-02-21',
@@ -62,14 +62,14 @@ const staticFreshnessEntries: Record<string, ContentFreshnessEntry> = {
 		notes: 'Google Maps activation now requires an explicit consent action after a localized privacy notice.',
 	},
 	'/buchen': {
-		lastModified: '2026-11-18',
+		lastModified: '2026-11-23',
 		reviewGroup: 'core',
-		notes: 'Apartment selection and tariff guarantee information.',
+		notes: 'Added a permanent contact link for direct enquiries.',
 	},
 	'/fakten': {
-		lastModified: '2026-04-25',
+		lastModified: '2026-11-23',
 		reviewGroup: 'trust',
-		notes: 'Facts layer and machine-readable entity information reviewed.',
+		notes: 'Revised the introduction for guests.',
 	},
 	'/impressum': {
 		lastModified: '2026-11-22',
@@ -77,14 +77,14 @@ const staticFreshnessEntries: Record<string, ContentFreshnessEntry> = {
 		notes: 'Identified Astrid Hueber as the responsible operator.',
 	},
 	'/datenschutz': {
-		lastModified: '2026-10-10',
+		lastModified: '2026-11-23',
 		reviewGroup: 'legal',
-		notes: 'Google Maps consent flow, OpenStreetMap and stored FOSSGIS routes documented in German and English.',
+		notes: 'Added the full English translation of the privacy policy.',
 	},
 	'/agb': {
-		lastModified: '2026-11-22',
+		lastModified: '2026-11-23',
 		reviewGroup: 'legal',
-		notes: 'Aligned operator, pet policy and offer-specific cancellation terms.',
+		notes: 'Added the full English translation of the terms.',
 	},
 	'/barrierefreiheit': {
 		lastModified: '2026-01-22',
@@ -109,9 +109,9 @@ const buildAccommodationEntries = (
 export const getSitemapFreshnessEntries = (rooms: Accommodation[]): Record<string, ContentFreshnessEntry> => ({
 	...staticFreshnessEntries,
 	...buildAccommodationEntries(rooms, {
-		lastModified: '2026-11-22',
+		lastModified: '2026-11-23',
 		reviewGroup: 'accommodations',
-		notes: 'Restored indicative summer and winter rates alongside stay conditions.',
+		notes: 'Published seasonal offer details matching the visible pricing table.',
 	}),
 });
 

@@ -2,7 +2,7 @@
 	import { cardClasses } from '$lib/components/ui/styles';
 	import Button from '$lib/components/ui/Button.svelte';
 	import ButtonLink from '$lib/components/ui/ButtonLink.svelte';
-	import CardButton from '$lib/components/ui/CardButton.svelte';
+	import CardLink from '$lib/components/ui/CardLink.svelte';
 	import type { ComponentType } from 'svelte';
 	import { lang, t } from '$lib/i18n';
 	import { page } from '$app/state';
@@ -117,7 +117,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 		if (event.seasonMonths) {
 			facts.push({
 				label: $lang === 'de' ? 'Saison' : 'Season',
-				value: event.seasonMonths,
+				value: event.seasonMonths[$lang],
 				icon: CalendarDays,
 			});
 		}
@@ -167,23 +167,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 	const secondaryEvents = $derived(eventsBySeason[activeSeason].slice(1));
 
 	const currentContent = $derived(content[activeSeason]);
-	const seo = $derived.by(() => {
-		if (!seoSeasonFromUrl) {
-			return {
-				titleKey: 'experiences.seo.title',
-				descriptionKey: 'experiences.seo.description',
-			};
-		}
-
-		const isWinter = seoSeasonFromUrl === 'winter';
-
-		return {
-			titleKey: isWinter ? 'experiences.seo.winter.title' : 'experiences.seo.summer.title',
-			descriptionKey: isWinter
-				? 'experiences.seo.winter.description'
-				: 'experiences.seo.summer.description',
-		};
-	});
+	const copyKey = $derived(seoSeasonFromUrl ? 'experiences.seo.' + seoSeasonFromUrl : 'experiences.seo');
 
 	const festivalSection = experienceFestivalSection;
 
@@ -226,8 +210,10 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 		return openingExperienceId === event.id ? `experience-image-${event.id}` : 'none';
 	}
 
-	async function openExperienceModal(event: ExperienceEvent, trigger: EventTarget | null = null) {
-		if (trigger instanceof HTMLElement) lastExperienceTrigger = trigger;
+	async function openExperienceModal(event: ExperienceEvent, click: MouseEvent) {
+		if (click.ctrlKey || click.metaKey || click.shiftKey || click.altKey) return;
+		click.preventDefault();
+		if (click.currentTarget instanceof HTMLElement) lastExperienceTrigger = click.currentTarget;
 		openingExperienceId = event.id;
 		await tick();
 		await updateWithViewTransition(() => {
@@ -268,7 +254,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 
 <svelte:window onkeydown={onWindowKeydown} />
 
-<SeoHead titleKey={seo.titleKey} descriptionKey={seo.descriptionKey} image={currentContent.bg} />
+<SeoHead titleKey={copyKey + '.title'} descriptionKey={copyKey + '.description'} image={currentContent.bg} />
 
 
 {#snippet factsLine(event: ExperienceEvent)}
@@ -295,10 +281,89 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 	<div class="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-slate-950/15 via-30% to-transparent to-50%" aria-hidden="true"></div>
 {/snippet}
 
+{#snippet tourDetails(event: ExperienceEvent)}
+	<p class="flex items-center gap-2 text-xs font-medium text-slate-600">
+		<event.icon class="h-4 w-4 text-brand" aria-hidden="true" />
+		{localize(event.kicker)}
+	</p>
+	<h3 class="mt-2 text-2xl font-semibold leading-tight text-slate-900">
+		{localize(event.title)}
+	</h3>
+	{#if event.description}
+		<p class="mt-3 text-sm leading-relaxed text-slate-600">
+			{localize(event.description)}
+		</p>
+	{/if}
+
+	{#if buildPlanningFacts(event).length}
+		<div class="mt-6">
+			<p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
+				{$lang === 'de' ? 'Planung' : 'Planning'}
+			</p>
+			<dl class="mt-2 divide-y divide-slate-200 border-y border-slate-200">
+				{#each buildPlanningFacts(event) as fact}
+					<div class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 py-3">
+						<dt class="inline-flex min-w-0 items-center gap-2 text-sm text-slate-600">
+							<fact.icon class="h-4 w-4 shrink-0 text-slate-500" aria-hidden="true" />
+							<span>{fact.label}</span>
+						</dt>
+						<dd class="text-right text-sm font-semibold text-slate-900">{fact.value}</dd>
+					</div>
+				{/each}
+			</dl>
+		</div>
+	{/if}
+
+	{#if buildDetailFacts(event).length}
+		<div class="mt-6">
+			<p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
+				{$lang === 'de' ? 'Details' : 'Details'}
+			</p>
+			<dl class="mt-2 divide-y divide-slate-200 border-y border-slate-200">
+				{#each buildDetailFacts(event) as fact}
+					<div class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 py-3">
+						<dt class="inline-flex min-w-0 items-center gap-2 text-sm text-slate-600">
+							<fact.icon class="h-4 w-4 shrink-0 text-slate-500" aria-hidden="true" />
+							<span>{fact.label}</span>
+						</dt>
+						<dd class="max-w-[12rem] text-right text-sm font-semibold text-slate-900">{fact.value}</dd>
+					</div>
+				{/each}
+			</dl>
+		</div>
+	{/if}
+
+	{#if getEventLinks(event).length}
+		<div class="mt-7">
+			<p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
+				{$lang === 'de' ? 'Verfügbare Links' : 'Available links'}
+			</p>
+			<div class="mt-2 divide-y divide-slate-200 border-y border-slate-200">
+				{#each getEventLinks(event) as link}
+					{@const linkMeta = experienceLinkMeta[link.urlType]}
+					<a
+						href={link.url}
+						target="_blank"
+						rel="noreferrer"
+						class="group/link flex items-center justify-between gap-3 py-3 text-sm font-semibold text-slate-800 transition hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+					>
+						<span class="inline-flex items-center gap-2">
+							<linkMeta.icon class="h-4 w-4 text-brand" aria-hidden="true" />
+							{localize(link.label ?? linkMeta.label)}
+						</span>
+						<ExternalLink class="h-4 w-4 text-slate-400 transition group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5 group-hover/link:text-brand" aria-hidden="true" />
+					</a>
+				{/each}
+			</div>
+		</div>
+	{/if}
+{/snippet}
+
 {#snippet featuredCard(event: ExperienceEvent)}
-	<CardButton tone="default" padding="none"
+	<CardLink tone="default" padding="none"
 		id={event.id}
-		onclick={(clickEvent) => openExperienceModal(event, clickEvent.currentTarget)}
+		href={`#tour-${event.id}`}
+		onclick={(clickEvent) => openExperienceModal(event, clickEvent)}
 		class="group relative block w-full scroll-mt-28 overflow-hidden text-left"
 	>
 		<div class="relative aspect-[4/5] w-full overflow-hidden bg-slate-100 sm:aspect-[2/1] sm:min-h-96"
@@ -322,13 +387,14 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 				{/each}
 			</div>
 		</div>
-	</CardButton>
+	</CardLink>
 {/snippet}
 
 {#snippet eventCard(event: ExperienceEvent, layout: CardLayout)}
-	<button type="button"
+	<a
 		id={event.id}
-		onclick={(clickEvent) => openExperienceModal(event, clickEvent.currentTarget)}
+		href={`#tour-${event.id}`}
+		onclick={(clickEvent) => openExperienceModal(event, clickEvent)}
 		class={[photoCardClasses, 'aspect-[4/3] lg:aspect-auto lg:h-full', layout === 'panorama' ? 'sm:aspect-[2/1]' : 'sm:aspect-[4/5]']}
 	>
 		{@render photoLayer(event, layout === 'narrow'
@@ -339,7 +405,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 			<h3 class={['mt-1.5 font-serif text-2xl leading-tight sm:text-[1.7rem]', layout !== 'narrow' && 'lg:text-[2.1rem]']}>{localize(event.title)}</h3>
 			{@render factsLine(event)}
 		</div>
-	</button>
+	</a>
 {/snippet}
 
 <!-- ERLEBNISSE PAGE (Tailwind) -->
@@ -355,11 +421,11 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 						{$t('experiences.destinations.kicker')}
 					</p>
 					<h1 class="mt-3 font-serif text-4xl leading-[0.95] text-slate-900 sm:text-5xl">
-						{$t('experiences.destinations.title')}
+						{$t(copyKey + '.heading')}
 					</h1>
 					<div class="mx-auto mt-3 h-[3px] w-14 rounded-full bg-brand" aria-hidden="true"></div>
 					<p class="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-slate-600 sm:text-base">
-						{$t('experiences.destinations.subtitle')}
+						{$t(copyKey + '.description')}
 					</p>
 				</header>
 
@@ -403,6 +469,14 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 									</li>
 								{/each}
 							</ul>
+							{#each eventsBySeason[activeSeason] as event (event.id)}
+								<article id={'tour-' + event.id} class="tour-details scroll-mt-28 rounded-xl border border-slate-200 bg-white p-5 sm:p-8">
+									{@render tourDetails(event)}
+									<a href={'#' + event.id} class="mt-5 inline-block text-sm font-medium underline">
+										{$lang === 'de' ? 'Zurück zur Ausflugskarte' : 'Back to activity card'}
+									</a>
+								</article>
+							{/each}
 						</section>
 					{/key}
 				</div>
@@ -601,7 +675,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 				type="button"
 				class="absolute inset-0 bg-slate-950/55 backdrop-blur-[3px]"
 				onclick={closeExperienceModal}
-				aria-label="Details schließen"
+				aria-label={$lang === 'de' ? 'Details schließen' : 'Close details'}
 				transition:fade={{ duration: reduceMotion ? 0 : 180 }}
 			></button>
 			<div class="pointer-events-none relative mx-auto flex h-full max-w-6xl items-end sm:items-center">
@@ -618,7 +692,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 						bind:element={modalCloseButton}
 						class="absolute right-3 top-3 z-20"
 						onclick={closeExperienceModal}
-						aria-label="Details schließen"
+						aria-label={$lang === 'de' ? 'Details schließen' : 'Close details'}
 					>
 						<X class="h-5 w-5" aria-hidden="true" />
 					</Button>
@@ -638,81 +712,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 							class="p-5 sm:p-8 lg:p-9"
 							in:fly={{ x: reduceMotion ? 0 : 14, duration: reduceMotion ? 0 : 320, delay: reduceMotion ? 0 : 70, easing: cubicOut }}
 						>
-							<p class="flex items-center gap-2 text-xs font-medium text-slate-600">
-								<activeExperience.icon class="h-4 w-4 text-brand" aria-hidden="true" />
-								{localize(activeExperience.kicker)}
-							</p>
-							<h3 class="mt-2 text-2xl font-semibold leading-tight text-slate-900">
-								{localize(activeExperience.title)}
-							</h3>
-							{#if activeExperience.description}
-								<p class="mt-3 text-sm leading-relaxed text-slate-600">
-									{localize(activeExperience.description)}
-								</p>
-							{/if}
-
-							{#if buildPlanningFacts(activeExperience).length}
-								<div class="mt-6">
-									<p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
-										{$lang === 'de' ? 'Planung' : 'Planning'}
-									</p>
-									<dl class="mt-2 divide-y divide-slate-200 border-y border-slate-200">
-										{#each buildPlanningFacts(activeExperience) as fact}
-											<div class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 py-3">
-												<dt class="inline-flex min-w-0 items-center gap-2 text-sm text-slate-600">
-													<fact.icon class="h-4 w-4 shrink-0 text-slate-500" aria-hidden="true" />
-													<span>{fact.label}</span>
-												</dt>
-												<dd class="text-right text-sm font-semibold text-slate-900">{fact.value}</dd>
-											</div>
-										{/each}
-									</dl>
-								</div>
-							{/if}
-
-							{#if buildDetailFacts(activeExperience).length}
-								<div class="mt-6">
-									<p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
-										{$lang === 'de' ? 'Details' : 'Details'}
-									</p>
-									<dl class="mt-2 divide-y divide-slate-200 border-y border-slate-200">
-										{#each buildDetailFacts(activeExperience) as fact}
-											<div class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 py-3">
-												<dt class="inline-flex min-w-0 items-center gap-2 text-sm text-slate-600">
-													<fact.icon class="h-4 w-4 shrink-0 text-slate-500" aria-hidden="true" />
-													<span>{fact.label}</span>
-												</dt>
-												<dd class="max-w-[12rem] text-right text-sm font-semibold text-slate-900">{fact.value}</dd>
-											</div>
-										{/each}
-									</dl>
-								</div>
-							{/if}
-
-							{#if getEventLinks(activeExperience).length}
-								<div class="mt-7">
-									<p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
-										{$lang === 'de' ? 'Verfügbare Links' : 'Available links'}
-									</p>
-									<div class="mt-2 divide-y divide-slate-200 border-y border-slate-200">
-										{#each getEventLinks(activeExperience) as link}
-											{@const linkMeta = experienceLinkMeta[link.urlType]}
-											<a
-												href={link.url}
-												target="_blank"
-												rel="noreferrer"
-												class="group/link flex items-center justify-between gap-3 py-3 text-sm font-semibold text-slate-800 transition hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
-											>
-												<span class="inline-flex items-center gap-2">
-													<linkMeta.icon class="h-4 w-4 text-brand" aria-hidden="true" />
-													{localize(link.label ?? linkMeta.label)}
-												</span>
-												<ExternalLink class="h-4 w-4 text-slate-400 transition group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5 group-hover/link:text-brand" aria-hidden="true" />
-											</a>
-										{/each}
-									</div>
-								</div>
-							{/if}
+							{@render tourDetails(activeExperience)}
 						</div>
 					</div>
 				</div>
@@ -721,3 +721,7 @@ const localize = (value?: LocalizedText) => (value ? value[$lang] : '');
 	{/if}
 
 </div>
+
+<style>
+	.tour-details:not(:target) { display: none; }
+</style>

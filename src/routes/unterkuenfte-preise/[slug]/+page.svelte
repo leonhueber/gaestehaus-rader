@@ -5,7 +5,7 @@
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { lang, t } from '$lib/i18n';
-	import { getSortedAccommodationGallery } from '$lib/data/accommodations';
+	import { allowsExtraGuest, getSortedAccommodationGallery, seasonalRates } from '$lib/data/accommodations';
 	import { imageAttrs } from '$lib/images';
 	import { trackEvent } from '$lib/analytics/plausible';
 	import { openGalleryFrom } from '$lib/gallery-transition';
@@ -142,6 +142,7 @@
 	);
 	const roomJsonLd = $derived.by(() => {
 		const roomSchema = buildVacationRentalSchema({
+			translate: $t,
 			accommodation,
 			locale: $lang,
 			pageUrl: roomUrl,
@@ -163,7 +164,7 @@
 			),
 			roomSchema.vacationRentalNode,
 			roomSchema.accommodationNode,
-			roomSchema.offerNode,
+			...roomSchema.offerNodes,
 		]);
 	});
 
@@ -173,7 +174,6 @@
 		style: 'currency', currency: 'EUR', maximumFractionDigits: 0, minimumFractionDigits: 0
 	}));
 	const nightlyPrice = $derived(priceFormat.format(accommodation.pricePerNightBase));
-	const winterNightlyPrice = $derived(priceFormat.format(accommodation.pricePerNightWinter));
 	const reviewDate = $derived(new Intl.DateTimeFormat($lang === 'de' ? 'de-AT' : 'en-GB', {
 		month: 'long', year: 'numeric', timeZone: 'UTC'
 	}));
@@ -373,11 +373,11 @@
 								</tr>
 							</thead>
 							<tbody class="divide-y divide-slate-200">
-								{#each [{ season: 'summer', price: nightlyPrice }, { season: 'winter', price: winterNightlyPrice }] as row (row.season)}
+								{#each seasonalRates(accommodation) as row (row.season)}
 									<tr>
 										<th scope="row" class="font-semibold text-slate-900">{$t('experiences.nav.' + row.season)}</th>
-										<td class="whitespace-nowrap font-semibold tabular-nums text-slate-900">{row.price}</td>
-										<td class="font-medium">{accommodation.slug === 'nr-3' ? '—' : `${$t('rooms.page.pricing.extraPrice')} / ${$t('price.night')}`}</td>
+										<td class="whitespace-nowrap font-semibold tabular-nums text-slate-900">{priceFormat.format(row.price)}</td>
+										<td class="font-medium">{!allowsExtraGuest(accommodation) ? '—' : `${$t('rooms.page.pricing.extraPrice')} / ${$t('price.night')}`}</td>
 										<td class="font-medium">{$t('room.detail.card.facts.minStayValue')}</td>
 									</tr>
 								{/each}

@@ -12,12 +12,13 @@
 	import SeoHead from '$lib/components/SeoHead.svelte';
 
 	let containerEl: HTMLDivElement;
-	let widgetStatus = $state<DesklineStatus>('loading');
+	let widgetStatus = $state<DesklineStatus>();
 
 	const apartment = $derived(page.params.slug ? accommodationBySlug(page.params.slug) : undefined);
 	let requestedStay = $state<BookingStay>();
 	let invalidStay = $state(false);
 	onMount(() => {
+		widgetStatus = 'loading';
 		const selection = readStay(new URLSearchParams(window.location.search), apartment && maximumGuests(apartment.attributes.guests.de));
 		invalidStay = typeof selection === 'string';
 		requestedStay = typeof selection === 'object' ? selection : undefined;
@@ -57,7 +58,7 @@
 	{/if}
 </section>
 
-{#if widgetStatus !== 'ready'}
+{#if widgetStatus && widgetStatus !== 'ready'}
 	<div class="mx-auto max-w-4xl px-4 py-10 text-center" role="status" aria-live="polite">
 		{#if widgetStatus === 'loading'}
 			<p class="text-slate-500">
@@ -82,4 +83,11 @@
 <div id="deskline-container" bind:this={containerEl} class:hidden={widgetStatus === 'error'}></div>
 
 
-<p class="mx-auto max-w-6xl px-4 py-4 text-sm text-slate-600">{$t('booking.guestcard.title')} · {$t('booking.guestcard.body')}</p>
+<div class="mx-auto max-w-6xl space-y-2 px-4 py-4 text-sm text-slate-600">
+	<p>
+		{$t('booking.directEnquiry')}
+		<a data-sveltekit-reload href={localizePath('/kontakt', page.url.pathname)}
+			class="font-semibold text-slate-800 underline underline-offset-4 hover:text-brand focus-visible:outline-offset-4">{$t('booking.contactLink')}</a>
+	</p>
+	<p>{$t('booking.guestcard.title')} · {$t('booking.guestcard.body')}</p>
+</div>

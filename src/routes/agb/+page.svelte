@@ -1,6 +1,8 @@
 <script lang="ts">
 	import Card from '$lib/components/ui/Card.svelte';
 	import SeoHead from '$lib/components/SeoHead.svelte';
+	import { lang } from '$lib/i18n';
+	import { termsCopy as copy } from '$lib/data/termsCopy';
 </script>
 
 <SeoHead titleKey="terms.seo.title" descriptionKey="terms.seo.description" />
@@ -8,7 +10,7 @@
 <div class="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
 	<Card as="section" tone="default" padding="lg" >
 		<p class="text-xs font-semibold uppercase tracking-[0.35em] text-brand">Gästehaus Rader</p>
-		<h1 class="mt-4 font-serif text-4xl leading-[0.95] text-slate-900 sm:text-5xl">AGB</h1>
+		<h1 class="mt-4 font-serif text-4xl leading-[0.95] text-slate-900 sm:text-5xl">{copy.title[$lang]}</h1>
 		<div class="mt-4 h-[3px] w-14 rounded-full bg-brand"></div>
 
 		<div class="mt-8 space-y-8 text-sm text-slate-600 sm:text-base">
@@ -18,10 +20,10 @@
 					<p class="font-semibold text-slate-800">Astrid Hueber</p>
 					<p>Weißbriach 92</p>
 					<p>9622 Weißbriach</p>
-					<p>Österreich</p>
-					<p class="mt-3">Telefon: <a class="hover:text-slate-900" href="tel:+434286222">+43 4286 222</a></p>
+					<p>{copy.country[$lang]}</p>
+					<p class="mt-3">{copy.phone[$lang]} <a class="hover:text-slate-900" href="tel:+434286222">+43 4286 222</a></p>
 					<p>
-						E-Mail:
+						{copy.email[$lang]}
 						<a class="hover:text-slate-900" href="mailto:info@rader-gitschtal.at">
 							info@rader-gitschtal.at
 						</a>
@@ -30,135 +32,121 @@
 			</section>
 
 			<section>
-				<h2 class="text-base font-semibold text-slate-900">1. Geltungsbereich</h2>
+				<h2 class="text-base font-semibold text-slate-900">{copy.scopeHeading[$lang]}</h2>
 				<p class="mt-3">
-					Diese Allgemeinen Geschäftsbedingungen gelten für alle Buchungen und Aufenthalte im Gästehaus
-					Rader. Sie gelten unabhängig davon, ob die Buchung telefonisch, per E-Mail oder über ein externes
-					Online-Buchungssystem erfolgt.
+					{copy.scope[$lang]}
 				</p>
-				<p class="mt-3">Mit der Buchung erkennt der Gast diese AGB an.</p>
+				<p class="mt-3">{copy.acceptance[$lang]}</p>
 			</section>
 
 			<section>
-				<h2 class="text-base font-semibold text-slate-900">2. Vertragsabschluss</h2>
-				<p class="mt-3">Der Beherbergungsvertrag kommt zustande, sobald:</p>
+				<h2 class="text-base font-semibold text-slate-900">{copy.contractHeading[$lang]}</h2>
+				<p class="mt-3">{copy.contractIntro[$lang]}</p>
 				<ul class="mt-2 list-inside list-disc space-y-1">
-					<li>eine Buchung vom Gast vorgenommen wurde und</li>
-					<li>diese durch Gästehaus Rader (direkt oder über den Buchungsanbieter) bestätigt wurde.</li>
+					<li>{copy.guestBooking[$lang]}</li>
+					<li>{copy.confirmation[$lang]}</li>
 				</ul>
 				<p class="mt-3">
-					Buchungen über externe Buchungssysteme erfolgen technisch über einen Drittanbieter. Der
-					Beherbergungsvertrag kommt jedoch ausschließlich zwischen dem Gast und Gästehaus Rader zustande.
+					{copy.contractParties[$lang]}
 				</p>
 			</section>
 
 			<section>
-				<h2 class="text-base font-semibold text-slate-900">3. Preise</h2>
+				<h2 class="text-base font-semibold text-slate-900">{copy.pricesHeading[$lang]}</h2>
 				<p class="mt-3">
-					Es gelten die zum Zeitpunkt der Buchung angegebenen Preise. Alle Preise verstehen sich in Euro
-					inklusive der gesetzlichen Abgaben, zuzüglich der jeweils gültigen Ortstaxe. Preise können
-					auf externen Buchungsplattformen abweichen.
+					{copy.prices[$lang]}
 				</p>
 			</section>
 
 			<section>
-				<h2 class="text-base font-semibold text-slate-900">4. Zahlungsbedingungen</h2>
-				<p class="mt-3">Sofern nicht anders vereinbart, erfolgt die Bezahlung:</p>
+				<h2 class="text-base font-semibold text-slate-900">{copy.paymentHeading[$lang]}</h2>
+				<p class="mt-3">{copy.paymentIntro[$lang]}</p>
 				<ul class="mt-2 list-inside list-disc space-y-1">
-					<li>entweder vorab über das Buchungssystem</li>
-					<li>oder vor Ort bei Anreise / Abreise</li>
+					<li>{copy.prepayment[$lang]}</li>
+					<li>{copy.onSite[$lang]}</li>
 				</ul>
-				<p class="mt-3">Gästehaus Rader behält sich vor, bei Buchungen eine Anzahlung zu verlangen.</p>
+				<p class="mt-3">{copy.deposit[$lang]}</p>
 			</section>
 
 			<section>
-				<h2 class="text-base font-semibold text-slate-900">5. An- und Abreise</h2>
-				<p class="mt-3">Anreise: ab 14:00 Uhr</p>
-				<p>Abreise: bis 10:00 Uhr</p>
-				<p class="mt-3">Abweichende Zeiten sind nach vorheriger Absprache möglich.</p>
+				<h2 class="text-base font-semibold text-slate-900">{copy.arrivalHeading[$lang]}</h2>
+				<p class="mt-3">{copy.checkIn[$lang]}</p>
+				<p>{copy.checkOut[$lang]}</p>
+				<p class="mt-3">{copy.otherTimes[$lang]}</p>
 			</section>
 
 			<section>
-				<h2 class="text-base font-semibold text-slate-900">6. Rücktritt (Stornierung) durch den Gast</h2>
+				<h2 class="text-base font-semibold text-slate-900">{copy.cancellationHeading[$lang]}</h2>
 				<p class="mt-3">
-					Stornofristen und mögliche Gebühren für Stornierung und Nichtanreise richten sich nach
-					den Bedingungen des gewählten Angebots. Prüfen Sie bei Online-Buchungen die Tarifdetails vor
-					dem verbindlichen Buchungsabschluss. Bei einer Direktbuchung ohne Online-Buchungssystem
-					teilen wir die Bedingungen vor Vertragsabschluss mit.
+					{copy.cancellation[$lang]}
 				</p>
-				<p class="mt-3">Maßgeblich ist der Zeitpunkt des Einlangens der Stornierung bei Gästehaus Rader.</p>
+				<p class="mt-3">{copy.cancellationReceived[$lang]}</p>
 			</section>
 
 			<section>
-				<h2 class="text-base font-semibold text-slate-900">7. Rücktritt durch den Beherberger</h2>
-				<p class="mt-3">Gästehaus Rader ist berechtigt, vom Vertrag zurückzutreten, wenn:</p>
+				<h2 class="text-base font-semibold text-slate-900">{copy.hostCancellationHeading[$lang]}</h2>
+				<p class="mt-3">{copy.hostCancellationIntro[$lang]}</p>
 				<ul class="mt-2 list-inside list-disc space-y-1">
-					<li>eine vereinbarte Anzahlung nicht fristgerecht geleistet wurde</li>
-					<li>höhere Gewalt oder unvorhersehbare Ereignisse die Erfüllung verhindern</li>
-					<li>der Aufenthalt den reibungslosen Betrieb gefährdet</li>
+					<li>{copy.unpaidDeposit[$lang]}</li>
+					<li>{copy.forceMajeure[$lang]}</li>
+					<li>{copy.disruption[$lang]}</li>
 				</ul>
-				<p class="mt-3">Bereits geleistete Zahlungen werden rückerstattet. Weitere Ansprüche sind ausgeschlossen.</p>
+				<p class="mt-3">{copy.refund[$lang]}</p>
 			</section>
 
 			<section>
-				<h2 class="text-base font-semibold text-slate-900">8. Aufenthalt und Hausordnung</h2>
+				<h2 class="text-base font-semibold text-slate-900">{copy.houseRulesHeading[$lang]}</h2>
 				<p class="mt-3">
-					Der Gast verpflichtet sich, die Hausordnung einzuhalten. Rücksicht auf andere Gäste ist
-					einzuhalten. Bei groben Verstößen kann der Aufenthalt vorzeitig beendet werden.
+					{copy.houseRules[$lang]}
 				</p>
 			</section>
 
 			<section>
-				<h2 class="text-base font-semibold text-slate-900">9. Haftung</h2>
+				<h2 class="text-base font-semibold text-slate-900">{copy.liabilityHeading[$lang]}</h2>
 				<p class="mt-3">
-					Gästehaus Rader haftet im Rahmen der gesetzlichen Bestimmungen für Schäden, die durch grobe
-					Fahrlässigkeit oder Vorsatz verursacht wurden.
+					{copy.liability[$lang]}
 				</p>
 				<p class="mt-3">
-					Für Wertgegenstände wird keine Haftung übernommen, sofern diese nicht ausdrücklich zur Verwahrung
-					übergeben wurden.
+					{copy.valuables[$lang]}
 				</p>
 			</section>
 
 			<section>
-				<h2 class="text-base font-semibold text-slate-900">10. Tiere</h2>
-				<p class="mt-3">Haustiere sind nicht erlaubt.</p>
+				<h2 class="text-base font-semibold text-slate-900">{copy.petsHeading[$lang]}</h2>
+				<p class="mt-3">{copy.pets[$lang]}</p>
 			</section>
 
 			<section>
-				<h2 class="text-base font-semibold text-slate-900">11. Datenschutz</h2>
+				<h2 class="text-base font-semibold text-slate-900">{copy.privacyHeading[$lang]}</h2>
 				<p class="mt-3">
-					Die Verarbeitung personenbezogener Daten erfolgt gemäß der Datenschutzerklärung auf unserer Website.
+					{copy.privacy[$lang]}
 				</p>
 			</section>
 
 			<section>
-				<h2 class="text-base font-semibold text-slate-900">12. Online-Buchung über Drittanbieter</h2>
+				<h2 class="text-base font-semibold text-slate-900">{copy.platformHeading[$lang]}</h2>
 				<p class="mt-3">
-					Die Online-Buchung erfolgt technisch über ein externes Buchungssystem. Für die technische Abwicklung
-					gelten ergänzend die Nutzungsbedingungen des jeweiligen Buchungsanbieters.
+					{copy.platform[$lang]}
 				</p>
 				<p class="mt-3">
-					Der Beherbergungsvertrag wird jedoch ausschließlich zwischen dem Gast und Gästehaus Rader
-					geschlossen.
+					{copy.accommodationContract[$lang]}
 				</p>
 			</section>
 
 			<section>
-				<h2 class="text-base font-semibold text-slate-900">13. Gerichtsstand und anwendbares Recht</h2>
-				<p class="mt-3">Es gilt österreichisches Recht.</p>
-				<p>Gerichtsstand ist das sachlich zuständige Gericht am Standort des Gästehauses.</p>
+				<h2 class="text-base font-semibold text-slate-900">{copy.jurisdictionHeading[$lang]}</h2>
+				<p class="mt-3">{copy.law[$lang]}</p>
+				<p>{copy.court[$lang]}</p>
 			</section>
 
 			<section>
-				<h2 class="text-base font-semibold text-slate-900">14. Salvatorische Klausel</h2>
+				<h2 class="text-base font-semibold text-slate-900">{copy.severabilityHeading[$lang]}</h2>
 				<p class="mt-3">
-					Sollten einzelne Bestimmungen dieser AGB unwirksam sein, bleibt die Wirksamkeit der übrigen
-					Bestimmungen unberührt.
+					{copy.severability[$lang]}
 				</p>
 			</section>
 
-			<p class="pt-2 text-sm text-slate-500">Stand: 22.11.2026</p>
+			<p class="pt-2 text-sm text-slate-500">{copy.date[$lang]}</p>
 		</div>
 	</Card>
 </div>

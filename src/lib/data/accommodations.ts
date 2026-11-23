@@ -1,3 +1,4 @@
+import { maximumGuests } from '$lib/booking-search';
 import type { Lang } from '$lib/i18n';
 
 type Localized<T> = Record<Lang, T>;
@@ -52,6 +53,13 @@ export type Accommodation = {
 	typeLabel: Localized<string>;
 	detailBody: Localized<string>;
 };
+
+export const seasonalRates = (room: Accommodation) => [
+	{ season: 'summer', price: room.pricePerNightBase },
+	{ season: 'winter', price: room.pricePerNightWinter },
+] as const;
+
+export const allowsExtraGuest = (room: Accommodation) => maximumGuests(room.attributes.guests.de) > 2;
 
 const galleryCategorySortOrder: Record<AccommodationImageCategory, number> = {
 	living: 10,

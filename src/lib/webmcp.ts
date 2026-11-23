@@ -272,7 +272,7 @@ const findExperiences = (input?: unknown) => {
 					}
 				: null,
 			elevationGainM: experience.elevationGainM ?? null,
-			seasonMonths: experience.seasonMonths ?? null,
+			seasonMonths: experience.seasonMonths?.[language] ?? null,
 			indoor: experience.indoor ?? null,
 			sourceUrls: experience.links?.map((link) => link.url) ?? [],
 			detailsPageUrl: localizedUrl(experiencePaths[experience.season]),
